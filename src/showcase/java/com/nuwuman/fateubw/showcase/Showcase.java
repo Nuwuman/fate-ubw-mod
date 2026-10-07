@@ -28,6 +28,8 @@ public class Showcase implements ClientModInitializer {
     private boolean holdUse;
     private boolean holdSneak;
     private float yaw;
+    // FATE_SHOWCASE=lancer → solo la parte de Lancer (más rápido para iterar)
+    private final boolean lancerOnly = "lancer".equals(System.getenv("FATE_SHOWCASE"));
 
     @Override
     public void onInitializeClient() {
@@ -55,7 +57,89 @@ public class Showcase implements ClientModInitializer {
         ClientPlayerEntity p = client.player;
         p.setYaw(yaw);
         p.setPitch(0.0F);
-        script(client, p, worldTicks);
+        if (!lancerOnly || worldTicks == 5) script(client, p, worldTicks);
+        int l = worldTicks - (lancerOnly ? 60 : 560) - lancerDelay;
+        // Antes de soltar, esperar a que el servidor (que a veces va retrasado) haya contado la carga completa
+        if ((l == 119 && !serverCharged(client, p, 22)) || (l == 212 && !serverCharged(client, p, 42))) {
+            lancerDelay++;
+            return;
+        }
+        lancer(client, p, l);
+    }
+
+    private int lancerDelay;
+
+    private static boolean serverCharged(MinecraftClient c, ClientPlayerEntity p, int ticks) {
+        if (c.getServer() == null) return true;
+        var serverPlayer = c.getServer().getPlayerManager().getPlayer(p.getUuid());
+        return serverPlayer == null || serverPlayer.getItemUseTime() >= ticks;
+    }
+
+    private void lancer(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                yaw = 0.0F;
+                for (String cmd : new String[]{
+                        "fill ~-6 ~-1 ~-3 ~6 ~-1 ~24 grass_block", "fill ~-6 ~ ~-3 ~6 ~6 ~24 air", "kill @e[type=husk]",
+                        "item replace entity @s armor.chest with fate_ubw:lancer_chestplate",
+                        "item replace entity @s armor.legs with fate_ubw:lancer_leggings",
+                        "item replace entity @s armor.feet with fate_ubw:lancer_boots",
+                        "item replace entity @s hotbar.0 with fate_ubw:gae_bolg",
+                        "item replace entity @s hotbar.1 with fate_ubw:lancer_chestplate",
+                        "item replace entity @s hotbar.2 with fate_ubw:lancer_leggings",
+                        "item replace entity @s hotbar.3 with fate_ubw:lancer_boots",
+                        "item replace entity @s weapon.offhand with air",
+                        "summon husk ~1 ~ ~6 {NoAI:1b,PersistenceRequired:1b}",
+                        "summon husk ~ ~ ~20 {NoAI:1b,PersistenceRequired:1b}",
+                        "summon husk ~2 ~ ~21 {NoAI:1b,PersistenceRequired:1b}"}) {
+                    p.networkHandler.sendChatCommand(cmd);
+                }
+                p.getInventory().selectedSlot = 0;
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+            }
+            case 40 -> shot(c, "21_lancer_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "22_lancer_armor_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "23_lancer_armor_back");
+            case 72 -> yaw = 90.0F;
+            case 85 -> shot(c, "24_lancer_armor_side");
+            case 87 -> yaw = 0.0F;
+
+            // Estocada: la lanza que atraviesa con la muerte
+            case 95 -> use(c, p);
+            case 110 -> shot(c, "25_gae_bolg_charge_back");
+            case 112 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 115 -> shot(c, "26_gae_bolg_charge_firstperson");
+            case 117 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 119 -> holdUse = false;
+            case 123 -> shot(c, "27_gae_bolg_pierce");
+            case 128 -> shot(c, "28_gae_bolg_pierce_late");
+
+            // Lanzamiento: la lanza que vuela con la muerte
+            case 160 -> holdSneak = true;
+            case 162 -> use(c, p);
+            case 210 -> shot(c, "29_gae_bolg_soaring_charge");
+            case 212 -> holdUse = false;
+            case 214 -> yaw = 35.0F; // la lanza queda a la izquierda de la cámara, no tapada por el jugador
+            case 216 -> holdSneak = false;
+            case 220 -> shot(c, "30_gae_bolg_soaring_flight");
+            case 226 -> shot(c, "31_gae_bolg_soaring_flight_late");
+            case 250 -> shot(c, "32_gae_bolg_soaring_impact");
+
+            case 290 -> {
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+                c.setScreen(new InventoryScreen(p));
+            }
+            case 300 -> shot(c, "33_lancer_inventory");
+            case 305 -> {
+                c.setScreen(null);
+                log("fin");
+                c.scheduleStop();
+            }
+            default -> {
+            }
+        }
     }
 
     private void script(MinecraftClient c, ClientPlayerEntity p, int t) {
@@ -151,11 +235,7 @@ public class Showcase implements ClientModInitializer {
                 c.setScreen(new InventoryScreen(p));
             }
             case 540 -> shot(c, "20_inventory");
-            case 545 -> {
-                c.setScreen(null);
-                log("fin");
-                c.scheduleStop();
-            }
+            case 545 -> c.setScreen(null);
             default -> {
             }
         }

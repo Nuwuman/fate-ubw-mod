@@ -11,12 +11,12 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Genera los modelos 3D de Archer (EMIYA) y sus texturas:
- * ítems como modelos JSON con cubos, y la armadura como geo de GeckoLib.
+ * Genera los modelos 3D de los servants y sus texturas:
+ * ítems como modelos JSON con cubos, y las armaduras como geo de GeckoLib.
  * Cada cara de cada cubo recibe su propia región en la textura y se pinta con su material.
- * Uso: java tools/ArcherAssets.java src/main/resources/assets/fate_ubw
+ * Uso: java tools/ServantAssets.java src/main/resources/assets/fate_ubw
  */
-public class ArcherAssets {
+public class ServantAssets {
     static final int DENSITY = 2; // píxeles de textura por unidad de modelo
 
     // ---------- materiales ----------
@@ -83,6 +83,16 @@ public class ArcherAssets {
         return (x, y, w, h, s) -> shade(Math.floorMod(x + y, 3) == 0 ? dark : base, x, y, w, h, s, 0.04);
     }
 
+    // Traje ceñido con costuras verticales (Lancer)
+    static Paint seams(int base, int line) {
+        return (x, y, w, h, s) -> shade(Math.floorMod(x, 5) == 4 ? line : base, x, y, w, h, s, 0.05);
+    }
+
+    // Asta con vetas a lo largo
+    static Paint grain(int base, int dark) {
+        return (x, y, w, h, s) -> shade(noise(x, y / 4, s) > 0.7 ? dark : base, x, y, w, h, s, 0.06);
+    }
+
     // ---------- paletas ----------
     static final Paint KAN_BLADE = lattice(0x1c1c24, 0x7a1a1a), KAN_EDGE = metal(0x8f95a3),
             KAN_GRIP = wrap(0x5a1414, 0x2e0909), KAN_METAL = metal(0x8c6d1f);
@@ -94,6 +104,10 @@ public class ArcherAssets {
     static final Paint CAL_BLADE = spiral(0xb7c2d6, 0x5f6b88), CAL_GRIP = wrap(0x1d1d24, 0x0d0d11), GOLD = metal(0xd2a537);
     static final Paint RED_CLOTH = cloth(0xa3161c), BLACK_ARMOR = plates(0x1f1f27, 0x3a3c47), SILVER = metal(0x9ea4af),
             BELT = solid(0x2f2b2b);
+    static final Paint SPEAR_SHAFT = grain(0x8b0f1a, 0x5a0810), SPEAR_HEAD = metal(0xc0182a), SPEAR_EDGE = metal(0xff5560),
+            SPEAR_METAL = solid(0x3a0a0e), SPEAR_GRIP = wrap(0x5a0a10, 0x2a0508);
+    static final Paint BLUE_SUIT = seams(0x22337a, 0x5d78b8), LANCER_SILVER = metal(0xb8bfcc), LANCER_DARK = solid(0x141a33),
+            HAIR = cloth(0x2b4cc2);
 
     // ---------- geometría ----------
     static class Face {
@@ -317,11 +331,16 @@ public class ArcherAssets {
     // Los modelos se construyen en vertical (+Y). Las transformaciones son las de los sprites vanilla
     // con -45° extra en Z, así la espada queda en la diagonal de siempre en mano e inventario.
     static String handheld(double guiScale) {
+        return handheld(guiScale, 0.68);
+    }
+
+    static String handheld(double guiScale, double firstPersonScale) {
+        String fp = arr(firstPersonScale, firstPersonScale, firstPersonScale);
         return "{\n"
                 + "    \"thirdperson_righthand\": { \"rotation\": [0, -90, 10], \"translation\": [0, 4, 0.5], \"scale\": [0.85, 0.85, 0.85] },\n"
                 + "    \"thirdperson_lefthand\": { \"rotation\": [0, 90, -10], \"translation\": [0, 4, 0.5], \"scale\": [0.85, 0.85, 0.85] },\n"
-                + "    \"firstperson_righthand\": { \"rotation\": [0, -90, -20], \"translation\": [1.13, 3.2, 1.13], \"scale\": [0.68, 0.68, 0.68] },\n"
-                + "    \"firstperson_lefthand\": { \"rotation\": [0, 90, 20], \"translation\": [1.13, 3.2, 1.13], \"scale\": [0.68, 0.68, 0.68] },\n"
+                + "    \"firstperson_righthand\": { \"rotation\": [0, -90, -20], \"translation\": [1.13, 3.2, 1.13], \"scale\": " + fp + " },\n"
+                + "    \"firstperson_lefthand\": { \"rotation\": [0, 90, 20], \"translation\": [1.13, 3.2, 1.13], \"scale\": " + fp + " },\n"
                 + "    \"gui\": { \"rotation\": [0, 0, -45], \"translation\": [-1, -1, 0], \"scale\": " + arr(guiScale, guiScale, guiScale) + " },\n"
                 + "    \"ground\": { \"rotation\": [0, 0, -45], \"translation\": [0, 2, 0], \"scale\": [0.5, 0.5, 0.5] },\n"
                 + "    \"fixed\": { \"rotation\": [0, 180, -45], \"scale\": [0.8, 0.8, 0.8] }\n"
@@ -467,6 +486,63 @@ public class ArcherAssets {
                 rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // Gáe Bolg: lanza carmesí con púas. Agarre en y≈2.5, igual que las espadas; total de -12 a 30.5
+    static Model gaeBolg() {
+        Model m = new Model();
+        m.box(7.4, -12, 7.4, 8.6, -10.5, 8.6, SPEAR_METAL);     // regatón
+        m.box(7.6, -10.5, 7.6, 8.4, 21, 8.4, SPEAR_SHAFT);      // asta
+        m.box(7.35, 0.5, 7.35, 8.65, 4.5, 8.65, SPEAR_GRIP);    // agarre
+        m.box(7.2, 21, 7.2, 8.8, 22, 8.8, SPEAR_METAL);         // anillo
+        m.box(7.0, 22, 7.6, 9.0, 26, 8.4, SPEAR_HEAD);          // hoja
+        m.box(7.4, 26, 7.65, 8.6, 29, 8.35, SPEAR_HEAD);
+        m.box(7.75, 29, 7.7, 8.25, 30.5, 8.3, SPEAR_EDGE);      // punta
+        // Púas que apuntan hacia atrás, a ambos lados de la hoja
+        for (double y : new double[]{22.5, 25.0}) {
+            m.box(5.6, y, 7.75, 7.0, y + 0.8, 8.25, SPEAR_EDGE).rot("z", 45, 7.0, y + 0.4, 8);
+            m.box(9.0, y, 7.75, 10.4, y + 0.8, 8.25, SPEAR_EDGE).rot("z", -45, 9.0, y + 0.4, 8);
+        }
+        return m;
+    }
+
+    // Lancer: traje azul ceñido, coraza, hombreras y brazales de plata, y su coleta azul
+    static List<Bone> lancerArmor() {
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, BLUE_SUIT).inflate(1.0);
+        body.model.box(-4, 18, -2, 4, 23, 2, LANCER_SILVER).inflate(1.15);
+        body.model.box(-4, 11.5, -2, 4, 13, 2, LANCER_DARK).inflate(1.25);
+
+        Bone ponytail = new Bone("ponytail", "armorBody", 0, 25, 3.2);
+        ponytail.model.box(-0.75, 14, 3.2, 0.75, 25, 4.2, HAIR);
+        ponytail.model.box(-0.5, 12, 3.3, 0.5, 14, 4.0, HAIR);
+        ponytail.model.box(-1.0, 22.5, 3.1, 1.0, 23.5, 4.4, LANCER_SILVER);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 24, 2, BLUE_SUIT).inflate(0.8);
+        rightArm.model.box(-8, 12, -2, -4, 15.5, 2, LANCER_SILVER).inflate(1.0);
+        rightArm.model.box(-8.75, 20.5, -2.75, -3.25, 24.75, 2.75, LANCER_SILVER).inflate(0.5);
+        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
+        leftArm.model.box(4, 12, -2, 8, 24, 2, BLUE_SUIT).inflate(0.8);
+        leftArm.model.box(4, 12, -2, 8, 15.5, 2, LANCER_SILVER).inflate(1.0);
+        leftArm.model.box(3.25, 20.5, -2.75, 8.75, 24.75, 2.75, LANCER_SILVER).inflate(0.5);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 3, -2, 0, 12, 2, BLUE_SUIT).inflate(0.5);
+        rightLeg.model.box(-4, 5.5, -3.0, 0, 8, -2.5, LANCER_SILVER);
+        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
+        leftLeg.model.box(0, 3, -2, 4, 12, 2, BLUE_SUIT).inflate(0.5);
+        leftLeg.model.box(0, 5.5, -3.0, 4, 8, -2.5, LANCER_SILVER);
+
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 4, 2, LANCER_SILVER).inflate(0.9);
+        rightBoot.model.box(-4, 0, -3.4, 0, 1.5, -2.9, LANCER_DARK);
+        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
+        leftBoot.model.box(0, 0, -2, 4, 4, 2, LANCER_SILVER).inflate(0.9);
+        leftBoot.model.box(0, 0, -3.4, 4, 1.5, -2.9, LANCER_DARK);
+
+        return List.of(head, body, ponytail, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
     static Model bonesToModel(List<Bone> bones, double dx, double dy, double dz, String... names) {
         Model m = new Model();
         for (Bone b : bones) {
@@ -510,5 +586,14 @@ public class ArcherAssets {
                 "coatFrontL", "coatFrontR", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "archer_leggings", bonesToModel(armor, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "archer_boots", bonesToModel(armor, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+
+        // ---------- Lancer ----------
+        itemModel(root, "gae_bolg", gaeBolg(), handheld(0.5, 0.5), null);
+        List<Bone> lancer = lancerArmor();
+        geoModel(root, "lancer_armor", lancer);
+        itemModel(root, "lancer_chestplate", bonesToModel(lancer, 8, -4, 8, "armorBody", "ponytail", "armorRightArm", "armorLeftArm"),
+                armorIcon(0.5), null);
+        itemModel(root, "lancer_leggings", bonesToModel(lancer, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
+        itemModel(root, "lancer_boots", bonesToModel(lancer, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
     }
 }

@@ -18,6 +18,17 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
 - **Armadura** (peto, grebas, botas) con modelo 3D de GeckoLib y faldón animado.
   Conjunto completo: visión nocturna y los monstruos cercanos brillan.
 
+**Lancer (Cú Chulainn)**
+- **Gáe Bolg**: lanza carmesí con más alcance. Mantén 1 s y suelta: **la lanza que atraviesa con la muerte**,
+  embiste al objetivo que miras (12 bloques) y le atraviesa el corazón sin fallar (ignora armadura, deja Wither).
+  Agachado, mantén 2 s y suelta: **la lanza que vuela con la muerte**, saltas y la lanzas; persigue al objetivo
+  y estalla en un área de 6 bloques.
+- **Armadura** (coraza, grebas, botas) con modelo 3D de GeckoLib y coleta animada.
+  Conjunto completo: Velocidad I, **Protección contra Proyectiles** (el 75% no te hiere) y
+  **Continuación de Batalla** (sobrevives a un golpe mortal, cada 5 minutos).
+
+![Lancer](docs/lancer.png)
+
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
 ## Gamerule
@@ -26,7 +37,8 @@ Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene 
 /gamerule fateAbilitiesBreakBlocks true
 ```
 
-Desactivada por defecto. Activada: Excalibur abre un túnel por donde pasa y Caladbolg II explota como TNT.
+Desactivada por defecto. Activada: Excalibur abre un túnel por donde pasa, y Caladbolg II y la Gáe Bolg lanzada
+explotan como TNT.
 Bedrock, obsidiana y bloques igual de resistentes no se rompen.
 
 ## Instalar
@@ -50,10 +62,11 @@ El jar sale en `build/libs/`.
 ## Herramientas de desarrollo
 
 - `java tools/TextureGen.java src/main/resources/assets/fate_ubw/textures/item`: regenera las texturas animadas de Excalibur.
-- `java tools/ArcherAssets.java src/main/resources/assets/fate_ubw`: regenera los modelos 3D de Archer
+- `java tools/ServantAssets.java src/main/resources/assets/fate_ubw`: regenera los modelos 3D de los servants
   (ítems JSON, geo de GeckoLib) y sus texturas.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
+  Con la variable de entorno `FATE_SHOWCASE=lancer` solo prueba a Lancer.
 
 ---
 

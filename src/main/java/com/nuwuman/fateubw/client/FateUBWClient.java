@@ -1,6 +1,8 @@
 package com.nuwuman.fateubw.client;
 
 import com.nuwuman.fateubw.FateUBW;
+import com.nuwuman.fateubw.archer.SwordArrowEntity;
+import com.nuwuman.fateubw.lancer.GaeBolgSpearEntity;
 import com.nuwuman.fateubw.saber.ExcaliburItem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -16,8 +18,13 @@ public class FateUBWClient implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.register(FateUBW.BEAM, ExcaliburBeamRenderer::new);
         EntityRendererRegistry.register(FateUBW.THROWN_FALCHION, ThrownFalchionRenderer::new);
-        EntityRendererRegistry.register(FateUBW.SWORD_ARROW_ENTITY, SwordArrowRenderer::new);
+        EntityRendererRegistry.register(FateUBW.SWORD_ARROW_ENTITY, ctx -> {
+            ItemStack arrow = new ItemStack(FateUBW.SWORD_ARROW);
+            ItemStack caladbolg = new ItemStack(FateUBW.CALADBOLG);
+            return new OrientedItemRenderer<SwordArrowEntity>(ctx, e -> e.isCaladbolg() ? caladbolg : arrow, SwordArrowEntity::isCaladbolg);
+        });
         EntityRendererRegistry.register(FateUBW.RHO_AIAS_ENTITY, RhoAiasRenderer::new);
+        EntityRendererRegistry.register(FateUBW.GAE_BOLG_SPEAR, ctx -> new OrientedItemRenderer<GaeBolgSpearEntity>(ctx, GaeBolgSpearEntity::getStack, e -> false));
 
         // Excalibur: normal / cargando / cargada
         ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("charge"),

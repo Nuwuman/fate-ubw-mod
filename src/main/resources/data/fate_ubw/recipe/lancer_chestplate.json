@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["N N", "BIB", "BBB"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "I": { "item": "minecraft:iron_block" },
+    "B": { "item": "minecraft:blue_wool" }
+  },
+  "result": { "id": "fate_ubw:lancer_chestplate", "count": 1 }
+}

@@ -21,18 +21,37 @@
   "item.fate_ubw.archer_boots": "Archer's Boots",
   "item.fate_ubw.archer_armor.tooltip.set": "Full set: Hawk Eye (night vision, nearby monsters glow)",
 
+  "item.fate_ubw.gae_bolg": "Gáe Bolg",
+  "item.fate_ubw.gae_bolg.tooltip.pierce": "Hold 1s and release: Barbed Spear that Pierces with Death",
+  "item.fate_ubw.gae_bolg.tooltip.soaring": "Sneak, hold 2s and release: Soaring Spear that Strikes with Death",
+  "item.fate_ubw.gae_bolg_pierce": "Gáe Bolg (thrust)",
+  "item.fate_ubw.gae_bolg_soaring": "Gáe Bolg (throw)",
+  "item.fate_ubw.battle_continuation": "Battle Continuation",
+  "item.fate_ubw.lancer_chestplate": "Lancer's Cuirass",
+  "item.fate_ubw.lancer_leggings": "Lancer's Greaves",
+  "item.fate_ubw.lancer_boots": "Lancer's Boots",
+  "item.fate_ubw.lancer_armor.tooltip.set": "Full set: Speed I",
+  "item.fate_ubw.lancer_armor.tooltip.arrows": "Protection from Arrows: 75% of projectiles can't hurt you",
+  "item.fate_ubw.lancer_armor.tooltip.battle": "Battle Continuation: survive a lethal hit (every 5 min)",
+
   "entity.fate_ubw.excalibur_beam": "Excalibur",
   "entity.fate_ubw.thrown_falchion": "Thrown Falchion",
   "entity.fate_ubw.sword_arrow": "Projected Sword",
   "entity.fate_ubw.rho_aias": "Rho Aias",
+  "entity.fate_ubw.gae_bolg_spear": "Gáe Bolg",
 
   "gamerule.fateAbilitiesBreakBlocks": "Fate: abilities break blocks",
-  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur carves a tunnel and Caladbolg II explodes like TNT",
+  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur carves a tunnel; Caladbolg II and Gáe Bolg explode like TNT",
 
   "ability.fate_ubw.rho_aias": "Rho Aias",
   "ability.fate_ubw.caladbolg": "Caladbolg II",
+  "ability.fate_ubw.gae_bolg_pierce": "Gáe Bolg (thrust)",
+  "ability.fate_ubw.gae_bolg_soaring": "Gáe Bolg (throw)",
   "message.fate_ubw.cooldown": "%s is recharging: %ss",
+  "message.fate_ubw.battle_continuation": "Battle Continuation! You're still standing",
 
   "death.attack.excalibur": "%1$s was turned to light",
-  "death.attack.excalibur.player": "%1$s was turned to light by %2$s's Excalibur"
+  "death.attack.excalibur.player": "%1$s was turned to light by %2$s's Excalibur",
+  "death.attack.gae_bolg": "%1$s had their heart pierced",
+  "death.attack.gae_bolg.player": "%1$s had their heart pierced by %2$s's Gáe Bolg"
 }
