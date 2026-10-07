@@ -1,0 +1,38 @@
+{
+  "itemGroup.fate_ubw": "Fate: Unlimited Blade Works",
+
+  "item.fate_ubw.excalibur": "Excalibur",
+  "item.fate_ubw.excalibur.tooltip.charge": "Hold right-click: charge the Noble Phantasm",
+  "item.fate_ubw.excalibur.tooltip.strike_air": "Sneak + right-click: Strike Air",
+
+  "item.fate_ubw.kanshou": "Kanshō",
+  "item.fate_ubw.bakuya": "Bakuya",
+  "item.fate_ubw.falchion.tooltip.throw": "Right-click: throw it, it comes back to your hand",
+  "item.fate_ubw.falchion.tooltip.pair": "With its twin in the other hand: throw both at once",
+  "item.fate_ubw.falchion.tooltip.rho_aias": "Sneak + right-click: Rho Aias",
+  "item.fate_ubw.archer_bow": "Archer's Bow",
+  "item.fate_ubw.archer_bow.tooltip.shoot": "Fires projected swords, no arrows needed",
+  "item.fate_ubw.archer_bow.tooltip.caladbolg": "Sneak at full draw: Caladbolg II (Broken Phantasm)",
+  "item.fate_ubw.caladbolg": "Caladbolg II",
+  "item.fate_ubw.sword_arrow": "Projected Sword",
+  "item.fate_ubw.rho_aias": "Rho Aias",
+  "item.fate_ubw.archer_chestplate": "Shroud of Magdalene",
+  "item.fate_ubw.archer_leggings": "Archer's Greaves",
+  "item.fate_ubw.archer_boots": "Archer's Boots",
+  "item.fate_ubw.archer_armor.tooltip.set": "Full set: Hawk Eye (night vision, nearby monsters glow)",
+
+  "entity.fate_ubw.excalibur_beam": "Excalibur",
+  "entity.fate_ubw.thrown_falchion": "Thrown Falchion",
+  "entity.fate_ubw.sword_arrow": "Projected Sword",
+  "entity.fate_ubw.rho_aias": "Rho Aias",
+
+  "gamerule.fateAbilitiesBreakBlocks": "Fate: abilities break blocks",
+  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur carves a tunnel and Caladbolg II explodes like TNT",
+
+  "ability.fate_ubw.rho_aias": "Rho Aias",
+  "ability.fate_ubw.caladbolg": "Caladbolg II",
+  "message.fate_ubw.cooldown": "%s is recharging: %ss",
+
+  "death.attack.excalibur": "%1$s was turned to light",
+  "death.attack.excalibur.player": "%1$s was turned to light by %2$s's Excalibur"
+}

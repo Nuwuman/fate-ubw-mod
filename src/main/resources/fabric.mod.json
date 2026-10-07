@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "fate_ubw",
+  "version": "${version}",
+  "name": "Fate: Unlimited Blade Works",
+  "description": "Los servants de Fate/stay night UBW: armas, armaduras y Noble Phantasms. Saber (Excalibur) y Archer (Kanshō y Bakuya, Rho Aias, Caladbolg II).",
+  "authors": ["Nuwuman"],
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.nuwuman.fateubw.FateUBW"],
+    "client": ["com.nuwuman.fateubw.client.FateUBWClient"]
+  },
+  "mixins": ["fate_ubw.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "geckolib": ">=4.7"
+  }
+}

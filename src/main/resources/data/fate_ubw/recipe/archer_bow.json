@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [" N ", "DBD", " N "],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "D": { "item": "minecraft:black_dye" },
+    "B": { "item": "minecraft:bow" }
+  },
+  "result": { "id": "fate_ubw:archer_bow", "count": 1 }
+}

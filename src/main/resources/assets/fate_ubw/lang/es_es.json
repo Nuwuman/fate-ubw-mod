@@ -1,0 +1,38 @@
+{
+  "itemGroup.fate_ubw": "Fate: Unlimited Blade Works",
+
+  "item.fate_ubw.excalibur": "Excalibur",
+  "item.fate_ubw.excalibur.tooltip.charge": "Mantén click derecho: carga el Noble Phantasm",
+  "item.fate_ubw.excalibur.tooltip.strike_air": "Agachado + click derecho: Strike Air",
+
+  "item.fate_ubw.kanshou": "Kanshō",
+  "item.fate_ubw.bakuya": "Bakuya",
+  "item.fate_ubw.falchion.tooltip.throw": "Click derecho: lánzalo, vuelve a tu mano",
+  "item.fate_ubw.falchion.tooltip.pair": "Con su pareja en la otra mano: lanza los dos a la vez",
+  "item.fate_ubw.falchion.tooltip.rho_aias": "Agachado + click derecho: Rho Aias",
+  "item.fate_ubw.archer_bow": "Arco de Archer",
+  "item.fate_ubw.archer_bow.tooltip.shoot": "Dispara espadas proyectadas, sin gastar flechas",
+  "item.fate_ubw.archer_bow.tooltip.caladbolg": "Agachado y tensado a tope: Caladbolg II (Broken Phantasm)",
+  "item.fate_ubw.caladbolg": "Caladbolg II",
+  "item.fate_ubw.sword_arrow": "Espada proyectada",
+  "item.fate_ubw.rho_aias": "Rho Aias",
+  "item.fate_ubw.archer_chestplate": "Sudario de Magdalena",
+  "item.fate_ubw.archer_leggings": "Grebas de Archer",
+  "item.fate_ubw.archer_boots": "Botas de Archer",
+  "item.fate_ubw.archer_armor.tooltip.set": "Conjunto completo: Ojo de Halcón (visión nocturna, los monstruos cercanos brillan)",
+
+  "entity.fate_ubw.excalibur_beam": "Excalibur",
+  "entity.fate_ubw.thrown_falchion": "Sable lanzado",
+  "entity.fate_ubw.sword_arrow": "Espada proyectada",
+  "entity.fate_ubw.rho_aias": "Rho Aias",
+
+  "gamerule.fateAbilitiesBreakBlocks": "Fate: las habilidades rompen bloques",
+  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur abre un túnel y Caladbolg II explota como TNT",
+
+  "ability.fate_ubw.rho_aias": "Rho Aias",
+  "ability.fate_ubw.caladbolg": "Caladbolg II",
+  "message.fate_ubw.cooldown": "%s se está recargando: %s s",
+
+  "death.attack.excalibur": "%1$s fue reducido a luz",
+  "death.attack.excalibur.player": "%1$s fue reducido a luz por el Excalibur de %2$s"
+}

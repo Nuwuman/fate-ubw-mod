@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "fate_ubw_showcase",
+  "version": "1.0.0",
+  "name": "Fate UBW Showcase",
+  "description": "Solo para desarrollo: escena automática con capturas de cada arma y habilidad.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.nuwuman.fateubw.showcase.Showcase"]
+  },
+  "depends": {
+    "fate_ubw": "*"
+  }
+}

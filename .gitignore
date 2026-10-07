@@ -1,0 +1,15 @@
+# Gradle / Loom
+.gradle/
+build/
+out/
+bin/
+remappedSrc/
+
+# Carpetas de ejecución del cliente de desarrollo
+run/
+run-showcase/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
