@@ -1465,28 +1465,24 @@ public class ServantAssets {
         return (x, y, w, h, s) -> bevel(Math.floorMod(x, 3) == 0 ? 0x6a3fa6 : 0x8a52c8, x, y, w, h, s, 0.06);
     }
 
-    // Venda de Medusa: ciruela oscuro con ribetes morados arriba y abajo y escamas; delante, un rombo en el centro
-    static Paint gorgonBand(boolean emblem) {
-        Paint base = plate(0x2a1838);
+    // Venda de Medusa: tela magenta enrollada, con pliegues en diagonal (sombra y brillo) y los bordes más oscuros
+    static Paint gorgonBand() {
         return (x, y, w, h, s) -> {
-            if (y == 0 || y == h - 1) return bevel(0x9a4fd0, x, y, w, h, s, 0.03);
-            double cx = Math.abs(x - (w - 1) / 2.0), cy = Math.abs(y - (h - 1) / 2.0);
-            if (emblem && cx + cy * 1.4 < 2.2) return bevel(cx + cy * 1.4 < 1 ? 0xe07af0 : 0xb04fd8, x, y, w, h, s, 0.02);
-            if (Math.floorMod(x + (y % 2) * 2, 4) == 0) return bevel(0x5a2a7a, x, y, w, h, s, 0.03);
-            return base.at(x, y, w, h, s);
+            if (y == 0 || y == h - 1) return bevel(0x7a1840, x, y, w, h, s, 0.03);
+            int fold = Math.floorMod(x + y * 2, 6);
+            int c = fold == 0 ? 0x6e1236 : fold == 1 ? 0xd8508a : 0xb3285e;
+            return bevel(c, x, y, w, h, s, 0.04);
         };
     }
 
     static List<Bone> riderArmor() {
         Paint dress = fabric(RID_BLACK), leather = plate(RID_LEATHER), purple = plate(RID_PURPLE), hairPaint = riderHair();
         Bone head = new Bone("armorHead", null, 0, 24, 0);
-        // Breaker Gorgon: solo la venda. Rodea la cabeza, con una placa sobre los ojos, emblema y nudo con cintas detrás
-        Paint band = gorgonBand(false), front = gorgonBand(true), dark = plate(0x24142f);
-        head.model.box(-4, 26.4, -4, 4, 29.2, 4, band).inflate(0.45).face("north", front);
-        head.model.box(-3.4, 26.7, -4.85, 3.4, 28.9, -4.45, front);           // placa sobre los ojos
-        head.model.box(-1, 26.9, 4.45, 1, 28.7, 5.0, dark);                   // nudo
-        head.model.box(-0.9, 23.4, 4.6, -0.2, 27.0, 4.85, band);              // cintas
-        head.model.box(0.2, 23.8, 4.6, 0.9, 27.0, 4.85, band);
+        // Breaker Gorgon: solo la venda, tela magenta sobre los ojos con dos hebillas de metal en su lado izquierdo
+        Paint band = gorgonBand(), buckle = plate(0xb8bcc6);
+        head.model.box(-4, 26.3, -4, 4, 29.3, 4, band).inflate(0.45);
+        head.model.box(1.9, 27.9, -4.75, 3.5, 28.8, -4.4, buckle);            // hebillas
+        head.model.box(1.9, 26.8, -4.75, 3.5, 27.7, -4.4, buckle);
 
         Bone body = new Bone("armorBody", null, 0, 24, 0);
         body.model.box(-4, 12, -2, 4, 22.6, 2, dress).inflate(0.45);
