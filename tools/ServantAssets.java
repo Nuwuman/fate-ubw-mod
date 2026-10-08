@@ -1425,7 +1425,7 @@ public class ServantAssets {
         itemModel(root, "excalibur_charged", excalibur(2), raised(0.7, -50, 6.5, -0.5, 0.8), null,
                 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
         List<Bone> saber = saberArmor();
-        geoModel(root, "saber_armor", saber);
+        // saber_armor.geo.json y su textura se editan a mano en Blockbench (blockbench/saber_armor.bbmodel): no se regeneran
         itemModel(root, "saber_chestplate", bonesToModel(saber, 8, -4, 8, "armorBody", "skirtFront", "skirtBack", "skirtLeft",
                 "skirtRight", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "saber_leggings", bonesToModel(saber, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
