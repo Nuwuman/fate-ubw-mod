@@ -849,7 +849,10 @@ public class ServantAssets {
 
     static String sha(Path file) throws IOException {
         try {
-            byte[] d = java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file));
+            // Los de texto sin \r: git puede cambiar los finales de línea al sacar los archivos
+            byte[] bytes = file.toString().endsWith(".png") ? Files.readAllBytes(file)
+                    : Files.readString(file).replace("\r", "").getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] d = java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
             return java.util.HexFormat.of().formatHex(d);
         } catch (java.security.NoSuchAlgorithmException e) {
             throw new IOException(e);
