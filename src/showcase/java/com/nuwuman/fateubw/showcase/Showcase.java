@@ -118,6 +118,7 @@ public class Showcase implements ClientModInitializer {
             case "npc" -> npc(client, p, st);
             case "newnps" -> newNps(client, p, st);
             case "glow" -> glow(client, p, st);
+            case "armors" -> armors(client, p, st);
             case "caster" -> caster(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
@@ -1011,6 +1012,36 @@ public class Showcase implements ClientModInitializer {
     }
 
     // De noche: las líneas de Ea brillan en la oscuridad y sus cilindros giran
+    // Cada armadura puesta, de frente, de espaldas y de lado
+    private static final String[] ARMOR_SETS = System.getenv("FATE_ARMORS") != null ? System.getenv("FATE_ARMORS").split(",")
+            : new String[]{"archer", "lancer", "rider", "gilgamesh", "caster", "assassin", "berserker"};
+
+    private boolean armors(MinecraftClient c, ClientPlayerEntity p, int t) {
+        if (t < 40) return false;                          // que el mundo termine de cargar
+        int set = (t - 40) / 50, step = (t - 40) % 50;
+        if (set >= ARMOR_SETS.length) return true;
+        String n = ARMOR_SETS[set];
+        switch (step) {
+            case 0 -> {
+                String head = n.equals("rider") ? "rider_helmet" : n.equals("caster") ? "caster_hood" : null;
+                setup(c, p, head == null
+                        ? new String[]{"armor.chest with fate_ubw:" + n + "_chestplate", "armor.legs with fate_ubw:" + n + "_leggings", "armor.feet with fate_ubw:" + n + "_boots"}
+                        : new String[]{"armor.head with fate_ubw:" + head, "armor.chest with fate_ubw:" + n + "_chestplate",
+                        "armor.legs with fate_ubw:" + n + "_leggings", "armor.feet with fate_ubw:" + n + "_boots"}, new String[]{});
+                p.networkHandler.sendChatCommand("fill ~-8 ~ ~-8 ~8 ~12 ~8 air");   // que no haya hojas delante de la cámara
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
+            case 20 -> shot(c, "armor_" + n + "_1_front");
+            case 22 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 32 -> shot(c, "armor_" + n + "_2_back");
+            case 34 -> yaw = 90.0F;
+            case 46 -> shot(c, "armor_" + n + "_3_side");
+            default -> {
+            }
+        }
+        return false;
+    }
+
     private boolean glow(MinecraftClient c, ClientPlayerEntity p, int t) {
         switch (t) {
             case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:ea", "hotbar.1 with fate_ubw:excalibur",

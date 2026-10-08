@@ -45,7 +45,7 @@ public final class Servants {
                     new Servant("gilgamesh", Items.GOLD_BLOCK,
                             List.of(FateUBW.GILGAMESH_CHESTPLATE, FateUBW.GILGAMESH_LEGGINGS, FateUBW.GILGAMESH_BOOTS), List.of(FateUBW.EA)),
                     new Servant("caster", Items.AMETHYST_SHARD,
-                            List.of(FateUBW.CASTER_CHESTPLATE, FateUBW.CASTER_LEGGINGS, FateUBW.CASTER_BOOTS), List.of(FateUBW.RULE_BREAKER)),
+                            List.of(FateUBW.CASTER_HOOD, FateUBW.CASTER_CHESTPLATE, FateUBW.CASTER_LEGGINGS, FateUBW.CASTER_BOOTS), List.of(FateUBW.RULE_BREAKER)),
                     new Servant("assassin", Items.FEATHER,
                             List.of(FateUBW.ASSASSIN_CHESTPLATE, FateUBW.ASSASSIN_LEGGINGS, FateUBW.ASSASSIN_BOOTS), List.of(FateUBW.MONOHOSHIZAO)),
                     new Servant("berserker", Items.LEATHER,

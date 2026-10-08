@@ -156,6 +156,7 @@ public class FateUBW implements ModInitializer {
     public static final RegistryEntry<ArmorMaterial> CASTER_MATERIAL = armorMaterial("caster");
 
     public static final Item RULE_BREAKER = item("rule_breaker", new RuleBreakerItem(new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item CASTER_HOOD = item("caster_hood", new CasterArmorItem(ArmorItem.Type.HELMET, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item CASTER_CHESTPLATE = item("caster_chestplate", new CasterArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item CASTER_LEGGINGS = item("caster_leggings", new CasterArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item CASTER_BOOTS = item("caster_boots", new CasterArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
@@ -275,6 +276,7 @@ public class FateUBW implements ModInitializer {
                 entries.add(GILGAMESH_LEGGINGS);
                 entries.add(GILGAMESH_BOOTS);
                 entries.add(RULE_BREAKER);
+                entries.add(CASTER_HOOD);
                 entries.add(CASTER_CHESTPLATE);
                 entries.add(CASTER_LEGGINGS);
                 entries.add(CASTER_BOOTS);

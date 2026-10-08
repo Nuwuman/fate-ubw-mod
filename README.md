@@ -97,7 +97,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **Rule Breaker**: daga en zigzag de colores que brillan en la oscuridad. Click derecho a quien tienes delante: la puñalada que rompe todo contrato
   mágico. Le quita todos los efectos, rompe la doma (el animal pasa a ser tuyo), disipa a Pegaso y deshace su Reality
   Marble.
-- **Túnica** (túnica, faldones, botas) con capa animada. Conjunto completo: Regeneración I y sin daño por caída.
+- **Túnica** (capucha, túnica, faldones, botas): capucha y capa verde oscuro con ribete y adorno dorados sobre la
+  túnica morada, y la capa se mueve. La capucha es opcional. Conjunto completo: Regeneración I y sin daño por caída.
   Habilidades: **Palabras Divinas Rápidas** (rayos de maná a los seis enemigos más cercanos frente a ti) y
   **Transferencia Espacial** (apareces donde miras, hasta 32 bloques).
 
@@ -198,11 +199,14 @@ El jar sale en `build/libs/`.
 ## Herramientas de desarrollo
 
 - `java tools/ServantAssets.java src/main/resources/assets/fate_ubw`: regenera los modelos 3D de los servants
-  (ítems JSON, geo de GeckoLib) y sus texturas, con las partes que brillan (_glowmask).
+  (ítems JSON, geo de GeckoLib) y sus texturas, con las partes que brillan (_glowmask). Cada armadura sale también
+  como proyecto de Blockbench (`geo/item/armor/<servant>_armor.geo.bbmodel`) con la textura dentro, listo para
+  retocar a mano. Si una armadura se ha retocado (su geo, textura o `.bbmodel` ya no coincide con lo que escribió el
+  generador, ver `tools/generated-hashes.txt`), el generador la deja como está.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, o varios separados por comas) solo prueba esas secciones.
+  `caster`, `assassin`, `berserker`, `armors`, o varios separados por comas) solo prueba esas secciones.
 
 ---
 

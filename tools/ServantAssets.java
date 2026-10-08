@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,40 @@ public class ServantAssets {
         double f = 1 + (noise(x, y, seed) - 0.5) * 2 * grain;
         if (w > 2 && h > 2 && (x == 0 || y == 0 || x == w - 1 || y == h - 1)) f *= 0.8;
         return mul(c, f);
+    }
+
+    // Bisel: arriba y a la izquierda la luz, abajo y a la derecha la sombra, como la ropa pintada a mano
+    static int bevel(int c, int x, int y, int w, int h, int seed, double grain) {
+        double f = 1 + (noise(x, y, seed) - 0.5) * 2 * grain;
+        if (w > 2 && h > 2) {
+            if (y == 0 || x == 0) f *= 1.2;
+            else if (y == h - 1 || x == w - 1) f *= 0.68;
+        }
+        return mul(c, f);
+    }
+
+    // Placa de metal: degradado vertical y bisel
+    static Paint plate(int c) {
+        return (x, y, w, h, s) -> bevel(mul(c, 1.15 - 0.3 * y / Math.max(1, h - 1)), x, y, w, h, s, 0.035);
+    }
+
+    // Tela: pliegues verticales suaves y bisel
+    static Paint fabric(int c) {
+        return (x, y, w, h, s) -> bevel(mul(c, 0.9 + 0.1 * Math.sin(x * 1.3 + s)), x, y, w, h, s, 0.05);
+    }
+
+    // Una pintura con un ribete de otro color alrededor (t píxeles)
+    static Paint edged(Paint inner, int edge, int t) {
+        return (x, y, w, h, s) -> x < t || y < t || x >= w - t || y >= h - t ? bevel(edge, x, y, w, h, s, 0.03) : inner.at(x, y, w, h, s);
+    }
+
+    // Una pintura con dibujo encima: donde 'mark' es cierto se pinta 'color'
+    interface Mark {
+        boolean at(int x, int y, int w, int h);
+    }
+
+    static Paint marked(Paint base, int color, Mark mark) {
+        return (x, y, w, h, s) -> mark.at(x, y, w, h) ? bevel(color, x, y, w, h, s, 0.03) : base.at(x, y, w, h, s);
     }
 
     static Paint solid(int c) {
@@ -220,6 +255,14 @@ public class ServantAssets {
             return this;
         }
 
+        // Pintura distinta en una cara concreta (p. ej. un emblema solo delante)
+        final Map<String, Paint> facePaints = new HashMap<>();
+
+        Cube face(String dir, Paint p) {
+            facePaints.put(dir, p);
+            return this;
+        }
+
         // Partes que brillan en la oscuridad (GeckoLib: textura _glowmask). 0 = no brilla
         Paint glow;
 
@@ -255,6 +298,19 @@ public class ServantAssets {
             cubes.addAll(other.cubes);
             return this;
         }
+
+        // Reflejo en X (de brazo/pierna derecha a izquierda). Las caras este y oeste se intercambian
+        Model mirrored() {
+            Model m = new Model();
+            for (Cube c : cubes) {
+                Cube n = m.box(-c.to[0], c.from[1], c.from[2], -c.from[0], c.to[1], c.to[2], c.paint);
+                n.inflate = c.inflate;
+                n.glow = c.glow;
+                c.facePaints.forEach((dir, paint) -> n.facePaints.put(dir.equals("east") ? "west" : dir.equals("west") ? "east" : dir, paint));
+                if (c.axis != null) n.rot(c.axis, c.axis.equals("x") ? c.angle : -c.angle, -c.origin[0], c.origin[1], c.origin[2]);
+            }
+            return m;
+        }
     }
 
     static class Bone {
@@ -266,6 +322,13 @@ public class ServantAssets {
             this.name = name;
             this.parent = parent;
             this.pivot = pivot;
+        }
+
+        // El hueso del otro lado: mismo contenido reflejado en X
+        Bone mirror(String name, String parent) {
+            Bone b = new Bone(name, parent, -pivot[0], pivot[1], pivot[2]);
+            b.model.add(model.mirrored());
+            return b;
         }
     }
 
@@ -287,7 +350,7 @@ public class ServantAssets {
             String[] dirs = {"north", "south", "east", "west", "up", "down"};
             double[][] dims = {{dx, dy}, {dx, dy}, {dz, dy}, {dz, dy}, {dx, dz}, {dx, dz}};
             for (int i = 0; i < 6; i++) {
-                Face f = new Face(dirs[i], px(dims[i][0]), px(dims[i][1]), c.paint, seed++);
+                Face f = new Face(dirs[i], px(dims[i][0]), px(dims[i][1]), c.facePaints.getOrDefault(dirs[i], c.paint), seed++);
                 c.faces.put(dirs[i], f);
                 faces.add(f);
             }
@@ -340,7 +403,8 @@ public class ServantAssets {
     // ---------- salida ----------
     static String n(double v) {
         if (v == Math.rint(v)) return Long.toString((long) v);
-        return String.format(Locale.ROOT, "%.4f", v).replaceAll("0+$", "");
+        String t = String.format(Locale.ROOT, "%.4f", v).replaceAll("0+$", "").replaceAll("\\.$", "");
+        return t.equals("-0") ? "0" : t;
     }
 
     static String arr(double... v) {
@@ -394,7 +458,8 @@ public class ServantAssets {
             b.append("    { \"from\": ").append(arr(c.from[0] - g, c.from[1] - g, c.from[2] - g))
                     .append(", \"to\": ").append(arr(c.to[0] + g, c.to[1] + g, c.to[2] + g));
             if (c.axis != null) {
-                b.append(", \"rotation\": { \"angle\": ").append(n(c.angle)).append(", \"axis\": \"").append(c.axis)
+                // Los modelos JSON solo admiten giros de 22,5° en 22,5°: los iconos redondean al más cercano
+                b.append(", \"rotation\": { \"angle\": ").append(n(Math.round(c.angle / 22.5) * 22.5)).append(", \"axis\": \"").append(c.axis)
                         .append("\", \"origin\": ").append(arr(c.origin)).append(" }");
             }
             b.append(", \"faces\": {");
@@ -542,121 +607,6 @@ public class ServantAssets {
         m.box(6, 24, 7.35, 10, 26, 8.65, AXE_STONE);
         m.box(7, 26, 7.45, 9.2, 27, 8.55, AXE_STONE);
         return m;
-    }
-
-    // Medea: túnica morada con capa que cae desde los hombros (animada) y mangas acampanadas
-    static List<Bone> casterArmor() {
-        Bone head = new Bone("armorHead", null, 0, 24, 0);
-        Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, ROBE).inflate(1.0);
-        body.model.box(-4, 22, -2, 4, 24, 2, ROBE_DARK).inflate(1.15);
-        body.model.box(-4, 11.5, -2, 4, 13, 2, ROBE_GOLD).inflate(1.25);
-        body.model.box(-1, 14, -3.4, 1, 22, -3.0, ROBE_GOLD);
-        Bone capeBack = new Bone("capeBack", "armorBody", 0, 24, 3.4);
-        capeBack.model.box(-5.2, 0.5, 3.4, 5.2, 24.5, 4.0, ROBE_DARK);
-        Bone capeLeft = new Bone("capeLeft", "armorBody", 5.4, 24, 0);
-        capeLeft.model.box(5.4, 4, -2.6, 6.0, 24, 3.4, ROBE_DARK);
-        Bone capeRight = new Bone("capeRight", "armorBody", -5.4, 24, 0);
-        capeRight.model.box(-6.0, 4, -2.6, -5.4, 24, 3.4, ROBE_DARK);
-
-        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 16, -2, -4, 24, 2, ROBE).inflate(1.0);
-        rightArm.model.box(-8.5, 11.5, -2.5, -3.5, 16, 2.5, ROBE).inflate(0.9);
-        rightArm.model.box(-8.5, 11.2, -2.5, -3.5, 12, 2.5, ROBE_GOLD).inflate(0.95);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 16, -2, 8, 24, 2, ROBE).inflate(1.0);
-        leftArm.model.box(3.5, 11.5, -2.5, 8.5, 16, 2.5, ROBE).inflate(0.9);
-        leftArm.model.box(3.5, 11.2, -2.5, 8.5, 12, 2.5, ROBE_GOLD).inflate(0.95);
-
-        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 2, -2, 0, 12, 2, ROBE).inflate(0.7);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 2, -2, 4, 12, 2, ROBE).inflate(0.7);
-
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 3, 2, ROBE_DARK).inflate(0.9);
-        rightBoot.model.box(-4, 0, -3.3, 0, 1.2, -2.8, ROBE_GOLD);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0, -2, 4, 3, 2, ROBE_DARK).inflate(0.9);
-        leftBoot.model.box(0, 0, -3.3, 4, 1.2, -2.8, ROBE_GOLD);
-
-        return List.of(head, body, capeBack, capeLeft, capeRight, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
-    }
-
-    // Sasaki Kojirō: kimono azul, haori morado abierto (faldones animados), coleta larga, hakama ancho y tabi con zori
-    static List<Bone> assassinArmor() {
-        Bone head = new Bone("armorHead", null, 0, 24, 0);
-        Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, KIMONO).inflate(1.0);
-        body.model.box(-4, 13, -2, -1, 24, 2, HAORI).inflate(1.15);       // haori, abierto delante
-        body.model.box(1, 13, -2, 4, 24, 2, HAORI).inflate(1.15);
-        body.model.box(-4, 11.5, -2, 4, 13.5, 2, OBI).inflate(1.25);
-        Bone hair = new Bone("hair", "armorBody", 0, 24.5, 3.2);
-        hair.model.box(-1.2, 12, 3.2, 1.2, 24.5, 4.4, KOJIRO_HAIR);
-        Bone haoriBack = new Bone("haoriBack", "armorBody", 0, 12, 3.3);
-        haoriBack.model.box(-4.8, 4, 3.3, 4.8, 12, 3.9, HAORI);
-        Bone haoriFrontL = new Bone("haoriFrontL", "armorBody", 2.5, 12, -3.3);
-        haoriFrontL.model.box(1.4, 5, -3.9, 4.8, 12, -3.3, HAORI);
-        Bone haoriFrontR = new Bone("haoriFrontR", "armorBody", -2.5, 12, -3.3);
-        haoriFrontR.model.box(-4.8, 5, -3.9, -1.4, 12, -3.3, HAORI);
-
-        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 15, -2, -4, 24, 2, HAORI).inflate(1.1);
-        rightArm.model.box(-8.6, 14, -2.8, -3.4, 18, 2.8, HAORI).inflate(0.6);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 15, -2, 8, 24, 2, HAORI).inflate(1.1);
-        leftArm.model.box(3.4, 14, -2.8, 8.6, 18, 2.8, HAORI).inflate(0.6);
-
-        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 2, -2, 0, 12, 2, HAKAMA).inflate(1.0);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 2, -2, 4, 12, 2, HAKAMA).inflate(1.0);
-
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0.6, -2, 0, 3, 2, TABI).inflate(0.5);
-        rightBoot.model.box(-4, 0, -2.6, 0, 0.6, 2.6, ZORI).inflate(0.4);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0.6, -2, 4, 3, 2, TABI).inflate(0.5);
-        leftBoot.model.box(0, 0, -2.6, 4, 0.6, 2.6, ZORI).inflate(0.4);
-
-        return List.of(head, body, hair, haoriBack, haoriFrontL, haoriFrontR, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
-    }
-
-    // Heracles: piel oscura, pectorales, brazales de bronce, cinturón con taparrabos (animado) y grebas
-    static List<Bone> berserkerArmor() {
-        Bone head = new Bone("armorHead", null, 0, 24, 0);
-        Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, SKIN).inflate(0.6);
-        body.model.box(-3.8, 18, -2.9, -0.2, 22, -2.4, SKIN_DARK);       // pectorales
-        body.model.box(0.2, 18, -2.9, 3.8, 22, -2.4, SKIN_DARK);
-        body.model.box(-4, 11.5, -2, 4, 13.5, 2, BRONZE).inflate(1.1);
-        Bone clothFront = new Bone("loinFront", "armorBody", 0, 12, -3.2);
-        clothFront.model.box(-2.5, 4, -3.6, 2.5, 12, -3.1, LOINCLOTH);
-        Bone clothBack = new Bone("loinBack", "armorBody", 0, 12, 3.2);
-        clothBack.model.box(-3, 4, 3.1, 3, 12, 3.6, LOINCLOTH);
-
-        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 12, -2, -4, 24, 2, SKIN).inflate(0.7);
-        rightArm.model.box(-8, 12, -2, -4, 16, 2, BRONZE).inflate(1.0);
-        rightArm.model.box(-8.6, 21, -2.6, -3.4, 24.6, 2.6, BRONZE).inflate(0.3);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 12, -2, 8, 24, 2, SKIN).inflate(0.7);
-        leftArm.model.box(4, 12, -2, 8, 16, 2, BRONZE).inflate(1.0);
-        leftArm.model.box(3.4, 21, -2.6, 8.6, 24.6, 2.6, BRONZE).inflate(0.3);
-
-        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 4, -2, 0, 12, 2, SKIN).inflate(0.55);
-        rightLeg.model.box(-4, 5, -2.9, 0, 7.5, -2.4, BRONZE);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 4, -2, 4, 12, 2, SKIN).inflate(0.55);
-        leftLeg.model.box(0, 5, -2.9, 4, 7.5, -2.4, BRONZE);
-
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 5, 2, GREAVE).inflate(0.9);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0, -2, 4, 5, 2, GREAVE).inflate(0.9);
-
-        return List.of(head, body, clothFront, clothBack, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
     // ---------- Guerra del Santo Grial, Noble Phantasm nuevos y objetos de los Masters ----------
@@ -824,6 +774,121 @@ public class ServantAssets {
             ImageIO.write(glowmask(all, img), "png", root.resolve("textures/" + kind + name + "_glowmask.png").toFile());
         }
         return img;
+    }
+
+    static String uuid(String seed) {
+        return java.util.UUID.nameUUIDFromBytes(seed.getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
+    }
+
+    // Proyecto de Blockbench (formato Bedrock) con la textura dentro, para retocar la armadura a mano.
+    // Blockbench guarda el Bedrock con X invertido y los giros en X e Y cambiados de signo
+    static void bbmodel(Path file, String name, List<Bone> bones, BufferedImage img) throws IOException {
+        StringBuilder els = new StringBuilder();
+        Map<String, StringBuilder> children = new LinkedHashMap<>();
+        for (Bone bone : bones) children.put(bone.name, new StringBuilder());
+        int count = 0;
+        for (Bone bone : bones) {
+            for (int j = 0; j < bone.model.cubes.size(); j++) {
+                Cube c = bone.model.cubes.get(j);
+                String id = uuid(name + "/" + bone.name + "/" + j);
+                double rx = "x".equals(c.axis) ? -c.angle : 0, ry = "y".equals(c.axis) ? -c.angle : 0, rz = "z".equals(c.axis) ? c.angle : 0;
+                double[] o = c.axis != null ? new double[]{-c.origin[0], c.origin[1], c.origin[2]} : new double[]{0, 0, 0};
+                if (count++ > 0) els.append(",\n");
+                els.append("    { \"name\": \"").append(bone.name).append("\", \"type\": \"cube\", \"uuid\": \"").append(id)
+                        .append("\", \"box_uv\": false, \"from\": ").append(arr(-c.to[0], c.from[1], c.from[2]))
+                        .append(", \"to\": ").append(arr(-c.from[0], c.to[1], c.to[2]))
+                        .append(", \"inflate\": ").append(n(c.inflate)).append(", \"origin\": ").append(arr(o))
+                        .append(", \"rotation\": ").append(arr(rx, ry, rz)).append(", \"faces\": {");
+                int k = 0;
+                for (Face f : c.faces.values()) {
+                    boolean flip = f.dir.equals("up") || f.dir.equals("down");
+                    double[] uv = flip ? new double[]{f.u + f.w, f.v + f.h, f.u, f.v} : new double[]{f.u, f.v, f.u + f.w, f.v + f.h};
+                    if (k++ > 0) els.append(",");
+                    els.append(" \"").append(f.dir).append("\": { \"uv\": ").append(arr(uv)).append(", \"texture\": 0 }");
+                }
+                els.append(" } }");
+                StringBuilder kids = children.get(bone.name);
+                if (kids.length() > 0) kids.append(", ");
+                kids.append("\"").append(id).append("\"");
+            }
+        }
+        java.io.ByteArrayOutputStream png = new java.io.ByteArrayOutputStream();
+        ImageIO.write(img, "png", png);
+        StringBuilder b = new StringBuilder("{\n  \"meta\": { \"format_version\": \"4.10\", \"model_format\": \"bedrock\", \"box_uv\": false },\n");
+        b.append("  \"name\": \"").append(name).append("\", \"model_identifier\": \"").append(name).append("\", \"visible_box\": [3, 3, 1.5],\n");
+        b.append("  \"resolution\": { \"width\": ").append(img.getWidth()).append(", \"height\": ").append(img.getHeight()).append(" },\n");
+        b.append("  \"elements\": [\n").append(els).append("\n  ],\n  \"outliner\": [\n");
+        int r = 0;
+        for (Bone bone : bones) {
+            if (bone.parent != null) continue;
+            if (r++ > 0) b.append(",\n");
+            b.append("    ").append(group(name, bone, bones, children));
+        }
+        b.append("\n  ],\n  \"textures\": [ { \"name\": \"").append(name).append(".png\", \"id\": \"0\", \"uuid\": \"").append(uuid(name + "/texture"))
+                .append("\", \"width\": ").append(img.getWidth()).append(", \"height\": ").append(img.getHeight())
+                .append(", \"uv_width\": ").append(img.getWidth()).append(", \"uv_height\": ").append(img.getHeight())
+                .append(", \"source\": \"data:image/png;base64,").append(java.util.Base64.getEncoder().encodeToString(png.toByteArray()))
+                .append("\" } ]\n}\n");
+        Files.writeString(file, b);
+    }
+
+    static String group(String name, Bone bone, List<Bone> bones, Map<String, StringBuilder> children) {
+        StringBuilder kids = new StringBuilder(children.get(bone.name));
+        for (Bone child : bones) {
+            if (!bone.name.equals(child.parent)) continue;
+            if (kids.length() > 0) kids.append(", ");
+            kids.append(group(name, child, bones, children));
+        }
+        return "{ \"name\": \"" + bone.name + "\", \"uuid\": \"" + uuid(name + "/group/" + bone.name) + "\", \"origin\": "
+                + arr(-bone.pivot[0], bone.pivot[1], bone.pivot[2]) + ", \"rotation\": [0, 0, 0], \"isOpen\": true, \"children\": [" + kids + "] }";
+    }
+
+    // Huellas de lo último que escribió el generador. Si un archivo ya no coincide, lo ha retocado alguien a mano
+    static final Path HASHES = Path.of("tools/generated-hashes.txt");
+    static final Map<String, String> hashes = new java.util.TreeMap<>();
+
+    static String sha(Path file) throws IOException {
+        try {
+            byte[] d = java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file));
+            return java.util.HexFormat.of().formatHex(d);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IOException(e);
+        }
+    }
+
+    static boolean editedByHand(Path... files) throws IOException {
+        if (hashes.isEmpty() && Files.exists(HASHES)) {
+            for (String line : Files.readAllLines(HASHES)) {
+                String[] kv = line.split(" ", 2);
+                if (kv.length == 2) hashes.put(kv[1], kv[0]);
+            }
+        }
+        for (Path f : files) {
+            String known = hashes.get(f.toString().replace('\\', '/'));
+            if (known != null && Files.exists(f) && !known.equals(sha(f))) return true;
+        }
+        return false;
+    }
+
+    static void remember(Path... files) throws IOException {
+        for (Path f : files) hashes.put(f.toString().replace('\\', '/'), sha(f));
+        StringBuilder b = new StringBuilder();
+        hashes.forEach((file, hash) -> b.append(hash).append(' ').append(file).append('\n'));
+        Files.writeString(HASHES, b);
+    }
+
+    // Armadura: geo + textura + proyecto de Blockbench. Si alguien la ha retocado a mano, no se toca
+    static void armorModel(Path root, String name, List<Bone> bones) throws IOException {
+        Path geo = root.resolve("geo/item/armor/" + name + ".geo.json");
+        Path tex = root.resolve("textures/item/armor/" + name + ".png");
+        Path bb = root.resolve("geo/item/armor/" + name + ".geo.bbmodel");
+        if (editedByHand(geo, tex, bb)) {
+            System.out.println(name + ": retocada a mano, no se regenera");
+            return;
+        }
+        geoModel(root, name, bones, "item/armor/");
+        bbmodel(bb, name, bones, ImageIO.read(tex.toFile()));
+        remember(geo, tex, bb);
     }
 
     static void geoModel(Path root, String name, List<Bone> bones, String kind) throws IOException {
@@ -1023,53 +1088,6 @@ public class ServantAssets {
         return m;
     }
 
-    // ---------- armadura (coordenadas de jugador: y desde los pies, frente hacia -Z) ----------
-    static List<Bone> archerArmor() {
-        Bone head = new Bone("armorHead", null, 0, 24, 0);
-        Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, BLACK_ARMOR).inflate(1.0);
-        body.model.box(-4, 22, -2, 4, 24, 2, SILVER).inflate(1.15);
-        body.model.box(-4, 11, -2, 4, 13, 2, BELT).inflate(1.3);
-        body.model.box(-1, 11, -3.6, 1, 13, -3.1, SILVER);
-
-        // Faldón rojo del Sudario de Magdalena: atrás, a los lados y dos solapas delante (abierto en el centro)
-        Bone coatBack = new Bone("coatBack", "armorBody", 0, 12, 3.3);
-        coatBack.model.box(-4.6, 1, 3.3, 4.6, 12, 3.9, RED_CLOTH);
-        Bone coatLeft = new Bone("coatLeft", "armorBody", 4.6, 12, 0);
-        coatLeft.model.box(4.6, 2, -2.5, 5.2, 12, 3.3, RED_CLOTH);
-        Bone coatRight = new Bone("coatRight", "armorBody", -4.6, 12, 0);
-        coatRight.model.box(-5.2, 2, -2.5, -4.6, 12, 3.3, RED_CLOTH);
-        Bone coatFrontL = new Bone("coatFrontL", "armorBody", 2.5, 12, -3.3);
-        coatFrontL.model.box(1.2, 4, -3.9, 4.6, 12, -3.3, RED_CLOTH);
-        Bone coatFrontR = new Bone("coatFrontR", "armorBody", -2.5, 12, -3.3);
-        coatFrontR.model.box(-4.6, 4, -3.9, -1.2, 12, -3.3, RED_CLOTH);
-
-        // Mangas rojas sueltas y guanteletes negros
-        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 14, -2, -4, 23, 2, RED_CLOTH).inflate(1.1);
-        rightArm.model.box(-8, 12, -2, -4, 15, 2, BLACK_ARMOR).inflate(0.8);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 14, -2, 8, 23, 2, RED_CLOTH).inflate(1.1);
-        leftArm.model.box(4, 12, -2, 8, 15, 2, BLACK_ARMOR).inflate(0.8);
-
-        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 3, -2, 0, 12, 2, BLACK_ARMOR).inflate(0.5);
-        rightLeg.model.box(-4, 5.5, -3.0, 0, 8, -2.5, SILVER);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 3, -2, 4, 12, 2, BLACK_ARMOR).inflate(0.5);
-        leftLeg.model.box(0, 5.5, -3.0, 4, 8, -2.5, SILVER);
-
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 4, 2, BLACK_ARMOR).inflate(0.9);
-        rightBoot.model.box(-4, 0, -3.4, 0, 1.5, -2.9, SILVER);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0, -2, 4, 4, 2, BLACK_ARMOR).inflate(0.9);
-        leftBoot.model.box(0, 0, -3.4, 4, 1.5, -2.9, SILVER);
-
-        return List.of(head, body, coatBack, coatLeft, coatRight, coatFrontL, coatFrontR,
-                rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
-    }
-
     // Excalibur: pomo dorado con gema, guarda azul y oro con puntas curvadas, hoja plateada con grabados.
     // Agarre en y≈2.5 como las demás espadas; total de -1 a 24. mode como en exBlade; el 2 añade el halo
     static Model excalibur(int mode) {
@@ -1232,44 +1250,6 @@ public class ServantAssets {
             + "    \"fixed\": { \"scale\": [0.8, 0.8, 0.8] }\n"
             + "  }";
 
-    // Rider: Breaker Gorgon (venda y flequillo) en la cabeza; vestido negro y melena morada en el cuerpo;
-    // medias con liga morada; botas altas negras
-    static List<Bone> riderArmor() {
-        Bone head = new Bone("armorHead", null, 0, 24, 0);
-        head.model.box(-4, 28.5, -4, 4, 32.5, 4, PURPLE_HAIR).inflate(0.75);
-        head.model.box(-4, 26.5, -4, 4, 28.5, 4, BLINDFOLD).inflate(0.6);
-
-        Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, BLACK_DRESS).inflate(1.0);
-        body.model.box(-4, 22, -2, 4, 24, 2, DARK_PURPLE).inflate(1.1);
-        body.model.box(-4.5, 9, -2.6, 4.5, 12, 2.6, BLACK_DRESS);
-        Bone hair = new Bone("hair", "armorBody", 0, 24.5, 3.3);
-        hair.model.box(-4, 9, 3.3, 4, 24.5, 4.6, PURPLE_HAIR);
-
-        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 12, -2, -4, 18, 2, BLACK_DRESS).inflate(0.9);
-        rightArm.model.box(-8, 20, -2, -4, 21.5, 2, DARK_PURPLE).inflate(0.6);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 12, -2, 8, 18, 2, BLACK_DRESS).inflate(0.9);
-        leftArm.model.box(4, 20, -2, 8, 21.5, 2, DARK_PURPLE).inflate(0.6);
-
-        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 4, -2, 0, 12, 2, BLACK_DRESS).inflate(0.5);
-        rightLeg.model.box(-4, 8, -2, 0, 9, 2, DARK_PURPLE).inflate(0.6);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 4, -2, 4, 12, 2, BLACK_DRESS).inflate(0.5);
-        leftLeg.model.box(0, 8, -2, 4, 9, 2, DARK_PURPLE).inflate(0.6);
-
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 7, 2, BLACK_BOOT).inflate(0.9);
-        rightBoot.model.box(-4, 0, -3.2, 0, 1.2, -2.7, DARK_PURPLE);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0, -2, 4, 7, 2, BLACK_BOOT).inflate(0.9);
-        leftBoot.model.box(0, 0, -3.2, 4, 1.2, -2.7, DARK_PURPLE);
-
-        return List.of(head, body, hair, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
-    }
-
     // Pegaso: caballo blanco con alas, crin dorada y cascos de oro. Mira hacia -Z; patas y alas giran en su bone
     static List<Bone> pegasus() {
         Bone body = new Bone("body", null, 0, 16, 0);
@@ -1347,42 +1327,6 @@ public class ServantAssets {
         return m;
     }
 
-    // Gilgamesh: coraza dorada con gema azul, cinturón rojo, escarcelas (animadas), grandes hombreras, grebas y escarpes de oro
-    static List<Bone> gilgameshArmor() {
-        Bone head = new Bone("armorHead", null, 0, 24, 0);
-        Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, GOLD_ARMOR).inflate(1.0);
-        body.model.box(-4, 11.5, -2, 4, 13, 2, RED_TRIM).inflate(1.25);
-        body.model.box(-1, 19, -3.4, 1, 21, -3.0, EX_GEM);
-        Bone tassets = new Bone("tassets", "armorBody", 0, 12, 0);
-        tassets.model.box(-4.4, 5, -3.7, -0.3, 12, -3.2, GOLD_ARMOR);
-        tassets.model.box(0.3, 5, -3.7, 4.4, 12, -3.2, GOLD_ARMOR);
-        tassets.model.box(-4.4, 5, 3.2, 4.4, 12, 3.7, GOLD_ARMOR);
-
-        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 12, -2, -4, 20, 2, GOLD_ARMOR).inflate(0.9);
-        rightArm.model.box(-9.5, 20, -3, -3.5, 25, 3, GOLD_ARMOR).inflate(0.3);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 12, -2, 8, 20, 2, GOLD_ARMOR).inflate(0.9);
-        leftArm.model.box(3.5, 20, -3, 9.5, 25, 3, GOLD_ARMOR).inflate(0.3);
-
-        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 3, -2, 0, 12, 2, GOLD_ARMOR).inflate(0.5);
-        rightLeg.model.box(-3, 6, -3.0, -1, 8, -2.5, RED_TRIM);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 3, -2, 4, 12, 2, GOLD_ARMOR).inflate(0.5);
-        leftLeg.model.box(1, 6, -3.0, 3, 8, -2.5, RED_TRIM);
-
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 5, 2, GOLD_ARMOR).inflate(0.9);
-        rightBoot.model.box(-3.5, 0, -3.6, -0.5, 1.5, -2.9, GOLD);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0, -2, 4, 5, 2, GOLD_ARMOR).inflate(0.9);
-        leftBoot.model.box(0.5, 0, -3.6, 3.5, 1.5, -2.9, GOLD);
-
-        return List.of(head, body, tassets, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
-    }
-
     // Runas de Gáe Bolg: marcas cortas cada pocos píxeles en la parte alta del asta
     static Paint gaeRunes() {
         return (x, y, w, h, s) -> y < h * 0.45 && Math.floorMod(y, 5) < 2 && Math.floorMod(x + y / 5, 2) == 0 ? 0xff2a3a : 0;
@@ -1411,43 +1355,336 @@ public class ServantAssets {
         return m;
     }
 
-    // Lancer: traje azul ceñido, coraza, hombreras y brazales de plata, y su coleta azul
-    static List<Bone> lancerArmor() {
+    // ---------- Armaduras rehechas a partir de las ilustraciones de cada servant ----------
+    // Cada pieza es una capa (traje, placa, ribete) y los dibujos van solo en la cara que toca (normalmente delante)
+    static boolean centerLine(int x, int w) {
+        return Math.abs(x - (w - 1) / 2.0) < 0.6;
+    }
+
+    // EMIYA: armadura negra segmentada con líneas grises, abrigo rojo abierto de cuello alto, cinturón de plata,
+    // mangas rojas con puños negros, pantalón negro y botas con anillas de plata
+    static final int ARCH_RED = 0xa3161c, ARCH_BLACK = 0x1f1f26, ARCH_LINE = 0x6c707c, ARCH_SILVER = 0xbcc1cb;
+
+    static List<Bone> archerArmor() {
+        Paint red = fabric(ARCH_RED), black = plate(ARCH_BLACK), suit = fabric(0x18181d), silver = plate(ARCH_SILVER);
         Bone head = new Bone("armorHead", null, 0, 24, 0);
         Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, BLUE_SUIT).inflate(1.0);
-        body.model.box(-4, 18, -2, 4, 23, 2, LANCER_SILVER).inflate(1.15);
-        body.model.box(-4, 11.5, -2, 4, 13, 2, LANCER_DARK).inflate(1.25);
+        body.model.box(-4, 12, -2, 4, 24, 2, suit).inflate(0.4);
+        body.model.box(-4.2, 15.4, -2.6, 4.2, 23.4, 2.4, black).face("north", marked(black, ARCH_LINE,
+                (x, y, w, h) -> centerLine(x, w) || (y % 4 == 3 && y > h / 3) || (y == h / 3 && x > 1 && x < w - 2)));
+        body.model.box(-3.4, 23.2, -2.7, 3.4, 25.4, 2.6, red);                 // cuello alto del abrigo
+        body.model.box(-4.6, 12.4, 2.3, 4.6, 24.2, 2.9, red);                  // espalda del abrigo
+        body.model.box(4.3, 12.4, -2.7, 4.8, 24.2, 2.7, red);                  // costados
+        body.model.box(-4.8, 12.4, -2.7, -4.3, 24.2, 2.7, red);
+        body.model.box(2.3, 12.4, -2.9, 4.6, 24.2, -2.4, red);                 // solapas, abierto en el centro
+        body.model.box(-4.6, 12.4, -2.9, -2.3, 24.2, -2.4, red);
+        body.model.box(-4.4, 11.8, -2.8, 4.4, 12.9, 2.8, silver);              // cinturón
+        body.model.box(-1, 11.6, -3.1, 1, 13.1, -2.7, silver);
 
-        Bone ponytail = new Bone("ponytail", "armorBody", 0, 25, 3.2);
-        ponytail.model.box(-0.75, 14, 3.2, 0.75, 25, 4.2, HAIR);
-        ponytail.model.box(-0.5, 12, 3.3, 0.5, 14, 4.0, HAIR);
-        ponytail.model.box(-1.0, 22.5, 3.1, 1.0, 23.5, 4.4, LANCER_SILVER);
+        Bone coatBack = new Bone("coatBack", "armorBody", 0, 12.4, 2.9);
+        coatBack.model.box(-4.6, 1.5, 2.4, 4.6, 12.4, 3.0, red);
+        Bone coatRight = new Bone("coatRight", "armorBody", -4.6, 12.4, 0);
+        coatRight.model.box(-4.9, 2.5, -2.7, -4.3, 12.4, 2.6, red);
+        Bone coatLeft = coatRight.mirror("coatLeft", "armorBody");
+        Bone coatFrontR = new Bone("coatFrontR", "armorBody", -3.4, 12.4, -2.9);
+        coatFrontR.model.box(-4.6, 3.5, -3.1, -2.2, 12.4, -2.6, red);
+        Bone coatFrontL = coatFrontR.mirror("coatFrontL", "armorBody");
 
         Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8, 12, -2, -4, 24, 2, BLUE_SUIT).inflate(0.8);
-        rightArm.model.box(-8, 12, -2, -4, 15.5, 2, LANCER_SILVER).inflate(1.0);
-        rightArm.model.box(-8.75, 20.5, -2.75, -3.25, 24.75, 2.75, LANCER_SILVER).inflate(0.5);
-        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
-        leftArm.model.box(4, 12, -2, 8, 24, 2, BLUE_SUIT).inflate(0.8);
-        leftArm.model.box(4, 12, -2, 8, 15.5, 2, LANCER_SILVER).inflate(1.0);
-        leftArm.model.box(3.25, 20.5, -2.75, 8.75, 24.75, 2.75, LANCER_SILVER).inflate(0.5);
+        rightArm.model.box(-8, 13.6, -2, -4, 24, 2, red).inflate(0.5);
+        rightArm.model.box(-8.4, 12, -2.4, -3.6, 14, 2.4, black);              // puño negro
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
 
         Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 3, -2, 0, 12, 2, BLUE_SUIT).inflate(0.5);
-        rightLeg.model.box(-4, 5.5, -3.0, 0, 8, -2.5, LANCER_SILVER);
-        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 3, -2, 4, 12, 2, BLUE_SUIT).inflate(0.5);
-        leftLeg.model.box(0, 5.5, -3.0, 4, 8, -2.5, LANCER_SILVER);
-
+        rightLeg.model.box(-4, 3, -2, 0, 12, 2, suit).inflate(0.35);
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
         Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 4, 2, LANCER_SILVER).inflate(0.9);
-        rightBoot.model.box(-4, 0, -3.4, 0, 1.5, -2.9, LANCER_DARK);
-        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
-        leftBoot.model.box(0, 0, -2, 4, 4, 2, LANCER_SILVER).inflate(0.9);
-        leftBoot.model.box(0, 0, -3.4, 4, 1.5, -2.9, LANCER_DARK);
+        rightBoot.model.box(-4, 0, -2, 0, 5, 2, black).inflate(0.55);
+        rightBoot.model.box(-4.5, 3.2, -2.5, 0.5, 4.0, 2.5, silver);           // anillas
+        rightBoot.model.box(-4.5, 1.5, -2.5, 0.5, 2.1, 2.5, silver);
+        rightBoot.model.box(-3.7, 0, -3.3, -0.3, 1.5, -2.4, silver);           // puntera
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, body, coatBack, coatLeft, coatRight, coatFrontL, coatFrontR,
+                rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Cú Chulainn: traje azul ceñido con líneas plateadas que siguen los músculos, hombreras y cinturón de plata,
+    // grebas plateadas y su coleta
+    static final int LAN_BLUE = 0x2443b0, LAN_LINE = 0xc9d2e4, LAN_SILVER = 0xc0c8d6;
+
+    static Paint lancerSuit(boolean front) {
+        Paint base = fabric(LAN_BLUE);
+        return marked(base, LAN_LINE, (x, y, w, h) -> {
+            double d = Math.abs(x - (w - 1) / 2.0);
+            if (!front) return d < 0.6 && y > 1;
+            int pec = (int) Math.round(h * 0.34 - d / (w / 2.0) * h * 0.1);
+            return (d < 0.6 && y > h * 0.36) || y == pec || ((y == (int) (h * 0.58) || y == (int) (h * 0.76)) && d < w * 0.3);
+        });
+    }
+
+    static List<Bone> lancerArmor() {
+        Paint suit = lancerSuit(false), silver = plate(LAN_SILVER), deep = plate(0x8f98aa);
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, suit).inflate(0.4).face("north", lancerSuit(true));
+        body.model.box(-2.4, 23.5, -2.5, 2.4, 24.6, 2.5, suit);                // cuello del traje
+        body.model.box(-4.3, 11.7, -2.6, 4.3, 12.7, 2.6, silver);              // cinturón
+        Bone ponytail = new Bone("ponytail", "armorBody", 0, 25, 2.6);
+        ponytail.model.box(-0.75, 14, 2.6, 0.75, 25, 3.6, HAIR);
+        ponytail.model.box(-0.5, 12, 2.7, 0.5, 14, 3.4, HAIR);
+        ponytail.model.box(-1.0, 22.5, 2.5, 1.0, 23.5, 3.8, silver);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 24, 2, suit).inflate(0.35);
+        rightArm.model.box(-9.2, 21.3, -2.9, -3.6, 24.9, 2.9, silver).rot("z", -10, -4, 24, 0);   // hombrera
+        rightArm.model.box(-9.4, 20.0, -2.7, -4.4, 21.6, 2.7, deep).rot("z", -10, -4, 24, 0);
+        rightArm.model.box(-8.4, 12, -2.4, -3.6, 13, 2.4, silver);              // muñequera
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 3, -2, 0, 12, 2, suit).inflate(0.35);
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 5, 2, silver).inflate(0.5).face("north",
+                marked(silver, LAN_BLUE, (x, y, w, h) -> centerLine(x, w) && y < h - 2));
+        rightBoot.model.box(-3.6, 0, -3.2, -0.4, 1.4, -2.4, silver);
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
 
         return List.of(head, body, ponytail, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Medusa: venda Breaker Gorgon, pelo morado larguísimo, vestido negro corto sin tirantes con gargantilla,
+    // mangas largas negras con bandas moradas y botas negras hasta el muslo con banda y puntera morada
+    static final int RID_BLACK = 0x17131c, RID_LEATHER = 0x1c1722, RID_PURPLE = 0x7a2f9e;
+
+    static Paint riderHair() {
+        return (x, y, w, h, s) -> bevel(Math.floorMod(x, 3) == 0 ? 0x6a3fa6 : 0x8a52c8, x, y, w, h, s, 0.06);
+    }
+
+    static List<Bone> riderArmor() {
+        Paint dress = fabric(RID_BLACK), leather = plate(RID_LEATHER), purple = plate(RID_PURPLE), hairPaint = riderHair();
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        head.model.box(-4, 29, -4, 4, 32.3, 4, hairPaint).inflate(0.62);
+        head.model.box(-4, 26.5, -4, 4, 29, 4, plate(0x2a1838)).inflate(0.55).face("north",
+                marked(plate(0x2a1838), 0x9a4fd0, (x, y, w, h) -> y > 0 && y < h - 1 && x % 4 != 0 && x > 0 && x < w - 1));
+        head.model.box(-4.9, 22.5, -3.6, -4.3, 29.5, 4.4, hairPaint);          // mechones a los lados de la cara
+        head.model.box(4.3, 22.5, -3.6, 4.9, 29.5, 4.4, hairPaint);
+
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 22.6, 2, dress).inflate(0.45);
+        body.model.box(-2.3, 23.5, -2.3, 2.3, 24.3, 2.3, purple);              // gargantilla
+        body.model.box(-4.5, 9.0, -2.6, 4.5, 12.4, 2.6, dress);                // falda corta
+        Bone hair = new Bone("hair", "armorBody", 0, 24.5, 2.6);
+        hair.model.box(-4.3, 4, 2.6, 4.3, 24.5, 4.0, hairPaint);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 19.5, 2, fabric(0x141018)).inflate(0.4);
+        rightArm.model.box(-8.5, 12.8, -2.5, -3.5, 13.8, 2.5, purple);          // bandas moradas
+        rightArm.model.box(-8.5, 18.6, -2.5, -3.5, 19.7, 2.5, purple);
+        rightArm.model.box(-8.5, 21.6, -2.5, -3.5, 22.8, 2.5, purple);
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 4, -2, 0, 10.5, 2, leather).inflate(0.4);       // bota alta
+        rightLeg.model.box(-4.5, 10.0, -2.5, 0.5, 11.2, 2.5, purple);
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 4.2, 2, leather).inflate(0.5);
+        rightBoot.model.box(-3.7, 0, -3.2, -0.3, 1.6, -2.3, purple);           // puntera
+        rightBoot.model.box(-3.4, 0, 2.3, -0.6, 2.2, 3.0, purple);              // tacón
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, body, hair, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Gilgamesh: armadura dorada sobre un traje azul oscuro, hombreras grandes en láminas, peto con líneas oscuras,
+    // panel dorado con triángulos delante y falda roja hasta los tobillos, rodilleras y escarpes en punta
+    static final int GIL_GOLD = 0xe2b437, GIL_DEEP = 0xa77a1c, GIL_NAVY = 0x1c2350, GIL_RED = 0x9c1622;
+
+    static List<Bone> gilgameshArmor() {
+        Paint gold = plate(GIL_GOLD), deep = plate(GIL_DEEP), navy = fabric(GIL_NAVY), red = fabric(GIL_RED);
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, navy).inflate(0.45);
+        body.model.box(-4.2, 16.5, -2.6, 4.2, 23.6, 2.5, gold).face("north", marked(gold, GIL_NAVY, (x, y, w, h) -> {
+            double d = Math.abs(x - (w - 1) / 2.0), half = h / 2.0;
+            return y < half ? Math.abs(d - (half - y) * (w / 2.0) / half) < 0.7 : d < 0.6;
+        }));
+        body.model.box(-3.9, 14.4, -2.5, 3.9, 16.6, 2.4, gold);                // placas del vientre
+        body.model.box(-3.7, 12.6, -2.4, 3.7, 14.5, 2.3, gold);
+        body.model.box(-4.3, 11.6, -2.7, 4.3, 12.8, 2.7, deep).face("north",
+                marked(deep, GIL_NAVY, (x, y, w, h) -> x % 4 == 1 && y == h / 2));
+        body.model.box(-2.6, 23.4, -2.5, 2.6, 24.8, 2.3, gold);                // gorjal
+
+        Bone tassets = new Bone("tassets", "armorBody", 0, 12, 0);
+        tassets.model.box(-1.8, 2, -3.0, 1.8, 12, -2.6, gold).face("north", marked(gold, GIL_NAVY,
+                (x, y, w, h) -> (y >= 1 && y <= 4 && Math.abs(Math.floorMod(x, 4) - 1.5) < (4.5 - y) / 2) || (centerLine(x, w) && y > 7 && y % 4 != 0)));
+        tassets.model.box(-4.6, 0.5, 2.5, 4.6, 12, 3.0, red);                  // falda roja: detrás y a los lados
+        tassets.model.box(4.4, 0.5, -2.2, 4.9, 12, 2.6, red);
+        tassets.model.box(-4.9, 0.5, -2.2, -4.4, 12, 2.6, red);
+        tassets.model.box(1.8, 9.5, -3.0, 4.7, 12, -2.4, gold);                // escarcelas
+        tassets.model.box(-4.7, 9.5, -3.0, -1.8, 12, -2.4, gold);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 22, 2, navy).inflate(0.35);
+        rightArm.model.box(-9.9, 21.4, -3.3, -3.4, 25.4, 3.3, gold).rot("z", -12, -4, 24, 0);   // hombrera
+        rightArm.model.box(-10.3, 19.8, -3.1, -4.3, 21.8, 3.1, deep).rot("z", -12, -4, 24, 0);
+        rightArm.model.box(-8.5, 17.4, -2.5, -3.5, 19.4, 2.5, gold);           // brazal
+        rightArm.model.box(-8.6, 11.6, -2.6, -3.4, 16.4, 2.6, gold).face("north",
+                marked(gold, GIL_NAVY, (x, y, w, h) -> y == h / 2 && x > 0 && x < w - 1));      // guantelete
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 3, -2, 0, 12, 2, navy).inflate(0.3);
+        rightLeg.model.box(-4.3, 7.4, -2.5, 0.3, 11.8, 2.5, gold);             // muslera
+        rightLeg.model.box(-3.6, 4.6, -3.2, -0.4, 7.6, -2.0, gold);            // rodillera
+        rightLeg.model.box(-4.2, 3.0, -2.4, 0.2, 5.0, 2.4, deep);
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4.3, 0, -2.5, 0.3, 4.8, 2.5, gold).face("north",
+                marked(gold, GIL_NAVY, (x, y, w, h) -> centerLine(x, w) && y < h - 2));
+        rightBoot.model.box(-3.5, 0, -4.2, -0.5, 1.4, -2.5, gold);             // punta
+        rightBoot.model.box(-4.5, 3.8, -2.7, 0.5, 4.8, 2.7, deep);
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, body, tassets, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Medea: capucha y capa verde oscuro con ribete dorado y adorno en la frente, túnica morada, broche dorado,
+    // mangas anchas con puños dorados y la túnica hasta el suelo
+    static final int CAS_CLOAK = 0x223a2c, CAS_ROBE = 0x5a3488, CAS_GOLD = 0xd2ad44;
+
+    static List<Bone> casterArmor() {
+        Paint cloak = fabric(CAS_CLOAK), robe = fabric(CAS_ROBE), gold = plate(CAS_GOLD), trimmed = edged(cloak, CAS_GOLD, 1);
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        head.model.box(-4.7, 31.6, -4.9, 4.7, 33.0, 4.7, cloak);               // capucha
+        head.model.box(-5.1, 24.2, -4.9, -4.4, 32.2, 4.7, cloak);
+        head.model.box(4.4, 24.2, -4.9, 5.1, 32.2, 4.7, cloak);
+        head.model.box(-4.7, 24.2, 4.2, 4.7, 32.2, 4.9, cloak);
+        head.model.box(-4.8, 30.4, -5.3, 4.8, 31.8, -4.5, trimmed);            // borde de la capucha
+        head.model.box(-1.1, 30.6, -5.7, 1.1, 32.6, -5.2, gold);               // adorno de la frente
+
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, robe).inflate(0.45).face("north", marked(robe, CAS_GOLD,
+                (x, y, w, h) -> y > h * 0.55 && y < h * 0.85 && Math.abs(Math.abs(x - (w - 1) / 2.0) - (h * 0.85 - y) * 0.6) < 0.6));
+        body.model.box(-4.8, 20.5, -2.8, 4.8, 24.6, 2.8, cloak);               // manto sobre los hombros
+        body.model.box(-1.2, 21.6, -3.2, 1.2, 23.6, -2.7, gold).face("north",
+                marked(gold, 0xc0182a, (x, y, w, h) -> Math.abs(x - (w - 1) / 2.0) < 1 && Math.abs(y - (h - 1) / 2.0) < 1));  // broche
+        Bone capeBack = new Bone("capeBack", "armorBody", 0, 24, 3);
+        capeBack.model.box(-5.0, 0.5, 2.6, 5.0, 24.4, 3.2, trimmed);
+        Bone capeRight = new Bone("capeRight", "armorBody", -5, 24, 0);
+        capeRight.model.box(-5.2, 0.5, -2.9, -4.6, 24.4, 3.0, cloak);
+        capeRight.model.box(-5.2, 0.5, -3.1, -3.2, 20.5, -2.6, trimmed);        // capa abierta por delante
+        Bone capeLeft = capeRight.mirror("capeLeft", "armorBody");
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 16, -2, -4, 24, 2, robe).inflate(0.5);
+        rightArm.model.box(-8.8, 11.6, -2.8, -3.2, 16.2, 2.8, robe);            // manga ancha
+        rightArm.model.box(-8.9, 11.3, -2.9, -3.1, 12.1, 2.9, gold);
+        rightArm.model.box(-8.7, 20.6, -2.8, -3.4, 24.7, 2.8, cloak);
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4.3, 0.6, -2.4, 0, 12, 2.4, robe).face("north",
+                marked(robe, CAS_GOLD, (x, y, w, h) -> y >= h - 2));            // túnica hasta el suelo
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 1.6, 2, plate(0x1f3326)).inflate(0.4);
+        rightBoot.model.box(-3.7, 0.4, -2.7, -0.3, 1.0, -2.3, gold);
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, body, capeBack, capeLeft, capeRight, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Sasaki Kojirō: kimono azul, haori morado con forro claro (abierto, faldones animados), obi, coleta larga,
+    // hakama con pliegues y tabi con zori
+    static final int ASN_HAORI = 0x5a3d8a, ASN_LINING = 0xb9a6d9, ASN_KIMONO = 0x2d2f6b, ASN_HAKAMA = 0x1f2350;
+
+    static Paint hakama() {
+        Paint base = fabric(ASN_HAKAMA);
+        return marked(base, 0x141838, (x, y, w, h) -> x % 3 == 2);
+    }
+
+    static List<Bone> assassinArmor() {
+        Paint haori = fabric(ASN_HAORI), lined = edged(haori, ASN_LINING, 1), kimono = fabric(ASN_KIMONO), obi = plate(0xd8c9a0);
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, kimono).inflate(0.45);
+        body.model.box(-4.6, 13, -2.7, -1.0, 24.4, 2.7, haori).face("north", lined);   // haori abierto delante
+        body.model.box(1.0, 13, -2.7, 4.6, 24.4, 2.7, haori).face("north", lined);
+        body.model.box(-1.0, 13, 2.2, 1.0, 24.4, 2.7, haori);
+        body.model.box(-4.6, 11.6, -2.8, 4.6, 13.6, 2.8, obi);
+        body.model.box(-1.2, 11.4, -3.2, 1.2, 13.8, -2.8, obi);                // nudo del obi
+        Bone hair = new Bone("hair", "armorBody", 0, 24.5, 2.8);
+        hair.model.box(-1.2, 12, 2.8, 1.2, 24.5, 4.0, KOJIRO_HAIR);
+        Bone haoriBack = new Bone("haoriBack", "armorBody", 0, 13, 2.7);
+        haoriBack.model.box(-4.6, 4, 2.2, 4.6, 13, 2.8, lined);
+        Bone haoriFrontR = new Bone("haoriFrontR", "armorBody", -2.8, 13, -2.7);
+        haoriFrontR.model.box(-4.6, 5, -2.8, -1.0, 13, -2.2, lined);
+        Bone haoriFrontL = haoriFrontR.mirror("haoriFrontL", "armorBody");
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 15, -2, -4, 24, 2, haori).inflate(0.55);
+        rightArm.model.box(-8.8, 13.6, -2.9, -3.2, 18.2, 2.9, lined);            // manga ancha
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4.6, 1.6, -2.6, 0.2, 12, 2.6, hakama());
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0.6, -2, 0, 2.4, 2, fabric(0xeeeeee)).inflate(0.4);
+        rightBoot.model.box(-4.3, 0, -2.6, 0.3, 0.6, 2.6, plate(0xa08050));
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, body, hair, haoriBack, haoriFrontL, haoriFrontR, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Heracles: piel gris oscura con músculos marcados, cinturón de hierro con remaches, falda de placas de hierro
+    // (delante y detrás animadas) y anillas de hierro en muñecas y tobillos
+    static final int BER_SKIN = 0x4a4b52, BER_IRON = 0x5d5f66;
+
+    static Paint ironStuds() {
+        Paint base = plate(BER_IRON);
+        return marked(base, 0x9a9da6, (x, y, w, h) -> x % 3 == 1 && y == h / 2);
+    }
+
+    static List<Bone> berserkerArmor() {
+        // Piel lisa (sin pliegues de tela), con sombra hacia abajo y los músculos marcados en oscuro
+        Paint skin = (x, y, w, h, sd) -> bevel(mul(BER_SKIN, 1.12 - 0.22 * y / Math.max(1, h - 1)), x, y, w, h, sd, 0.03);
+        Paint iron = plate(BER_IRON), studs = ironStuds();
+        Paint muscles = marked(skin, 0x26272c, (x, y, w, h) -> {
+            double d = Math.abs(x - (w - 1) / 2.0);
+            return (d < 0.6 && y > h * 0.2) || y == (int) (h * 0.38) || ((y == (int) (h * 0.58) || y == (int) (h * 0.76)) && d < w * 0.3);
+        });
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, skin).inflate(0.5).face("north", muscles);
+        body.model.box(-4.5, 11.4, -2.7, 4.5, 13.2, 2.7, studs);               // cinturón
+        body.model.box(4.3, 5.5, -2.4, 4.9, 11.6, 2.4, iron);                  // placas de los costados
+        body.model.box(-4.9, 5.5, -2.4, -4.3, 11.6, 2.4, iron);
+        Bone loinFront = new Bone("loinFront", "armorBody", 0, 11.6, -2.7);
+        Bone loinBack = new Bone("loinBack", "armorBody", 0, 11.6, 2.7);
+        for (int i = 0; i < 3; i++) {
+            double x0 = -4.3 + i * 2.9;
+            loinFront.model.box(x0, 4.5, -3.1, x0 + 2.7, 11.6, -2.6, iron);
+            loinBack.model.box(x0, 4.5, 2.6, x0 + 2.7, 11.6, 3.1, iron);
+        }
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 24, 2, skin).inflate(0.5);
+        rightArm.model.box(-8.6, 12.4, -2.6, -3.4, 15.4, 2.6, studs);           // muñequera de hierro
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 4, -2, 0, 12, 2, skin).inflate(0.4);
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 4, 2, skin).inflate(0.45);
+        rightBoot.model.box(-4.6, 2.0, -2.6, 0.6, 4.4, 2.6, studs);             // tobillera de hierro
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, body, loinFront, loinBack, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
     static Model bonesToModel(List<Bone> bones, double dx, double dy, double dz, String... names) {
@@ -1507,7 +1744,7 @@ public class ServantAssets {
         }
 
         List<Bone> armor = archerArmor();
-        geoModel(root, "archer_armor", armor);
+        armorModel(root, "archer_armor", armor);
         // Iconos 3D de inventario con los mismos cubos que la armadura puesta
         itemModel(root, "archer_chestplate", bonesToModel(armor, 8, -4, 8, "armorBody", "coatBack", "coatLeft", "coatRight",
                 "coatFrontL", "coatFrontR", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
@@ -1518,7 +1755,7 @@ public class ServantAssets {
         geoModel(root, "gae_bolg", oneBone(gaeBolg()), "item/");
         builtinModel(root, "gae_bolg", "gae_bolg", handheld(0.5, 0.5), null);
         List<Bone> lancer = lancerArmor();
-        geoModel(root, "lancer_armor", lancer);
+        armorModel(root, "lancer_armor", lancer);
         itemModel(root, "lancer_chestplate", bonesToModel(lancer, 8, -4, 8, "armorBody", "ponytail", "armorRightArm", "armorLeftArm"),
                 armorIcon(0.5), null);
         itemModel(root, "lancer_leggings", bonesToModel(lancer, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
@@ -1528,7 +1765,7 @@ public class ServantAssets {
         itemModel(root, "rider_dagger", chainDagger(), handheld(0.7), null);
         itemModel(root, "bellerophon", bridle(), HELD_OBJECT, null);
         List<Bone> rider = riderArmor();
-        geoModel(root, "rider_armor", rider);
+        armorModel(root, "rider_armor", rider);
         itemModel(root, "rider_helmet", bonesToModel(rider, 8, -20, 8, "armorHead"), armorIcon(0.7), null);
         itemModel(root, "rider_chestplate", bonesToModel(rider, 8, -4, 8, "armorBody", "hair", "armorRightArm", "armorLeftArm"),
                 armorIcon(0.5), null);
@@ -1542,7 +1779,7 @@ public class ServantAssets {
         builtinModel(root, "ea", "ea", handheld(0.7), null);
         itemModel(root, "gate_of_babylon", babylonKey(), handheld(0.9), null);
         List<Bone> gilgamesh = gilgameshArmor();
-        geoModel(root, "gilgamesh_armor", gilgamesh);
+        armorModel(root, "gilgamesh_armor", gilgamesh);
         itemModel(root, "gilgamesh_chestplate", bonesToModel(gilgamesh, 8, -4, 8, "armorBody", "tassets", "armorRightArm", "armorLeftArm"),
                 armorIcon(0.5), null);
         itemModel(root, "gilgamesh_leggings", bonesToModel(gilgamesh, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
@@ -1568,7 +1805,8 @@ public class ServantAssets {
         geoModel(root, "rule_breaker", oneBone(ruleBreaker()), "item/");
         builtinModel(root, "rule_breaker", "rule_breaker", handheld(1.0), null);
         List<Bone> caster = casterArmor();
-        geoModel(root, "caster_armor", caster);
+        armorModel(root, "caster_armor", caster);
+        itemModel(root, "caster_hood", bonesToModel(caster, 8, -20, 8, "armorHead"), armorIcon(0.6), null);
         itemModel(root, "caster_chestplate", bonesToModel(caster, 8, -4, 8, "armorBody", "capeBack", "capeLeft", "capeRight",
                 "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "caster_leggings", bonesToModel(caster, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
@@ -1577,7 +1815,7 @@ public class ServantAssets {
         // ---------- Assassin ----------
         itemModel(root, "monohoshizao", monohoshizao(), handheld(0.55, 0.6), null);
         List<Bone> assassin = assassinArmor();
-        geoModel(root, "assassin_armor", assassin);
+        armorModel(root, "assassin_armor", assassin);
         itemModel(root, "assassin_chestplate", bonesToModel(assassin, 8, -4, 8, "armorBody", "hair", "haoriBack", "haoriFrontL",
                 "haoriFrontR", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "assassin_leggings", bonesToModel(assassin, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
@@ -1586,7 +1824,7 @@ public class ServantAssets {
         // ---------- Berserker ----------
         itemModel(root, "berserker_axe_sword", axeSword(), handheld(0.7), null);
         List<Bone> berserker = berserkerArmor();
-        geoModel(root, "berserker_armor", berserker);
+        armorModel(root, "berserker_armor", berserker);
         itemModel(root, "berserker_chestplate", bonesToModel(berserker, 8, -4, 8, "armorBody", "loinFront", "loinBack",
                 "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "berserker_leggings", bonesToModel(berserker, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
