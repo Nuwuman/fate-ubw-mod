@@ -9,8 +9,14 @@ import com.nuwuman.fateubw.archer.ThrownFalchionEntity;
 import com.nuwuman.fateubw.lancer.GaeBolgItem;
 import com.nuwuman.fateubw.lancer.GaeBolgSpearEntity;
 import com.nuwuman.fateubw.lancer.LancerArmorItem;
+import com.nuwuman.fateubw.rider.BellerophonItem;
+import com.nuwuman.fateubw.rider.ChainDaggerEntity;
+import com.nuwuman.fateubw.rider.PegasusEntity;
+import com.nuwuman.fateubw.rider.RiderArmorItem;
+import com.nuwuman.fateubw.rider.RiderDaggerItem;
 import com.nuwuman.fateubw.saber.ExcaliburBeamEntity;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import com.nuwuman.fateubw.saber.ExcaliburItem;
 import com.nuwuman.fateubw.saber.SaberArmorItem;
 import net.fabricmc.api.ModInitializer;
@@ -79,6 +85,16 @@ public class FateUBW implements ModInitializer {
     public static final Item LANCER_LEGGINGS = item("lancer_leggings", new LancerArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item LANCER_BOOTS = item("lancer_boots", new LancerArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Rider ----------
+    public static final RegistryEntry<ArmorMaterial> RIDER_MATERIAL = armorMaterial("rider");
+
+    public static final Item RIDER_DAGGER = item("rider_dagger", new RiderDaggerItem(new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item BELLEROPHON = item("bellerophon", new BellerophonItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item RIDER_HELMET = item("rider_helmet", new RiderArmorItem(ArmorItem.Type.HELMET, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item RIDER_CHESTPLATE = item("rider_chestplate", new RiderArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item RIDER_LEGGINGS = item("rider_leggings", new RiderArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item RIDER_BOOTS = item("rider_boots", new RiderArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
     // Sin pestaña: modelos que usan los proyectiles y claves de cooldown de las habilidades
     public static final Item CALADBOLG = item("caladbolg", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item SWORD_ARROW = item("sword_arrow", new Item(new Item.Settings()));
@@ -86,6 +102,8 @@ public class FateUBW implements ModInitializer {
     public static final Item GAE_BOLG_PIERCE = item("gae_bolg_pierce", new Item(new Item.Settings()));
     public static final Item GAE_BOLG_SOARING = item("gae_bolg_soaring", new Item(new Item.Settings()));
     public static final Item BATTLE_CONTINUATION = item("battle_continuation", new Item(new Item.Settings()));
+    public static final Item MYSTIC_EYES = item("mystic_eyes", new Item(new Item.Settings()));
+    public static final Item BELLEROPHON_CHARGE = item("bellerophon_charge", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);
@@ -93,10 +111,19 @@ public class FateUBW implements ModInitializer {
     public static final EntityType<SwordArrowEntity> SWORD_ARROW_ENTITY = entity("sword_arrow", SwordArrowEntity::new, 20);
     public static final EntityType<RhoAiasEntity> RHO_AIAS_ENTITY = entity("rho_aias", RhoAiasEntity::new, 1);
     public static final EntityType<GaeBolgSpearEntity> GAE_BOLG_SPEAR = entity("gae_bolg_spear", GaeBolgSpearEntity::new, 1);
+    public static final EntityType<ChainDaggerEntity> CHAIN_DAGGER = entity("chain_dagger", ChainDaggerEntity::new, 1);
+    public static final EntityType<PegasusEntity> PEGASUS = Registry.register(Registries.ENTITY_TYPE, id("pegasus"),
+            EntityType.Builder.create(PegasusEntity::new, SpawnGroup.MISC)
+                    .dimensions(1.4F, 1.6F)
+                    .passengerAttachments(1.35F)
+                    .maxTrackingRange(10)
+                    .disableSaving()
+                    .build("pegasus"));
 
     // Tipos de daño propios (data/fate_ubw/damage_type), ignoran armadura
     public static final RegistryKey<DamageType> EXCALIBUR_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("excalibur"));
     public static final RegistryKey<DamageType> GAE_BOLG_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("gae_bolg"));
+    public static final RegistryKey<DamageType> BELLEROPHON_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bellerophon"));
 
     // /gamerule fateAbilitiesBreakBlocks true → Excalibur abre un túnel y Caladbolg explota como TNT
     public static final GameRules.Key<GameRules.BooleanRule> BREAK_BLOCKS = GameRuleRegistry.register(
@@ -124,6 +151,12 @@ public class FateUBW implements ModInitializer {
                 entries.add(LANCER_CHESTPLATE);
                 entries.add(LANCER_LEGGINGS);
                 entries.add(LANCER_BOOTS);
+                entries.add(RIDER_DAGGER);
+                entries.add(BELLEROPHON);
+                entries.add(RIDER_HELMET);
+                entries.add(RIDER_CHESTPLATE);
+                entries.add(RIDER_LEGGINGS);
+                entries.add(RIDER_BOOTS);
             })
             .build());
 
@@ -167,5 +200,6 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(LancerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(SaberArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
+        FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
     }
 }

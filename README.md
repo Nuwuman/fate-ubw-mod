@@ -34,6 +34,18 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
 
 ![Lancer](docs/lancer.png)
 
+**Rider (Medusa)**
+- **Daga de Rider** con cadena: click derecho la lanza; si engancha a un enemigo lo hiere y lo atrae, si se clava en un
+  bloque te impulsa hacia él. Agachado + click derecho: **Ojos Místicos**, quien te mira de frente queda casi
+  petrificado (lentitud extrema, fatiga y debilidad).
+- **Bellerophon** (bridas): click derecho invoca a **Pegaso** (modelo 3D animado) y lo montas. Mira hacia arriba y avanza
+  para despegar; vuela hacia donde miras. Montado, click derecho: **la embestida de Bellerophon**, un cometa de luz que
+  arrolla todo a su paso. Pegaso desaparece si se queda sin jinete.
+- **Armadura** de 4 piezas: Breaker Gorgon (venda), vestido con melena animada, medias y botas.
+  Conjunto completo: Velocidad I y Salto II.
+
+![Rider](docs/rider.png)
+
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
 ## Gamerule
@@ -70,7 +82,8 @@ El jar sale en `build/libs/`.
   (ítems JSON, geo de GeckoLib) y sus texturas, incluidas las animadas de Excalibur.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
-  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`) solo prueba a ese servant.
+  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, o varios separados por comas)
+  solo prueba a esos servants.
 
 ---
 

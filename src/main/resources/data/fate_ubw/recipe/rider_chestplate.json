@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["N N", "BPB", "BBB"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "P": { "item": "minecraft:purple_wool" },
+    "B": { "item": "minecraft:black_wool" }
+  },
+  "result": { "id": "fate_ubw:rider_chestplate", "count": 1 }
+}

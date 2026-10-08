@@ -25,6 +25,8 @@ public class FateUBWClient implements ClientModInitializer {
         });
         EntityRendererRegistry.register(FateUBW.RHO_AIAS_ENTITY, RhoAiasRenderer::new);
         EntityRendererRegistry.register(FateUBW.GAE_BOLG_SPEAR, ctx -> new OrientedItemRenderer<GaeBolgSpearEntity>(ctx, GaeBolgSpearEntity::getStack, e -> false));
+        EntityRendererRegistry.register(FateUBW.CHAIN_DAGGER, ChainDaggerRenderer::new);
+        EntityRendererRegistry.register(FateUBW.PEGASUS, PegasusRenderer::new);
 
         // Excalibur: normal / cargando / cargada
         ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("charge"),

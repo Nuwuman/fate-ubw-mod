@@ -151,6 +151,15 @@ public class ServantAssets {
             HAIR = cloth(0x2b4cc2);
     static final Paint EX_GRIP = wrap(0x1d3f8f, 0x112a66), EX_BLUE = metal(0x2a56c6), EX_GEM = metal(0x7fd3ff);
     static final Paint BLUE_DRESS = cloth(0x2a4cb0), SABER_SILVER = metal(0xc8ced9);
+    static final Paint BLACK_DRESS = seams(0x1a1520, 0x4a2a5e), DARK_PURPLE = solid(0x4a1f66), PURPLE_HAIR = cloth(0x8a4fc4),
+            BLACK_BOOT = metal(0x26222c), BLINDFOLD = plates(0x2a1a36, 0x7a3fa6), DAGGER_GRIP = wrap(0x3a1f4f, 0x1c0f27),
+            DARK_STEEL = metal(0x5a5f6b), LEATHER = wrap(0x8a6420, 0x5c4214);
+    static final Paint WHITE_COAT = solid(0xf3f3f6), MANE = cloth(0xf0e6c8), EYE_BLUE = metal(0x5aa0ff);
+
+    // Plumas de las alas de Pegaso
+    static Paint feathers() {
+        return (x, y, w, h, s) -> shade(Math.floorMod(x + y / 3, 3) == 0 ? 0xd7dce6 : 0xffffff, x, y, w, h, s, 0.04);
+    }
 
     // ---------- geometría ----------
     static class Face {
@@ -393,10 +402,12 @@ public class ServantAssets {
             b.append(bone.model.cubes.isEmpty() ? "] }" : "\n      ] }").append(i < bones.size() - 1 ? "," : "").append("\n");
         }
         b.append("    ]\n  }]\n}\n");
-        Path geo = root.resolve("geo/item/armor/" + name + ".geo.json");
+        // Armaduras en item/armor/, entidades (Pegaso) en entity/: las rutas que espera GeckoLib
+        String kind = name.endsWith("_armor") ? "item/armor/" : "entity/";
+        Path geo = root.resolve("geo/" + kind + name + ".geo.json");
         Files.createDirectories(geo.getParent());
         Files.writeString(geo, b);
-        Path tex = root.resolve("textures/item/armor/" + name + ".png");
+        Path tex = root.resolve("textures/" + kind + name + ".png");
         Files.createDirectories(tex.getParent());
         ImageIO.write(img, "png", tex.toFile());
     }
@@ -647,6 +658,127 @@ public class ServantAssets {
                 rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // Daga de Rider: un clavo largo con una anilla en el pomo de la que cuelga la cadena
+    static Model chainDagger() {
+        Model m = new Model();
+        m.box(7.75, -9.5, 7.6, 8.25, -7, 8.4, DARK_STEEL);       // eslabones
+        m.box(7.6, -7, 7.75, 8.4, -4.5, 8.25, DARK_STEEL);
+        m.box(7.0, -4.5, 7.75, 9.0, -4, 8.25, DARK_STEEL);       // anilla
+        m.box(7.0, -4, 7.75, 7.5, -1.5, 8.25, DARK_STEEL);
+        m.box(8.5, -4, 7.75, 9.0, -1.5, 8.25, DARK_STEEL);
+        m.box(7.0, -1.5, 7.75, 9.0, -0.5, 8.25, DARK_STEEL);
+        m.box(7.4, -0.5, 7.4, 8.6, 4, 8.6, DAGGER_GRIP);         // empuñadura
+        m.box(6.8, 4, 7.6, 9.2, 4.8, 8.4, DARK_STEEL);           // guarda
+        m.box(7.4, 4.8, 7.5, 8.6, 10, 8.5, STEEL);               // hoja en forma de clavo
+        m.box(7.6, 10, 7.65, 8.4, 14, 8.35, STEEL);
+        m.box(7.8, 14, 7.8, 8.2, 16.5, 8.2, STEEL);
+        return m;
+    }
+
+    // Bellerophon: bridas doradas con una gema
+    static Model bridle() {
+        Model m = new Model();
+        m.box(4, 12, 7.5, 12, 13, 8.5, GOLD);
+        m.box(4, 4, 7.5, 12, 5, 8.5, GOLD);
+        m.box(4, 5, 7.5, 5, 12, 8.5, GOLD);
+        m.box(11, 5, 7.5, 12, 12, 8.5, GOLD);
+        m.box(7.4, 12.5, 7.3, 8.6, 13.7, 8.7, EX_GEM);
+        m.box(2, 4.2, 7.75, 14, 4.8, 8.25, STEEL);               // bocado
+        m.box(7.6, 0, 7.75, 8.4, 4.2, 8.25, LEATHER);            // riendas
+        m.box(3, 0, 7.75, 3.8, 4.2, 8.25, LEATHER);
+        m.box(12.2, 0, 7.75, 13, 4.2, 8.25, LEATHER);
+        return m;
+    }
+
+    static final String HELD_OBJECT = "{\n"
+            + "    \"thirdperson_righthand\": { \"rotation\": [0, -90, 0], \"translation\": [0, 2, 1], \"scale\": [0.55, 0.55, 0.55] },\n"
+            + "    \"thirdperson_lefthand\": { \"rotation\": [0, 90, 0], \"translation\": [0, 2, 1], \"scale\": [0.55, 0.55, 0.55] },\n"
+            + "    \"firstperson_righthand\": { \"rotation\": [0, -90, 10], \"translation\": [1.13, 3.2, 1.13], \"scale\": [0.6, 0.6, 0.6] },\n"
+            + "    \"firstperson_lefthand\": { \"rotation\": [0, 90, -10], \"translation\": [1.13, 3.2, 1.13], \"scale\": [0.6, 0.6, 0.6] },\n"
+            + "    \"gui\": { \"rotation\": [15, -30, 0], \"scale\": [0.9, 0.9, 0.9] },\n"
+            + "    \"ground\": { \"translation\": [0, 2, 0], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"fixed\": { \"scale\": [0.8, 0.8, 0.8] }\n"
+            + "  }";
+
+    // Rider: Breaker Gorgon (venda y flequillo) en la cabeza; vestido negro y melena morada en el cuerpo;
+    // medias con liga morada; botas altas negras
+    static List<Bone> riderArmor() {
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        head.model.box(-4, 28.5, -4, 4, 32.5, 4, PURPLE_HAIR).inflate(0.75);
+        head.model.box(-4, 26.5, -4, 4, 28.5, 4, BLINDFOLD).inflate(0.6);
+
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, BLACK_DRESS).inflate(1.0);
+        body.model.box(-4, 22, -2, 4, 24, 2, DARK_PURPLE).inflate(1.1);
+        body.model.box(-4.5, 9, -2.6, 4.5, 12, 2.6, BLACK_DRESS);
+        Bone hair = new Bone("hair", "armorBody", 0, 24.5, 3.3);
+        hair.model.box(-4, 9, 3.3, 4, 24.5, 4.6, PURPLE_HAIR);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 18, 2, BLACK_DRESS).inflate(0.9);
+        rightArm.model.box(-8, 20, -2, -4, 21.5, 2, DARK_PURPLE).inflate(0.6);
+        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
+        leftArm.model.box(4, 12, -2, 8, 18, 2, BLACK_DRESS).inflate(0.9);
+        leftArm.model.box(4, 20, -2, 8, 21.5, 2, DARK_PURPLE).inflate(0.6);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 4, -2, 0, 12, 2, BLACK_DRESS).inflate(0.5);
+        rightLeg.model.box(-4, 8, -2, 0, 9, 2, DARK_PURPLE).inflate(0.6);
+        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
+        leftLeg.model.box(0, 4, -2, 4, 12, 2, BLACK_DRESS).inflate(0.5);
+        leftLeg.model.box(0, 8, -2, 4, 9, 2, DARK_PURPLE).inflate(0.6);
+
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 7, 2, BLACK_BOOT).inflate(0.9);
+        rightBoot.model.box(-4, 0, -3.2, 0, 1.2, -2.7, DARK_PURPLE);
+        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
+        leftBoot.model.box(0, 0, -2, 4, 7, 2, BLACK_BOOT).inflate(0.9);
+        leftBoot.model.box(0, 0, -3.2, 4, 1.2, -2.7, DARK_PURPLE);
+
+        return List.of(head, body, hair, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Pegaso: caballo blanco con alas, crin dorada y cascos de oro. Mira hacia -Z; patas y alas giran en su bone
+    static List<Bone> pegasus() {
+        Bone body = new Bone("body", null, 0, 16, 0);
+        body.model.box(-5, 11, -11, 5, 21, 11, WHITE_COAT);
+        Bone neck = new Bone("neck", "body", 0, 19, -9);
+        neck.model.box(-2.5, 17, -14, 2.5, 27, -8, WHITE_COAT);
+        neck.model.box(-0.75, 20, -9, 0.75, 28, -7.5, MANE);
+        Bone head = new Bone("head", "neck", 0, 26, -11);
+        head.model.box(-2.5, 24, -19, 2.5, 29, -11, WHITE_COAT);
+        head.model.box(-2, 24, -21, 2, 27.5, -19, WHITE_COAT);
+        head.model.box(2.5, 26.5, -16.5, 2.7, 27.3, -15.5, EYE_BLUE);
+        head.model.box(-2.7, 26.5, -16.5, -2.5, 27.3, -15.5, EYE_BLUE);
+        head.model.box(-2, 29, -13, -1, 31, -12, WHITE_COAT);
+        head.model.box(1, 29, -13, 2, 31, -12, WHITE_COAT);
+
+        Bone legFL = new Bone("legFL", null, 3.5, 12, -8);
+        legFL.model.box(2, 2, -9.5, 5, 12, -6.5, WHITE_COAT);
+        legFL.model.box(2, 0, -9.5, 5, 2, -6.5, GOLD);
+        Bone legFR = new Bone("legFR", null, -3.5, 12, -8);
+        legFR.model.box(-5, 2, -9.5, -2, 12, -6.5, WHITE_COAT);
+        legFR.model.box(-5, 0, -9.5, -2, 2, -6.5, GOLD);
+        Bone legBL = new Bone("legBL", null, 3.5, 12, 8);
+        legBL.model.box(2, 2, 6.5, 5, 12, 9.5, WHITE_COAT);
+        legBL.model.box(2, 0, 6.5, 5, 2, 9.5, GOLD);
+        Bone legBR = new Bone("legBR", null, -3.5, 12, 8);
+        legBR.model.box(-5, 2, 6.5, -2, 12, 9.5, WHITE_COAT);
+        legBR.model.box(-5, 0, 6.5, -2, 2, 9.5, GOLD);
+
+        Bone wingL = new Bone("wingL", "body", 5, 20, -4);
+        wingL.model.box(5, 19.5, -7, 19, 20.5, 3, feathers());
+        wingL.model.box(19, 19.7, -5, 26, 20.3, 2, feathers());
+        Bone wingR = new Bone("wingR", "body", -5, 20, -4);
+        wingR.model.box(-19, 19.5, -7, -5, 20.5, 3, feathers());
+        wingR.model.box(-26, 19.7, -5, -19, 20.3, 2, feathers());
+
+        Bone tail = new Bone("tail", "body", 0, 19, 11);
+        tail.model.box(-1.5, 9, 11, 1.5, 19, 13.5, MANE);
+
+        return List.of(body, neck, head, legFL, legFR, legBL, legBR, wingL, wingR, tail);
+    }
+
     // Gáe Bolg: lanza carmesí con púas. Agarre en y≈2.5, igual que las espadas; total de -12 a 30.5
     static Model gaeBolg() {
         Model m = new Model();
@@ -774,5 +906,17 @@ public class ServantAssets {
                 armorIcon(0.5), null);
         itemModel(root, "lancer_leggings", bonesToModel(lancer, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "lancer_boots", bonesToModel(lancer, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+
+        // ---------- Rider ----------
+        itemModel(root, "rider_dagger", chainDagger(), handheld(0.7), null);
+        itemModel(root, "bellerophon", bridle(), HELD_OBJECT, null);
+        List<Bone> rider = riderArmor();
+        geoModel(root, "rider_armor", rider);
+        itemModel(root, "rider_helmet", bonesToModel(rider, 8, -20, 8, "armorHead"), armorIcon(0.7), null);
+        itemModel(root, "rider_chestplate", bonesToModel(rider, 8, -4, 8, "armorBody", "hair", "armorRightArm", "armorLeftArm"),
+                armorIcon(0.5), null);
+        itemModel(root, "rider_leggings", bonesToModel(rider, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
+        itemModel(root, "rider_boots", bonesToModel(rider, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+        geoModel(root, "pegasus", pegasus());
     }
 }

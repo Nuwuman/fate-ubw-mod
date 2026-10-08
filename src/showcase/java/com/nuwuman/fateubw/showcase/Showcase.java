@@ -26,13 +26,15 @@ import java.util.List;
  */
 public class Showcase implements ClientModInitializer {
     private final List<String> sections = System.getenv("FATE_SHOWCASE") == null
-            ? List.of("saber", "archer", "lancer") : List.of(System.getenv("FATE_SHOWCASE").split(","));
+            ? List.of("saber", "archer", "lancer", "rider") : List.of(System.getenv("FATE_SHOWCASE").split(","));
     private int ticks;
     private int worldTicks;
     private boolean started;
     private boolean holdUse;
     private boolean holdSneak;
+    private boolean holdForward;
     private float yaw;
+    private float pitch;
     private int section;
     private int st = -1; // tick dentro de la sección actual
 
@@ -59,9 +61,10 @@ public class Showcase implements ClientModInitializer {
         worldTicks++;
         client.options.useKey.setPressed(holdUse);
         client.options.sneakKey.setPressed(holdSneak);
+        client.options.forwardKey.setPressed(holdForward);
         ClientPlayerEntity p = client.player;
         p.setYaw(yaw);
-        p.setPitch(0.0F);
+        p.setPitch(pitch);
 
         if (worldTicks == 5) {
             for (String cmd : new String[]{
@@ -97,6 +100,7 @@ public class Showcase implements ClientModInitializer {
             case "saber" -> saber(client, p, st);
             case "archer" -> archer(client, p, st);
             case "lancer" -> lancer(client, p, st);
+            case "rider" -> rider(client, p, st);
             default -> true;
         };
         if (done) {
@@ -284,6 +288,126 @@ public class Showcase implements ClientModInitializer {
             case 250 -> shot(c, "lancer_12_soaring_impact");
             case 270 -> {
                 yaw = 0.0F;
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private int waited;
+
+    /** Retiene el tick de la sección hasta que se cumpla la condición (como mucho maxTicks), para no depender del retraso del servidor. */
+    private boolean waitUntil(boolean condition, int maxTicks) {
+        if (condition || waited >= maxTicks) {
+            waited = 0;
+            return false;
+        }
+        waited++;
+        st--;
+        return true;
+    }
+
+    private static boolean clientHas(MinecraftClient c, net.minecraft.entity.EntityType<?> type) {
+        for (var e : c.world.getEntities()) {
+            if (e.getType() == type) return true;
+        }
+        return false;
+    }
+
+    private boolean rider(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.head with fate_ubw:rider_helmet", "armor.chest with fate_ubw:rider_chestplate",
+                    "armor.legs with fate_ubw:rider_leggings", "armor.feet with fate_ubw:rider_boots",
+                    "hotbar.0 with fate_ubw:rider_dagger", "hotbar.1 with fate_ubw:bellerophon",
+                    "hotbar.2 with fate_ubw:rider_helmet", "hotbar.3 with fate_ubw:rider_chestplate",
+                    "hotbar.4 with fate_ubw:rider_leggings", "hotbar.5 with fate_ubw:rider_boots"},
+                    new String[]{"~ ~ ~8", "~-3 ~ ~12", "~2 ~ ~14"});
+            case 40 -> shot(c, "rider_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "rider_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "rider_03_back");
+            case 72 -> yaw = 90.0F;
+            case 85 -> shot(c, "rider_04_side");
+            case 87 -> yaw = 0.0F;
+
+            // Daga con cadena: contra el husk de enfrente y luego como gancho contra el suelo
+            case 92 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.FIRST_PERSON); // en tercera persona el cuerpo tapa la cadena
+            }
+            case 95 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 96 -> yaw = 15.0F;
+            case 98 -> {
+                if (waitUntil(clientHas(c, com.nuwuman.fateubw.FateUBW.CHAIN_DAGGER), 40)) return false;
+            }
+            case 100 -> shot(c, "rider_05_chain_hook");
+            case 104 -> shot(c, "rider_06_chain_pull");
+            case 108 -> {
+                yaw = 0.0F;
+                pitch = 35.0F;
+            }
+            case 110 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 112 -> {
+                if (waitUntil(clientHas(c, com.nuwuman.fateubw.FateUBW.CHAIN_DAGGER), 40)) return false;
+            }
+            case 114 -> shot(c, "rider_06b_chain_grapple");
+            case 118 -> {
+                pitch = 0.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            }
+
+            // Ojos Místicos
+            case 120 -> holdSneak = true;
+            case 122 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 124 -> holdSneak = false;
+            case 127 -> shot(c, "rider_07_mystic_eyes");
+            case 129 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 133 -> shot(c, "rider_08_mystic_eyes_front");
+
+            // Bellerophon: invocar, montar, despegar, volar y embestir
+            case 140 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                p.getInventory().selectedSlot = 1;
+            }
+            case 145 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 165 -> shot(c, "rider_09_pegasus_mounted");
+            case 167 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 180 -> shot(c, "rider_10_pegasus_front");
+            case 182 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                yaw = 90.0F;
+            }
+            case 192 -> shot(c, "rider_11_pegasus_side");
+            case 194 -> {
+                yaw = 0.0F;
+                pitch = -35.0F;
+                holdForward = true;
+            }
+            case 225 -> shot(c, "rider_12_takeoff");
+            case 227 -> pitch = 0.0F;
+            case 235 -> yaw = 60.0F;
+            case 240 -> shot(c, "rider_13_flying_side");
+            case 242 -> {
+                yaw = 0.0F;
+                holdForward = false;
+            }
+            case 250 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 252 -> {
+                if (waitUntil(p.getVehicle() instanceof com.nuwuman.fateubw.rider.PegasusEntity peg && peg.getCharge() > 0, 40)) return false;
+            }
+            case 254 -> shot(c, "rider_14_bellerophon_charge");
+            case 256 -> yaw = 50.0F;
+            case 260 -> shot(c, "rider_15_bellerophon_side");
+            case 285 -> {
+                yaw = 0.0F;
+                holdSneak = true;
+            }
+            case 290 -> holdSneak = false;
+            case 300 -> {
                 return true;
             }
             default -> {

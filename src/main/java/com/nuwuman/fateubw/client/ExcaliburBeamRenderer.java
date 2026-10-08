@@ -51,8 +51,9 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         matrices.pop();
     }
 
-    // Prisma cuadrado de y=0 a y=len que se ensancha de w0 a w1; caras con las dos orientaciones
-    private static void prism(VertexConsumer vc, Matrix4f m, float len, float w0, float w1, int r, int g, int b, int a) {
+    // Prisma cuadrado de y=0 a y=len que se ensancha de w0 a w1; caras con las dos orientaciones.
+    // También lo usa la estela de la embestida de Pegaso
+    static void prism(VertexConsumer vc, Matrix4f m, float len, float w0, float w1, int r, int g, int b, int a) {
         float[] xs = {-1, 1, 1, -1};
         float[] zs = {-1, -1, 1, 1};
         int tipAlpha = a / 2;

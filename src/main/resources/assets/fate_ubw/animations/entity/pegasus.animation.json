@@ -1,0 +1,41 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.pegasus.idle": {
+      "loop": true,
+      "animation_length": 3.0,
+      "bones": {
+        "wingL": { "rotation": { "0.0": [0, 0, -8], "1.5": [0, 0, -14], "3.0": [0, 0, -8] } },
+        "wingR": { "rotation": { "0.0": [0, 0, 8], "1.5": [0, 0, 14], "3.0": [0, 0, 8] } },
+        "tail": { "rotation": { "0.0": [15, 0, -4], "1.5": [18, 0, 4], "3.0": [15, 0, -4] } },
+        "head": { "rotation": { "0.0": [0, 0, 0], "1.5": [4, 0, 0], "3.0": [0, 0, 0] } }
+      }
+    },
+    "animation.pegasus.walk": {
+      "loop": true,
+      "animation_length": 0.8,
+      "bones": {
+        "legFL": { "rotation": { "0.0": [25, 0, 0], "0.4": [-25, 0, 0], "0.8": [25, 0, 0] } },
+        "legFR": { "rotation": { "0.0": [-25, 0, 0], "0.4": [25, 0, 0], "0.8": [-25, 0, 0] } },
+        "legBL": { "rotation": { "0.0": [-25, 0, 0], "0.4": [25, 0, 0], "0.8": [-25, 0, 0] } },
+        "legBR": { "rotation": { "0.0": [25, 0, 0], "0.4": [-25, 0, 0], "0.8": [25, 0, 0] } },
+        "wingL": { "rotation": { "0.0": [0, 0, -10], "0.4": [0, 0, -16], "0.8": [0, 0, -10] } },
+        "wingR": { "rotation": { "0.0": [0, 0, 10], "0.4": [0, 0, 16], "0.8": [0, 0, 10] } },
+        "tail": { "rotation": [20, 0, 0] }
+      }
+    },
+    "animation.pegasus.fly": {
+      "loop": true,
+      "animation_length": 0.6,
+      "bones": {
+        "wingL": { "rotation": { "0.0": [0, 0, -40], "0.3": [0, 0, 30], "0.6": [0, 0, -40] } },
+        "wingR": { "rotation": { "0.0": [0, 0, 40], "0.3": [0, 0, -30], "0.6": [0, 0, 40] } },
+        "legFL": { "rotation": [45, 0, 0] },
+        "legFR": { "rotation": [45, 0, 0] },
+        "legBL": { "rotation": [-45, 0, 0] },
+        "legBR": { "rotation": [-45, 0, 0] },
+        "tail": { "rotation": [45, 0, 0] }
+      }
+    }
+  }
+}

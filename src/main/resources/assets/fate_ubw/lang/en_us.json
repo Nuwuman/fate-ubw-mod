@@ -39,7 +39,24 @@
   "item.fate_ubw.lancer_armor.tooltip.arrows": "Protection from Arrows: 75% of projectiles can't hurt you",
   "item.fate_ubw.lancer_armor.tooltip.battle": "Battle Continuation: survive a lethal hit (every 5 min)",
 
+  "item.fate_ubw.rider_dagger": "Rider's Dagger",
+  "item.fate_ubw.rider_dagger.tooltip.throw": "Right-click: throw it; pulls the enemy in or pulls you to a block",
+  "item.fate_ubw.rider_dagger.tooltip.eyes": "Sneak + right-click: Mystic Eyes (petrifies whoever looks at you)",
+  "item.fate_ubw.bellerophon": "Bellerophon",
+  "item.fate_ubw.bellerophon.tooltip.summon": "Right-click: summon Pegasus and ride it",
+  "item.fate_ubw.bellerophon.tooltip.fly": "Riding: look up and move forward to take off",
+  "item.fate_ubw.bellerophon.tooltip.charge": "Riding, right-click: Bellerophon's charge",
+  "item.fate_ubw.rider_helmet": "Breaker Gorgon",
+  "item.fate_ubw.rider_chestplate": "Rider's Dress",
+  "item.fate_ubw.rider_leggings": "Rider's Stockings",
+  "item.fate_ubw.rider_boots": "Rider's Boots",
+  "item.fate_ubw.rider_armor.tooltip.set": "Full set (4 pieces): Speed I and Jump Boost II",
+  "item.fate_ubw.mystic_eyes": "Mystic Eyes",
+  "item.fate_ubw.bellerophon_charge": "Bellerophon's Charge",
+
   "entity.fate_ubw.excalibur_beam": "Excalibur",
+  "entity.fate_ubw.chain_dagger": "Chain Dagger",
+  "entity.fate_ubw.pegasus": "Pegasus",
   "entity.fate_ubw.thrown_falchion": "Thrown Falchion",
   "entity.fate_ubw.sword_arrow": "Projected Sword",
   "entity.fate_ubw.rho_aias": "Rho Aias",
@@ -52,11 +69,15 @@
   "ability.fate_ubw.caladbolg": "Caladbolg II",
   "ability.fate_ubw.gae_bolg_pierce": "Gáe Bolg (thrust)",
   "ability.fate_ubw.gae_bolg_soaring": "Gáe Bolg (throw)",
+  "ability.fate_ubw.mystic_eyes": "Mystic Eyes",
+  "ability.fate_ubw.bellerophon": "Bellerophon",
   "message.fate_ubw.cooldown": "%s is recharging: %ss",
   "message.fate_ubw.battle_continuation": "Battle Continuation! You're still standing",
 
   "death.attack.excalibur": "%1$s was turned to light",
   "death.attack.excalibur.player": "%1$s was turned to light by %2$s's Excalibur",
   "death.attack.gae_bolg": "%1$s had their heart pierced",
-  "death.attack.gae_bolg.player": "%1$s had their heart pierced by %2$s's Gáe Bolg"
+  "death.attack.gae_bolg.player": "%1$s had their heart pierced by %2$s's Gáe Bolg",
+  "death.attack.bellerophon": "%1$s was run down by a comet",
+  "death.attack.bellerophon.player": "%1$s was run down by %2$s's Bellerophon"
 }
