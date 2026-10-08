@@ -70,7 +70,7 @@ public class LancerArmorItem extends ServantArmorItem {
         player.setHealth(1.0F);
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 60, 2));
-        player.getItemCooldownManager().set(FateUBW.BATTLE_CONTINUATION, BATTLE_CONTINUATION_COOLDOWN);
+        com.nuwuman.fateubw.Rules.cooldown(player, FateUBW.BATTLE_CONTINUATION, BATTLE_CONTINUATION_COOLDOWN);
         player.sendMessage(Text.translatable("message.fate_ubw.battle_continuation").formatted(Formatting.AQUA), true);
         if (player.getWorld() instanceof ServerWorld world) {
             world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, player.getX(), player.getBodyY(0.5), player.getZ(), 40, 0.5, 0.8, 0.5, 0.3);

@@ -40,13 +40,10 @@ public class FalchionItem extends SwordItem {
 
         // Agachado: Rho Aias
         if (user.isSneaking()) {
-            if (user.getItemCooldownManager().isCoolingDown(FateUBW.RHO_AIAS)) {
-                if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN, "rho_aias");
-                return TypedActionResult.fail(stack);
-            }
+            if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN, "rho_aias")) return TypedActionResult.fail(stack);
             if (world instanceof ServerWorld server) RhoAiasEntity.deploy(server, user);
             com.nuwuman.fateubw.Voices.say(world, user, "rho_aias");
-            user.getItemCooldownManager().set(FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN);
+            com.nuwuman.fateubw.Rules.commit(user, FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN);
             return TypedActionResult.success(stack, world.isClient());
         }
 
@@ -59,8 +56,8 @@ public class FalchionItem extends SwordItem {
             world.playSound(null, user.getX(), user.getY(), user.getZ(),
                     SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 1.0F, 1.4F);
         }
-        user.getItemCooldownManager().set(this, THROW_COOLDOWN);
-        if (pair) user.getItemCooldownManager().set(twin(), THROW_COOLDOWN);
+        com.nuwuman.fateubw.Rules.cooldown(user, this, THROW_COOLDOWN);
+        if (pair) com.nuwuman.fateubw.Rules.cooldown(user, twin(), THROW_COOLDOWN);
         return TypedActionResult.success(stack, world.isClient());
     }
 

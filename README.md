@@ -11,6 +11,12 @@ esquina inferior derecha. **R** usa la seleccionada y **G** pasa a la siguiente 
 Fate: Unlimited Blade Works). Cada habilidad muestra su recarga, y cada habilidad de un arma tiene la suya propia: usar
 una no bloquea a las demás.
 
+**Maná**: la barra azul del HUD. Los Noble Phantasm y las habilidades gastan maná además de su recarga (Excalibur y
+Enuma Elish 50, Unlimited Blade Works 60, las pequeñas 10-20) y se rellena solo en unos 50 s. En creativo no se gasta.
+
+**Sellos de Comando**: los tres rombos rojos. **V** gasta uno: todas las recargas a cero, el maná lleno y 30 s de
+Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada día de Minecraft (20 min).
+
 ## Contenido
 
 **Saber (Artoria)**
@@ -111,15 +117,18 @@ Excalibur, Avalon, Gáe Bolg, Enuma Elish, Gate of Babylon, Unlimited Blade Work
 Rho Aias, Bellerophon, Rule Breaker, Tsubame Gaeshi y Nine Lives dicen su nombre al usarse. Se apagan con
 `/gamerule fateVoiceLines false`.
 
-## Gamerule
+## Gamerules
 
-```
-/gamerule fateAbilitiesBreakBlocks true
-```
+| Gamerule | Por defecto | Qué hace |
+|---|---|---|
+| `fateAbilitiesBreakBlocks` | `false` | Excalibur y Enuma Elish abren un túnel, Caladbolg II y la Gáe Bolg lanzada explotan como TNT (nunca dentro de un Reality Marble; bedrock y obsidiana no se rompen) |
+| `fateCooldownPercent` | `100` | Porcentaje de todas las recargas (50 = la mitad, 0 = sin recargas) |
+| `fatePlayerDamagePercent` | `100` | Porcentaje del daño de las armas y habilidades del mod contra otros jugadores |
+| `fateMana` | `true` | Las habilidades gastan maná |
+| `fateVoiceLines` | `true` | Los Noble Phantasm dicen su nombre |
 
-Desactivada por defecto. Activada: Excalibur y Enuma Elish abren un túnel por donde pasan, y Caladbolg II y la
-Gáe Bolg lanzada explotan como TNT.
-Bedrock, obsidiana y bloques igual de resistentes no se rompen.
+Con el PvP del servidor desactivado (`pvp=false`), las habilidades tampoco atraen, petrifican, encadenan ni empujan a
+otros jugadores (antes solo se evitaba el daño).
 
 ## Instalar
 

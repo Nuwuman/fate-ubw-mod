@@ -67,11 +67,8 @@ public class GaeBolgItem extends SwordItem {
         ItemStack stack = user.getStackInHand(hand);
         boolean soaring = user.isSneaking();
         Item key = soaring ? FateUBW.GAE_BOLG_SOARING : FateUBW.GAE_BOLG_PIERCE;
-        if (user.getItemCooldownManager().isCoolingDown(key)) {
-            if (!world.isClient) FateUBW.cooldownMessage(user, key, soaring ? SOARING_COOLDOWN : PIERCE_COOLDOWN,
-                    soaring ? "gae_bolg_soaring" : "gae_bolg_pierce");
-            return TypedActionResult.fail(stack);
-        }
+        if (!com.nuwuman.fateubw.Rules.ready(user, key, soaring ? SOARING_COOLDOWN : PIERCE_COOLDOWN,
+                soaring ? "gae_bolg_soaring" : "gae_bolg_pierce")) return TypedActionResult.fail(stack);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
     }
@@ -100,12 +97,12 @@ public class GaeBolgItem extends SwordItem {
         boolean soaring = player.isSneaking();
         if (charge < (soaring ? SOARING_CHARGE : PIERCE_CHARGE)) return;
 
-        if (soaring) {
-            player.getItemCooldownManager().set(FateUBW.GAE_BOLG_SOARING, SOARING_COOLDOWN);
-        } else {
-            player.getItemCooldownManager().set(FateUBW.GAE_BOLG_PIERCE, PIERCE_COOLDOWN);
-        }
         if (!(world instanceof ServerWorld server)) return;
+        // Puede haberse agachado o levantado mientras cargaba: se comprueba la versión que suelta
+        Item key = soaring ? FateUBW.GAE_BOLG_SOARING : FateUBW.GAE_BOLG_PIERCE;
+        int cooldown = soaring ? SOARING_COOLDOWN : PIERCE_COOLDOWN;
+        if (!com.nuwuman.fateubw.Rules.ready(player, key, cooldown, soaring ? "gae_bolg_soaring" : "gae_bolg_pierce")) return;
+        com.nuwuman.fateubw.Rules.commit(player, key, cooldown);
         player.swingHand(player.getActiveHand(), true);
         com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
         if (soaring) {
@@ -166,7 +163,7 @@ public class GaeBolgItem extends SwordItem {
         Box area = player.getBoundingBox().stretch(dir.multiply(range)).expand(3.0);
         LivingEntity best = null;
         double bestDot = minDot;
-        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, area, e -> e != player && e.isAlive() && !e.isSpectator())) {
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, area, e -> e != player && e.isAlive() && !e.isSpectator() && com.nuwuman.fateubw.Rules.canAffect(player, e))) {
             Vec3d to = e.getBoundingBox().getCenter().subtract(eye);
             if (to.length() > range) continue;
             double dot = to.normalize().dotProduct(dir);

@@ -106,7 +106,7 @@ public class GaeBolgSpearEntity extends ProjectileEntity {
 
         DamageSource source = world.getDamageSources().create(FateUBW.GAE_BOLG_DAMAGE, this, owner);
         Box area = Box.of(pos, BLAST_RADIUS * 2, BLAST_RADIUS * 2, BLAST_RADIUS * 2);
-        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, area, e -> e != owner && e.isAlive())) {
+        for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, area, e -> e != owner && e.isAlive() && com.nuwuman.fateubw.Rules.canAffect(owner, e))) {
             double distance = e.getBoundingBox().getCenter().distanceTo(pos);
             if (distance > BLAST_RADIUS) continue;
             e.damage(source, BLAST_DAMAGE * (float) (1.0 - 0.5 * distance / BLAST_RADIUS));

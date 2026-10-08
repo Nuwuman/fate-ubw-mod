@@ -21,7 +21,7 @@ public class TraceOnItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (user instanceof ServerPlayerEntity player && !player.getItemCooldownManager().isCoolingDown(this) && TraceOn.use(player)) {
-            player.getItemCooldownManager().set(this, TraceOn.COOLDOWN);
+            com.nuwuman.fateubw.Rules.cooldown(player, this, TraceOn.COOLDOWN);
         }
         return TypedActionResult.success(stack, world.isClient());
     }

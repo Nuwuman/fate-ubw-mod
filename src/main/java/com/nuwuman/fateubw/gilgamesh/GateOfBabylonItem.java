@@ -24,7 +24,7 @@ public class GateOfBabylonItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (world instanceof ServerWorld server) BabylonPortalEntity.openGate(server, user);
-        user.getItemCooldownManager().set(this, COOLDOWN);
+        com.nuwuman.fateubw.Rules.cooldown(user, this, COOLDOWN);
         return TypedActionResult.success(user.getStackInHand(hand), world.isClient());
     }
 

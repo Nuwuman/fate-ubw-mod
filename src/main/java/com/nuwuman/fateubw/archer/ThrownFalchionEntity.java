@@ -95,7 +95,7 @@ public class ThrownFalchionEntity extends ProjectileEntity {
 
         Box sweep = getBoundingBox().stretch(vel).expand(0.5);
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, sweep,
-                e -> e != owner && e.isAlive() && !hit.contains(e.getId()))) {
+                e -> e != owner && e.isAlive() && !hit.contains(e.getId()) && com.nuwuman.fateubw.Rules.canAffect(owner, e))) {
             hit.add(target.getId());
             target.damage(getDamageSources().thrown(this, owner), DAMAGE);
             world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.5), target.getZ(), 8, 0.3, 0.3, 0.3, 0.2);

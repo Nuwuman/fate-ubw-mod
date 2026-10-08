@@ -120,7 +120,7 @@
   "subtitles.fate_ubw.voice": "Un servant invoca su Noble Phantasm",
   "key.fate_ubw.ability_use": "Usar habilidad",
   "key.fate_ubw.ability_next": "Cambiar de habilidad",
-  "hud.fate_ubw.keys": "[%s] usar · [%s] cambiar",
+  "hud.fate_ubw.keys": "[%s] usar · [%s] cambiar · [%s] sello",
   "hud.fate_ubw.god_hand": "God Hand: %s vidas",
   "message.fate_ubw.no_target": "No hay ningún objetivo a la vista",
   "message.fate_ubw.spatial_transfer.blocked": "No hay sitio ahí",
@@ -191,5 +191,14 @@
   "item.fate_ubw.tsubame_gaeshi": "Tsubame Gaeshi",
   "item.fate_ubw.presence_concealment": "Ocultación de Presencia",
   "item.fate_ubw.nine_lives": "Nine Lives",
-  "item.fate_ubw.mad_enhancement": "Locura Mejorada"
+  "item.fate_ubw.mad_enhancement": "Locura Mejorada",
+  "hud.fate_ubw.mana_cost": "Maná: %s",
+  "gamerule.fateVoiceLines": "Fate: líneas de voz",
+  "gamerule.fatePlayerDamagePercent": "Fate: porcentaje de daño contra jugadores",
+  "key.fate_ubw.command_seal": "Usar un Sello de Comando",
+  "message.fate_ubw.no_mana": "Maná insuficiente: %s / %s",
+  "message.fate_ubw.no_seals": "No te quedan Sellos de Comando (recuperas uno cada día)",
+  "gamerule.fateMana": "Fate: las habilidades gastan maná",
+  "message.fate_ubw.command_seal": "¡Por el Sello de Comando! Quedan %s",
+  "gamerule.fateCooldownPercent": "Fate: porcentaje de las recargas"
 }

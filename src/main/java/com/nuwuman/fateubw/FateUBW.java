@@ -1,6 +1,8 @@
 package com.nuwuman.fateubw;
 
 import com.nuwuman.fateubw.ability.Abilities;
+import com.nuwuman.fateubw.ability.CommandSeals;
+import com.nuwuman.fateubw.ability.Mana;
 import com.nuwuman.fateubw.assassin.AssassinArmorItem;
 import com.nuwuman.fateubw.assassin.MonohoshizaoItem;
 import com.nuwuman.fateubw.berserker.BerserkerArmorItem;
@@ -182,6 +184,9 @@ public class FateUBW implements ModInitializer {
     public static final Item PRESENCE_CONCEALMENT = item("presence_concealment", new Item(new Item.Settings()));
     public static final Item NINE_LIVES = item("nine_lives", new Item(new Item.Settings()));
     public static final Item MAD_ENHANCEMENT = item("mad_enhancement", new Item(new Item.Settings()));
+    // Hrunting: modelo del proyectil y clave de su recarga
+    public static final Item HRUNTING = item("hrunting", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item BLOOD_FORT_ANDROMEDA = item("blood_fort_andromeda", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);
@@ -292,7 +297,7 @@ public class FateUBW implements ModInitializer {
     // Aviso en la barra de acción con los segundos que faltan
     public static void cooldownMessage(PlayerEntity player, Item key, int totalTicks, String ability) {
         float left = player.getItemCooldownManager().getCooldownProgress(key, 0.0F);
-        int seconds = (int) Math.ceil(left * totalTicks / 20.0F);
+        int seconds = (int) Math.ceil(left * Rules.scaled(player.getWorld(), totalTicks) / 20.0F);
         player.sendMessage(Text.translatable("message.fate_ubw.cooldown",
                 Text.translatable("ability.fate_ubw." + ability), seconds).formatted(Formatting.RED), true);
     }
@@ -308,7 +313,10 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(BerserkerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
+        Rules.register();
         Voices.register();
+        Mana.register();
+        CommandSeals.register();
         UnlimitedBladeWorks.register();
         TraceOn.register();
         Abilities.register();

@@ -319,7 +319,7 @@ public final class UnlimitedBladeWorks {
         }
         if (age < SPREAD_TICKS || age % RAIN_INTERVAL != 0) return;
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, new Box(m.center).expand(RADIUS),
-                e -> e != caster && e.isAlive() && !e.isSpectator() && !(e instanceof ArmorStandEntity)
+                e -> e != caster && e.isAlive() && !e.isSpectator() && !(e instanceof ArmorStandEntity) && com.nuwuman.fateubw.Rules.canAffect(caster, e)
                         && !(e instanceof net.minecraft.entity.passive.TameableEntity pet && pet.isOwner(caster))
                         && !(e instanceof PlayerEntity p && p.isCreative()) && contains(m, e.getBlockPos()))) {
             for (int i = 0; i < 3; i++) {
@@ -410,7 +410,8 @@ public final class UnlimitedBladeWorks {
         world.playSound(null, base.x, base.y, base.z, SoundEvents.BLOCK_END_PORTAL_SPAWN, SoundCategory.PLAYERS, 1.0F, 0.6F);
         world.playSound(null, base.x, base.y, base.z, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 2.0F, 0.5F);
         caster.sendMessage(Text.translatable("message.fate_ubw.ubw_open").formatted(Formatting.RED), true);
-        caster.getItemCooldownManager().set(FateUBW.UBW_COOLDOWN, MARBLE_COOLDOWN);
+        com.nuwuman.fateubw.Rules.cooldown(caster, FateUBW.UBW_COOLDOWN, MARBLE_COOLDOWN);
+        com.nuwuman.fateubw.ability.Mana.spend(caster, FateUBW.UBW_COOLDOWN);
         com.nuwuman.fateubw.Voices.say(world, caster, "unlimited_blade_works");
         return true;
     }

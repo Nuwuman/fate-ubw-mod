@@ -92,7 +92,7 @@ public class SaberArmorItem extends ServantArmorItem {
         player.velocityModified = true;
         player.fallDistance = 0.0F;
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().stretch(dir.multiply(7.0)).expand(1.5),
-                e -> e != player && e.isAlive())) {
+                e -> e != player && e.isAlive() && com.nuwuman.fateubw.Rules.canAffect(player, e))) {
             target.damage(world.getDamageSources().playerAttack(player), 8.0F);
             target.takeKnockback(1.5, -dir.x, -dir.z);
         }

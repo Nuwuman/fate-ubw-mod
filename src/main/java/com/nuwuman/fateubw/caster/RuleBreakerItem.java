@@ -47,19 +47,16 @@ public class RuleBreakerItem extends SwordItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (user.getItemCooldownManager().isCoolingDown(FateUBW.RULE_BREAKER_NP)) {
-            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.RULE_BREAKER_NP, COOLDOWN, "rule_breaker");
-            return TypedActionResult.fail(stack);
-        }
+        if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.RULE_BREAKER_NP, COOLDOWN, "rule_breaker")) return TypedActionResult.fail(stack);
         if (!(world instanceof ServerWorld server)) return TypedActionResult.success(stack, true);
         LivingEntity target = GaeBolgItem.findTarget(server, user, REACH, 0.8);
-        if (target == null) {
+        if (target == null || !com.nuwuman.fateubw.Rules.canAffect(user, target)) {
             user.sendMessage(Text.translatable("message.fate_ubw.no_target").formatted(Formatting.GRAY), true);
             return TypedActionResult.fail(stack);
         }
         ruleBreaker(server, user, target);
         user.swingHand(hand, true);
-        user.getItemCooldownManager().set(FateUBW.RULE_BREAKER_NP, COOLDOWN);
+        com.nuwuman.fateubw.Rules.commit(user, FateUBW.RULE_BREAKER_NP, COOLDOWN);
         return TypedActionResult.success(stack);
     }
 

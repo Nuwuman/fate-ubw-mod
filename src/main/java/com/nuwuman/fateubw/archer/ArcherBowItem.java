@@ -60,12 +60,9 @@ public class ArcherBowItem extends BowItem {
         if (pull < 0.1F) return;
 
         boolean wantsCaladbolg = player.isSneaking() && pull >= 1.0F;
-        boolean caladbolg = wantsCaladbolg && caladbolgReady(player);
         if (!(world instanceof ServerWorld server)) return;
-
-        if (wantsCaladbolg && !caladbolg) {
-            FateUBW.cooldownMessage(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN, "caladbolg");
-        }
+        // Sin recarga o sin maná sale una espada normal (ready avisa de lo que falte)
+        boolean caladbolg = wantsCaladbolg && com.nuwuman.fateubw.Rules.ready(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN, "caladbolg");
 
         SwordArrowEntity arrow = new SwordArrowEntity(server, player, stack, caladbolg);
         arrow.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, caladbolg ? 4.5F : pull * 3.0F, caladbolg ? 0.0F : 1.0F);
@@ -74,7 +71,7 @@ public class ArcherBowItem extends BowItem {
         stack.damage(1, player, LivingEntity.getSlotForHand(player.getActiveHand()));
 
         if (caladbolg) {
-            player.getItemCooldownManager().set(FateUBW.CALADBOLG, CALADBOLG_COOLDOWN);
+            com.nuwuman.fateubw.Rules.commit(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN);
             com.nuwuman.fateubw.Voices.say(world, player, "caladbolg");
             world.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.4F);

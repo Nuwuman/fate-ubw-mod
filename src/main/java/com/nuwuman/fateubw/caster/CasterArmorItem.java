@@ -70,7 +70,7 @@ public class CasterArmorItem extends ServantArmorItem {
         Vec3d eye = player.getEyePos();
         Vec3d dir = player.getRotationVec(1.0F);
         List<LivingEntity> targets = world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(SPELL_RANGE),
-                        e -> e != player && e.isAlive() && !e.isSpectator() && player.canSee(e)).stream()
+                        e -> e != player && e.isAlive() && !e.isSpectator() && player.canSee(e) && com.nuwuman.fateubw.Rules.canAffect(player, e)).stream()
                 .filter(e -> {
                     Vec3d to = e.getBoundingBox().getCenter().subtract(eye);
                     return to.length() <= SPELL_RANGE && to.normalize().dotProduct(dir) > 0.75;

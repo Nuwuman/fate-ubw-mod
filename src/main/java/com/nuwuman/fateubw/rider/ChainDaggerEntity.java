@@ -102,9 +102,11 @@ public class ChainDaggerEntity extends ProjectileEntity {
     // Lo hiere y tira de él hacia el dueño
     private void hook(ServerWorld world, Entity owner, LivingEntity target) {
         target.damage(getDamageSources().thrown(this, owner), DAMAGE);
-        Vec3d pull = owner.getPos().subtract(target.getPos()).normalize().multiply(1.6);
-        target.setVelocity(pull.x, 0.4, pull.z);
-        target.velocityModified = true;
+        if (com.nuwuman.fateubw.Rules.canAffect(owner, target)) {
+            Vec3d pull = owner.getPos().subtract(target.getPos()).normalize().multiply(1.6);
+            target.setVelocity(pull.x, 0.4, pull.z);
+            target.velocityModified = true;
+        }
         world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ITEM_TRIDENT_HIT, SoundCategory.PLAYERS, 1.0F, 1.0F);
         world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.5), target.getZ(), 10, 0.3, 0.3, 0.3, 0.2);
         setPosition(target.getBoundingBox().getCenter());

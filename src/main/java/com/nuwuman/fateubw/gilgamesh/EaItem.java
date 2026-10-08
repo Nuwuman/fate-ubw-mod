@@ -48,10 +48,7 @@ public class EaItem extends SwordItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (user.getItemCooldownManager().isCoolingDown(FateUBW.ENUMA_ELISH_NP)) {
-            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.ENUMA_ELISH_NP, COOLDOWN, "enuma_elish");
-            return TypedActionResult.fail(stack);
-        }
+        if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.ENUMA_ELISH_NP, COOLDOWN, "enuma_elish")) return TypedActionResult.fail(stack);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
     }
@@ -81,7 +78,7 @@ public class EaItem extends SwordItem {
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         if (charge < ExcaliburItem.FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
-        player.getItemCooldownManager().set(FateUBW.ENUMA_ELISH_NP, COOLDOWN);
+        com.nuwuman.fateubw.Rules.commit(player, FateUBW.ENUMA_ELISH_NP, COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
 
         EnumaElishEntity.fire(server, player);

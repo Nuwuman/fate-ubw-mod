@@ -48,7 +48,7 @@ public class RiderDaggerItem extends SwordItem {
             ChainDaggerEntity.toss(server, user, stack);
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_CHAIN_PLACE, SoundCategory.PLAYERS, 1.2F, 0.8F);
         }
-        user.getItemCooldownManager().set(this, THROW_COOLDOWN);
+        com.nuwuman.fateubw.Rules.cooldown(user, this, THROW_COOLDOWN);
         return TypedActionResult.success(stack, world.isClient());
     }
 
@@ -61,7 +61,7 @@ public class RiderDaggerItem extends SwordItem {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 0.8F, 1.4F);
 
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(MYSTIC_EYES_RANGE),
-                e -> e != player && e.isAlive() && player.canSee(e))) {
+                e -> e != player && e.isAlive() && player.canSee(e) && com.nuwuman.fateubw.Rules.canAffect(player, e))) {
             Vec3d to = target.getEyePos().subtract(eye);
             if (to.length() > MYSTIC_EYES_RANGE || to.normalize().dotProduct(dir) < 0.5) continue;
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 4));

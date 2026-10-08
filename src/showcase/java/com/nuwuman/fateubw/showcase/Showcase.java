@@ -112,6 +112,7 @@ public class Showcase implements ClientModInitializer {
             case "ubw" -> ubw(client, p, st);
             case "trace" -> trace(client, p, st);
             case "hud" -> hud(client, p, st);
+            case "mana" -> mana(client, p, st);
             case "caster" -> caster(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
@@ -634,7 +635,7 @@ public class Showcase implements ClientModInitializer {
             case 60 -> holdSneak = true;
             case 62 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
             case 64 -> holdSneak = false;
-            case 66 -> log("Strike Air en cooldown: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.STRIKE_AIR)
+            case 69 -> log("Strike Air en cooldown: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.STRIKE_AIR)
                     + ", haz de Excalibur bloqueado: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.EXCALIBUR_NP));
             case 70 -> setup(c, p, new String[]{
                     "armor.chest with fate_ubw:lancer_chestplate", "armor.legs with fate_ubw:lancer_leggings",
@@ -760,6 +761,42 @@ public class Showcase implements ClientModInitializer {
             }
             case 152 -> shot(c, "berserker_07_god_hand");
             case 160 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Maná y Sellos de Comando en supervivencia (en creativo no se gasta maná)
+    private boolean mana(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:saber_chestplate", "armor.legs with fate_ubw:saber_leggings",
+                    "armor.feet with fate_ubw:saber_boots", "hotbar.0 with fate_ubw:excalibur"}, new String[]{});
+            case 2 -> {
+                p.networkHandler.sendChatCommand("gamemode survival");
+                p.networkHandler.sendChatCommand("gamerule fateCooldownPercent 0");
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            }
+            // Avalon cuesta 40: el tercero no llega
+            case 20 -> ability(0);
+            case 24 -> ability(0);
+            case 28 -> ability(0);
+            case 32 -> {
+                log("maná tras tres Avalon: " + (int) com.nuwuman.fateubw.ability.Mana.get(p));
+                shot(c, "mana_01_no_mana");
+            }
+            case 36 -> pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_V);
+            case 44 -> {
+                log("tras el Sello de Comando: maná " + (int) com.nuwuman.fateubw.ability.Mana.get(p)
+                        + ", sellos " + com.nuwuman.fateubw.ability.CommandSeals.seals(p));
+                shot(c, "mana_02_command_seal");
+            }
+            case 50 -> {
+                p.networkHandler.sendChatCommand("gamerule fateCooldownPercent 100");
+                p.networkHandler.sendChatCommand("gamemode creative");
                 return true;
             }
             default -> {

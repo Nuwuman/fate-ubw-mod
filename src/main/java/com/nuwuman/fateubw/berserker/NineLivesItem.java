@@ -50,10 +50,7 @@ public class NineLivesItem extends SwordItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (user.getItemCooldownManager().isCoolingDown(FateUBW.NINE_LIVES)) {
-            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.NINE_LIVES, COOLDOWN, "nine_lives");
-            return TypedActionResult.fail(stack);
-        }
+        if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.NINE_LIVES, COOLDOWN, "nine_lives")) return TypedActionResult.fail(stack);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
     }
@@ -71,7 +68,7 @@ public class NineLivesItem extends SwordItem {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (!(user instanceof PlayerEntity player) || getMaxUseTime(stack, user) - remainingUseTicks < CHARGE) return;
-        player.getItemCooldownManager().set(FateUBW.NINE_LIVES, COOLDOWN);
+        com.nuwuman.fateubw.Rules.commit(player, FateUBW.NINE_LIVES, COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
         player.swingHand(player.getActiveHand(), true);
         nineLives(server, player);
@@ -84,7 +81,7 @@ public class NineLivesItem extends SwordItem {
         player.velocityModified = true;
         Vec3d center = player.getPos().add(dir.multiply(3.0));
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().stretch(dir.multiply(6.0)).expand(2.5),
-                e -> e != player && e.isAlive() && e.getPos().subtract(player.getPos()).normalize().dotProduct(dir) > 0.3)) {
+                e -> e != player && e.isAlive() && com.nuwuman.fateubw.Rules.canAffect(player, e) && e.getPos().subtract(player.getPos()).normalize().dotProduct(dir) > 0.3)) {
             for (int i = 0; i < HITS; i++) {
                 target.timeUntilRegen = 0;
                 target.damage(world.getDamageSources().playerAttack(player), HIT_DAMAGE);

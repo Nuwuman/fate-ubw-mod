@@ -57,10 +57,7 @@ public class MonohoshizaoItem extends SwordItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (user.getItemCooldownManager().isCoolingDown(FateUBW.TSUBAME_GAESHI)) {
-            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.TSUBAME_GAESHI, COOLDOWN, "tsubame_gaeshi");
-            return TypedActionResult.fail(stack);
-        }
+        if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.TSUBAME_GAESHI, COOLDOWN, "tsubame_gaeshi")) return TypedActionResult.fail(stack);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
     }
@@ -81,7 +78,7 @@ public class MonohoshizaoItem extends SwordItem {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (!(user instanceof PlayerEntity player) || getMaxUseTime(stack, user) - remainingUseTicks < CHARGE) return;
-        player.getItemCooldownManager().set(FateUBW.TSUBAME_GAESHI, COOLDOWN);
+        com.nuwuman.fateubw.Rules.commit(player, FateUBW.TSUBAME_GAESHI, COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
         player.swingHand(player.getActiveHand(), true);
         tsubameGaeshi(server, player);
@@ -94,7 +91,7 @@ public class MonohoshizaoItem extends SwordItem {
         Vec3d dir = player.getRotationVec(1.0F);
         List<LivingEntity> targets = main != null ? List.of(main)
                 : world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().stretch(dir.multiply(5.0)).expand(1.5),
-                e -> e != player && e.isAlive() && e.getBoundingBox().getCenter().subtract(eye).normalize().dotProduct(dir) > 0.5);
+                e -> e != player && e.isAlive() && com.nuwuman.fateubw.Rules.canAffect(player, e) && e.getBoundingBox().getCenter().subtract(eye).normalize().dotProduct(dir) > 0.5);
         for (LivingEntity target : targets) {
             for (int cut = 0; cut < 3; cut++) {
                 target.timeUntilRegen = 0;

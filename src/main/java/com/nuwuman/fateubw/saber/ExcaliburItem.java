@@ -1,6 +1,7 @@
 package com.nuwuman.fateubw.saber;
 
 import com.nuwuman.fateubw.FateUBW;
+import com.nuwuman.fateubw.Rules;
 import com.nuwuman.fateubw.Voices;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -59,18 +60,12 @@ public class ExcaliburItem extends SwordItem {
         ItemStack stack = user.getStackInHand(hand);
         // Cada habilidad con su propio cooldown, como la Gáe Bolg
         if (user.isSneaking()) {
-            if (user.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) {
-                if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN, "strike_air");
-                return TypedActionResult.fail(stack);
-            }
+            if (!Rules.ready(user, FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN, "strike_air")) return TypedActionResult.fail(stack);
             if (world instanceof ServerWorld server) strikeAir(server, user);
-            user.getItemCooldownManager().set(FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN);
+            Rules.commit(user, FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN);
             return TypedActionResult.success(stack, world.isClient());
         }
-        if (user.getItemCooldownManager().isCoolingDown(FateUBW.EXCALIBUR_NP)) {
-            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN, "excalibur");
-            return TypedActionResult.fail(stack);
-        }
+        if (!Rules.ready(user, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN, "excalibur")) return TypedActionResult.fail(stack);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
     }
@@ -116,7 +111,7 @@ public class ExcaliburItem extends SwordItem {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         if (charge < FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
 
-        player.getItemCooldownManager().set(FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
+        Rules.commit(player, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
 
         ExcaliburBeamEntity.fire(server, player);
@@ -139,7 +134,7 @@ public class ExcaliburItem extends SwordItem {
         Vec3d dir = player.getRotationVec(1.0F);
         Box area = player.getBoundingBox().stretch(dir.multiply(8.0)).expand(2.0);
 
-        for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, area, e -> e != player && e.isAlive())) {
+        for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, area, e -> e != player && e.isAlive() && com.nuwuman.fateubw.Rules.canAffect(player, e))) {
             Vec3d to = target.getBoundingBox().getCenter().subtract(eye);
             if (to.length() > 8.0 || to.normalize().dotProduct(dir) < 0.5) continue;
             target.damage(world.getDamageSources().playerAttack(player), 6.0F);

@@ -121,13 +121,17 @@ public final class Abilities {
         return List.of();
     }
 
-    /** Usa una habilidad respetando su cooldown, con aviso si aún se está recargando. */
+    /** Usa una habilidad respetando su cooldown y su coste de maná, con aviso si falta alguno. */
     public static void use(ServerPlayerEntity player, Ability ability) {
         Item key = ability.key().apply(player);
         if (player.getItemCooldownManager().isCoolingDown(key)) {
             FateUBW.cooldownMessage(player, key, cooldownOf(key), ability.id());
             return;
         }
-        if (ability.action().use(player)) player.getItemCooldownManager().set(key, cooldownOf(key));
+        if (!Mana.has(player, key)) return;
+        if (ability.action().use(player)) {
+            com.nuwuman.fateubw.Rules.cooldown(player, key, cooldownOf(key));
+            Mana.spend(player, key);
+        }
     }
 }

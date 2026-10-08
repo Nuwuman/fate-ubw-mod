@@ -38,7 +38,7 @@ public class AssassinArmorItem extends ServantArmorItem {
         super(FateUBW.ASSASSIN_MATERIAL, type, settings, "assassin_armor");
     }
 
-    private static boolean fullSet(LivingEntity entity) {
+    public static boolean fullSet(LivingEntity entity) {
         return entity instanceof PlayerEntity player
                 && wearsSet(player, FateUBW.ASSASSIN_CHESTPLATE, FateUBW.ASSASSIN_LEGGINGS, FateUBW.ASSASSIN_BOOTS);
     }

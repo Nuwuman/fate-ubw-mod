@@ -40,7 +40,7 @@ public class UbwItem extends Item {
                 if (user instanceof ServerPlayerEntity player) UnlimitedBladeWorks.end(player);
             } else if (!user.getItemCooldownManager().isCoolingDown(FateUBW.UBW_BARRAGE)) {
                 if (world instanceof ServerWorld server) UnlimitedBladeWorks.barrage(server, user);
-                user.getItemCooldownManager().set(FateUBW.UBW_BARRAGE, UnlimitedBladeWorks.BARRAGE_COOLDOWN);
+                com.nuwuman.fateubw.Rules.cooldown(user, FateUBW.UBW_BARRAGE, UnlimitedBladeWorks.BARRAGE_COOLDOWN);
             }
             return TypedActionResult.success(stack, world.isClient());
         }

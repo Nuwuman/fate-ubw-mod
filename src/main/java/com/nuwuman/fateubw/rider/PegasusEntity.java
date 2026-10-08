@@ -165,7 +165,7 @@ public class PegasusEntity extends PathAwareEntity implements GeoEntity {
         Box area = getBoundingBox().expand(2.5);
         DamageSource source = world.getDamageSources().create(FateUBW.BELLEROPHON_DAMAGE, this, rider);
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, area,
-                e -> e != this && e != rider && e.isAlive() && !chargeHits.contains(e.getId()))) {
+                e -> e != this && e != rider && e.isAlive() && !chargeHits.contains(e.getId()) && com.nuwuman.fateubw.Rules.canAffect(rider, e))) {
             chargeHits.add(target.getId());
             target.damage(source, CHARGE_DAMAGE);
             Vec3d push = getVelocity().lengthSquared() > 1.0E-4 ? getVelocity().normalize().multiply(2.5) : Vec3d.ZERO;

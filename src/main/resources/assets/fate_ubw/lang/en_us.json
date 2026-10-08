@@ -120,7 +120,7 @@
   "subtitles.fate_ubw.voice": "A servant calls out a Noble Phantasm",
   "key.fate_ubw.ability_use": "Use ability",
   "key.fate_ubw.ability_next": "Next ability",
-  "hud.fate_ubw.keys": "[%s] use · [%s] switch",
+  "hud.fate_ubw.keys": "[%s] use · [%s] switch · [%s] seal",
   "hud.fate_ubw.god_hand": "God Hand: %s lives",
   "message.fate_ubw.no_target": "No target in sight",
   "message.fate_ubw.spatial_transfer.blocked": "There is no room there",
@@ -191,5 +191,14 @@
   "item.fate_ubw.tsubame_gaeshi": "Tsubame Gaeshi",
   "item.fate_ubw.presence_concealment": "Presence Concealment",
   "item.fate_ubw.nine_lives": "Nine Lives",
-  "item.fate_ubw.mad_enhancement": "Mad Enhancement"
+  "item.fate_ubw.mad_enhancement": "Mad Enhancement",
+  "hud.fate_ubw.mana_cost": "Mana: %s",
+  "gamerule.fateVoiceLines": "Fate: voice lines",
+  "gamerule.fatePlayerDamagePercent": "Fate: damage percentage against players",
+  "key.fate_ubw.command_seal": "Use a Command Seal",
+  "message.fate_ubw.no_mana": "Not enough mana: %s / %s",
+  "message.fate_ubw.no_seals": "No Command Seals left (one returns every day)",
+  "gamerule.fateMana": "Fate: abilities cost mana",
+  "message.fate_ubw.command_seal": "By the Command Seal! %s left",
+  "gamerule.fateCooldownPercent": "Fate: cooldown percentage"
 }

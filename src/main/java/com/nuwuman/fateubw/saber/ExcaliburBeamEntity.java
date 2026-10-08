@@ -123,7 +123,7 @@ public class ExcaliburBeamEntity extends Entity {
         DamageSource source = world.getDamageSources().create(damageType(), this, owner);
         Box area = new Box(start, end).expand(radius + 1.0);
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, area,
-                e -> e != owner && e.isAlive() && !hit.contains(e.getId()) && sameSide(world, start, e))) {
+                e -> e != owner && e.isAlive() && !hit.contains(e.getId()) && sameSide(world, start, e) && com.nuwuman.fateubw.Rules.canAffect(owner, e))) {
             Vec3d center = target.getBoundingBox().getCenter();
             if (distanceToSegment(center, start, end) > radius + target.getWidth() / 2) continue;
             hit.add(target.getId());
