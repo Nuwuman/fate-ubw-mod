@@ -1,5 +1,6 @@
 package com.nuwuman.fateubw.saber;
 
+import com.nuwuman.fateubw.archer.UnlimitedBladeWorks;
 import com.nuwuman.fateubw.FateUBW;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -122,7 +123,7 @@ public class ExcaliburBeamEntity extends Entity {
         DamageSource source = world.getDamageSources().create(damageType(), this, owner);
         Box area = new Box(start, end).expand(radius + 1.0);
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, area,
-                e -> e != owner && e.isAlive() && !hit.contains(e.getId()))) {
+                e -> e != owner && e.isAlive() && !hit.contains(e.getId()) && sameSide(world, start, e))) {
             Vec3d center = target.getBoundingBox().getCenter();
             if (distanceToSegment(center, start, end) > radius + target.getWidth() / 2) continue;
             hit.add(target.getId());
@@ -148,6 +149,11 @@ public class ExcaliburBeamEntity extends Entity {
             }
         }
         carved = Math.max(carved, len);
+    }
+
+    /** El haz atraviesa paredes, pero no la frontera de un Reality Marble: dentro y fuera son mundos distintos. */
+    protected static boolean sameSide(ServerWorld world, Vec3d start, Entity e) {
+        return UnlimitedBladeWorks.protects(world, BlockPos.ofFloored(start)) == UnlimitedBladeWorks.protects(world, e.getBlockPos());
     }
 
     /** Punto del segmento a-b más cercano a p. */

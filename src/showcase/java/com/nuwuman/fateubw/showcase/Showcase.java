@@ -715,7 +715,8 @@ public class Showcase implements ClientModInitializer {
             }
             case 114 -> shot(c, "assassin_05_tsubame_gaeshi");
             case 120 -> ability(0);
-            case 126 -> shot(c, "assassin_06_presence_concealment");
+            case 122 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 132 -> shot(c, "assassin_06_presence_concealment");
             case 140 -> {
                 return true;
             }

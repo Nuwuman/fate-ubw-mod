@@ -320,6 +320,7 @@ public final class UnlimitedBladeWorks {
         if (age < SPREAD_TICKS || age % RAIN_INTERVAL != 0) return;
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, new Box(m.center).expand(RADIUS),
                 e -> e != caster && e.isAlive() && !e.isSpectator() && !(e instanceof ArmorStandEntity)
+                        && !(e instanceof net.minecraft.entity.passive.TameableEntity pet && pet.isOwner(caster))
                         && !(e instanceof PlayerEntity p && p.isCreative()) && contains(m, e.getBlockPos()))) {
             for (int i = 0; i < 3; i++) {
                 Vec3d from = target.getPos().add(world.random.nextDouble() * 4 - 2, 7 + world.random.nextDouble() * 3,
@@ -505,7 +506,8 @@ public final class UnlimitedBladeWorks {
             entry.setValue(charge);
             chantEffects(player.getServerWorld(), player, charge);
             if (charge < CHANT_TICKS) return false;
-            open(player);
+            // Puede fallar si se solaparía con otro Marble: que no se quede el aria en silencio
+            if (!open(player)) player.sendMessage(Text.translatable("message.fate_ubw.ubw_failed").formatted(Formatting.GRAY), true);
             return true;
         });
         for (Marble m : ended) close(server, m);

@@ -45,7 +45,17 @@ public class ServantArmorItem extends ArmorItem implements GeoItem {
             @Override
             public <T extends LivingEntity> BipedEntityModel<?> getGeoArmorRenderer(@Nullable T entity, ItemStack stack,
                                                                                     @Nullable EquipmentSlot slot, @Nullable BipedEntityModel<T> original) {
-                if (renderer == null) renderer = new GeoArmorRenderer<>(new DefaultedItemGeoModel<>(FateUBW.id("armor/" + model)));
+                if (renderer == null) {
+                    renderer = new GeoArmorRenderer<>(new DefaultedItemGeoModel<>(FateUBW.id("armor/" + model))) {
+                        // Invisible del todo (Ocultación de Presencia de Assassin): sin la armadura a la vista
+                        @Override
+                        public void render(net.minecraft.client.util.math.MatrixStack matrices, net.minecraft.client.render.VertexConsumer vertices,
+                                           int light, int overlay, int color) {
+                            if (getCurrentEntity() != null && getCurrentEntity().isInvisible()) return;
+                            super.render(matrices, vertices, light, overlay, color);
+                        }
+                    };
+                }
                 return renderer;
             }
         });

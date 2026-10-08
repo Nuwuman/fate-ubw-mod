@@ -56,7 +56,7 @@ public class EnumaElishEntity extends ExcaliburBeamEntity {
     protected void affectNearby(ServerWorld world, Vec3d start, Vec3d end) {
         Box area = new Box(start, end).expand(radius() + PULL_RANGE);
         for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, area,
-                e -> e != owner && e.isAlive() && !hit.contains(e.getId()))) {
+                e -> e != owner && e.isAlive() && !hit.contains(e.getId()) && sameSide(world, start, e))) {
             Vec3d center = e.getBoundingBox().getCenter();
             Vec3d toAxis = closestOnSegment(center, start, end).subtract(center);
             if (toAxis.length() > radius() + PULL_RANGE) continue;

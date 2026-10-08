@@ -125,7 +125,8 @@
   "message.fate_ubw.no_target": "No hay ningún objetivo a la vista",
   "message.fate_ubw.spatial_transfer.blocked": "No hay sitio ahí",
   "message.fate_ubw.god_hand": "God Hand: quedan %s vidas",
-  "message.fate_ubw.ubw_chant": "I am the bone of my sword...",
+  "message.fate_ubw.ubw_failed": "El Reality Marble no cabe aquí: hay otro demasiado cerca",
+  "message.fate_ubw.ubw_chant":"I am the bone of my sword...",
 
   "ability.fate_ubw.trace_on": "Trace On",
   "ability.fate_ubw.avalon": "Avalon",

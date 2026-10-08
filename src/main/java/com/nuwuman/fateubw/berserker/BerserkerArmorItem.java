@@ -68,9 +68,10 @@ public class BerserkerArmorItem extends ServantArmorItem {
         if (lives(player) < MAX_LIVES) player.setAttached(LIVES, lives(player) + 1);
     }
 
-    /** God Hand: los ataques débiles no atraviesan su cuerpo. */
+    /** God Hand: los ataques débiles no atraviesan su cuerpo (solo ataques: fuego, ahogarse o el hambre sí le afectan). */
     public static boolean allowDamage(LivingEntity entity, DamageSource source, float amount) {
-        return !(fullSet(entity) && amount < WEAK_HIT && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY));
+        return !(fullSet(entity) && amount < WEAK_HIT && source.getAttacker() != null
+                && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY));
     }
 
     /** God Hand: al morir, resucita mientras le queden vidas. */
