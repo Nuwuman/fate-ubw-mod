@@ -55,7 +55,7 @@
   "item.fate_ubw.bellerophon_charge": "Bellerophon's Charge",
 
   "item.fate_ubw.unlimited_blade_works": "Unlimited Blade Works",
-  "item.fate_ubw.unlimited_blade_works.tooltip.open": "Hold 3s and release: deploy the Reality Marble (you and anyone within 16 blocks)",
+  "item.fate_ubw.unlimited_blade_works.tooltip.open": "Hold 3s and release: the world around you becomes the Reality Marble (30-block dome)",
   "item.fate_ubw.unlimited_blade_works.tooltip.inside": "Inside, right-click: swords rise from the ground at your enemy",
   "item.fate_ubw.unlimited_blade_works.tooltip.end": "Inside, sneak + right-click: dispel the Marble (lasts 60s)",
   "item.fate_ubw.ubw_cooldown": "Unlimited Blade Works",

@@ -6,6 +6,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 /** Centro de un Marble activo: su renderer pinta los engranajes del cielo; en el servidor suelta ceniza. */
@@ -24,12 +25,18 @@ public class UbwCoreEntity extends Entity {
             discard();
             return;
         }
-        if (age % 4 == 0) world.spawnParticles(ParticleTypes.WHITE_ASH, getX(), getY() + 4.0, getZ(), 30, 14.0, 4.0, 14.0, 0.01);
+        if (age % 4 == 0) world.spawnParticles(ParticleTypes.WHITE_ASH, getX(), getY() + 4.0, getZ(), 50, 22.0, 4.0, 22.0, 0.01);
     }
 
     @Override
     public boolean shouldRender(double distance) {
         return true;
+    }
+
+    // Tan grande como la cúpula: así Sodium no deja de pintar el cielo cuando el centro queda fuera de la vista
+    @Override
+    public Box getVisibilityBoundingBox() {
+        return getBoundingBox().expand(UnlimitedBladeWorks.RADIUS);
     }
 
     @Override

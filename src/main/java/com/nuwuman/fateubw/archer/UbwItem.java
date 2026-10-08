@@ -35,7 +35,7 @@ public class UbwItem extends Item {
     public static final int MARBLE_COOLDOWN = 20 * 120;
     private static final int BARRAGE_COOLDOWN = 30;
     private static final int BARRAGE_SWORDS = 10;
-    private static final double CHANT_RADIUS = 16.0;
+    private static final double CHANT_RADIUS = UnlimitedBladeWorks.RADIUS - 2;
     private static final DustParticleEffect EMBER = new DustParticleEffect(new Vector3f(1.0F, 0.45F, 0.1F), 1.5F);
 
     public UbwItem(Item.Settings settings) {
@@ -78,8 +78,8 @@ public class UbwItem extends Item {
         if (!(world instanceof ServerWorld server) || UnlimitedBladeWorks.isInside(user)) return;
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         double radius = CHANT_RADIUS * Math.min(1.0, charge / (double) CHANT_TICKS);
-        for (int i = 0; i < 24; i++) {
-            double angle = i * Math.PI * 2 / 24 + charge * 0.05;
+        for (int i = 0; i < 64; i++) {
+            double angle = i * Math.PI * 2 / 64 + charge * 0.05;
             server.spawnParticles(ParticleTypes.FLAME, user.getX() + Math.cos(angle) * radius, user.getY() + 0.1,
                     user.getZ() + Math.sin(angle) * radius, 1, 0.0, 0.05, 0.0, 0.01);
         }

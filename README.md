@@ -22,11 +22,12 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
   que explota al impactar (Broken Phantasm).
 - **Armadura** (peto, grebas, botas) con modelo 3D de GeckoLib y faldón animado.
   Conjunto completo: visión nocturna y los monstruos cercanos brillan.
-- **Unlimited Blade Works** (Reality Marble): mantén 3 s y suelta. Un anillo de fuego se extiende y tú y todos los seres
-  vivos a 16 bloques sois llevados a la dimensión Unlimited Blade Works: un páramo rojizo bajo un cielo de atardecer,
-  con cientos de espadas clavadas y engranajes gigantes girando en el cielo. Dentro, click derecho hace surgir espadas del
-  suelo que vuelan hacia el enemigo; agachado + click derecho lo deshace. A los 60 s todos vuelven a donde estaban.
-  Si el servidor se cierra durante el Marble, quien siga dentro vuelve a su punto de respawn.
+- **Unlimited Blade Works** (Reality Marble): mantén 3 s y suelta. Un anillo de fuego se extiende y el mundo a tu
+  alrededor se convierte en Unlimited Blade Works: una cúpula de 30 bloques de radio con un páramo rojizo, espadas
+  clavadas y un cielo de atardecer con engranajes gigantes que tapa el mundo de fuera, así que parece no tener fin.
+  Quien esté dentro queda atrapado contigo. Dentro, click derecho hace surgir espadas del suelo que vuelan hacia el
+  enemigo; agachado + click derecho lo deshace. A los 60 s el Marble se deshace y cada bloque vuelve a como estaba,
+  cofres y su contenido incluidos. Si el servidor se cae durante el Marble, los bloques se restauran al arrancar.
 
 ![Unlimited Blade Works](docs/ubw.png)
 

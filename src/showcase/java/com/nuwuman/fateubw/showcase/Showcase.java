@@ -31,6 +31,7 @@ public class Showcase implements ClientModInitializer {
     private int worldTicks;
     private boolean started;
     private boolean holdUse;
+    private net.minecraft.util.math.BlockPos chestPos = net.minecraft.util.math.BlockPos.ORIGIN;
     private boolean holdSneak;
     private boolean holdForward;
     private float yaw;
@@ -478,12 +479,18 @@ public class Showcase implements ClientModInitializer {
     }
 
     private boolean ubw(MinecraftClient c, ClientPlayerEntity p, int t) {
-        boolean inside = c.world.getRegistryKey() == com.nuwuman.fateubw.archer.UnlimitedBladeWorks.WORLD;
+        boolean inside = clientHas(c, com.nuwuman.fateubw.FateUBW.UBW_CORE);
         switch (t) {
             case 0 -> setup(c, p, new String[]{
                     "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
                     "armor.feet with fate_ubw:archer_boots", "hotbar.0 with fate_ubw:unlimited_blade_works"},
                     new String[]{"~-2 ~ ~6", "~2 ~ ~8", "~ ~ ~10"});
+            // Algo que el Marble debe devolver tal cual: una torre y un cofre con diamantes
+            case 2 -> {
+                p.networkHandler.sendChatCommand("fill ~4 ~ ~5 ~5 ~5 ~6 stone_bricks");
+                p.networkHandler.sendChatCommand("setblock ~-4 ~ ~4 chest{Items:[{Slot:0b,id:\"minecraft:diamond\",count:5}]}");
+                chestPos = p.getBlockPos().add(-4, 0, 4);
+            }
             case 30 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
             case 40 -> use(c, p);
             case 70 -> shot(c, "ubw_01_chant");
@@ -494,6 +501,7 @@ public class Showcase implements ClientModInitializer {
             case 107 -> {
                 if (waitUntil(inside, 100)) return false;
             }
+            case 120 -> shot(c, "ubw_02a_spreading");
             case 140 -> shot(c, "ubw_02_arrival_back");
             case 142 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
             case 152 -> shot(c, "ubw_03_arrival_front");
@@ -527,7 +535,13 @@ public class Showcase implements ClientModInitializer {
             case 238 -> {
                 if (waitUntil(!inside, 100)) return false;
             }
-            case 300 -> shot(c, "ubw_08_returned");
+            case 247 -> shot(c, "ubw_07b_collapsing");
+            case 300 -> {
+                shot(c, "ubw_08_returned");
+                var server = c.getServer();
+                var chest = server.submit(() -> server.getOverworld().getBlockEntity(chestPos)).join();
+                log("cofre tras el Marble: " + (chest instanceof net.minecraft.inventory.Inventory inv ? inv.getStack(0) : "no está"));
+            }
             case 310 -> {
                 return true;
             }
