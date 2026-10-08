@@ -1653,10 +1653,8 @@ public class ServantAssets {
     }
 
     static List<Bone> berserkerArmor() {
-        // Piel lisa (sin pliegues de tela), con sombra hacia abajo y los músculos marcados en oscuro
-        Paint skin = (x, y, w, h, sd) -> bevel(mul(BER_SKIN, 1.12 - 0.22 * y / Math.max(1, h - 1)), x, y, w, h, sd, 0.03);
-        Paint iron = plate(BER_IRON), studs = ironStuds();
-        Paint muscles = marked(skin, 0x26272c, (x, y, w, h) -> {
+        Paint skin = fabric(BER_SKIN), iron = plate(BER_IRON), studs = ironStuds();
+        Paint muscles = marked(skin, 0x33343a, (x, y, w, h) -> {
             double d = Math.abs(x - (w - 1) / 2.0);
             return (d < 0.6 && y > h * 0.2) || y == (int) (h * 0.38) || ((y == (int) (h * 0.58) || y == (int) (h * 0.76)) && d < w * 0.3);
         });
