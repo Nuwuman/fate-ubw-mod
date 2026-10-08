@@ -118,7 +118,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 ![Caster, Assassin y Berserker](docs/new_servants.png)
 
 **Servants enemigos**
-- **Berserker** (jefe, con barra de vida): 300 de vida, God Hand con once vidas, ignora golpes débiles y usa Nine Lives.
+- **Berserker** (jefe, con barra de vida): 40 de vida y God Hand con once vidas más (480 en total), ignora golpes débiles y usa Nine Lives.
   Solo aparece con su huevo; suelta su hacha-espada.
 - **Lancer**: rápido, esquiva casi todos los proyectiles y se lanza con la Gáe Bolg.
 - **Assassin**: invisible hasta que te tiene cerca, esquiva golpes y usa Tsubame Gaeshi.

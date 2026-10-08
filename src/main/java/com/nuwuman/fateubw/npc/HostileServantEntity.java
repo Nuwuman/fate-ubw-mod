@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Un servant enemigo con su ropa y su arma.
  * <ul>
- *   <li>Berserker (jefe, solo con su huevo): 300 de vida, barra de jefe, God Hand (once vidas; los golpes de menos de 4
+ *   <li>Berserker (jefe, solo con su huevo): 40 de vida (480 contando sus vidas, como un Warden), barra de jefe, God Hand (once vidas; los golpes de menos de 4
  *   no le hacen nada) y Nine Lives contra quien tenga cerca.</li>
  *   <li>Lancer: rápido, esquiva tres de cada cuatro proyectiles y se lanza con la Gáe Bolg.</li>
  *   <li>Assassin: invisible mientras no tiene a nadie cerca, esquiva uno de cada cuatro golpes y usa Tsubame Gaeshi.</li>
@@ -55,7 +55,7 @@ import java.util.List;
  */
 public class HostileServantEntity extends HostileEntity {
     public enum Kind {
-        BERSERKER(300, 14, 0.30, 15, 5.0, 11, 1.0F, 50),
+        BERSERKER(40, 14, 0.30, 15, 5.0, 11, 1.0F, 50),
         LANCER(80, 9, 0.38, 20, 12.0, 0, 0.1F, 25),
         ASSASSIN(70, 10, 0.34, 12, 4.5, 0, 0.1F, 25);
 

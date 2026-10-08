@@ -53,7 +53,7 @@ public class FateUBWClient implements ClientModInitializer {
             if (world == null) return ExcaliburItem.VEILED;
             for (PlayerEntity p : world.getPlayers()) {
                 if (using(p, stack)) return ExcaliburItem.chargeProgress(p) >= 1.0F ? ExcaliburItem.CHARGED : ExcaliburItem.CHARGING;
-                if ((p.getMainHandStack() == stack || p.getOffHandStack() == stack)
+                if ((same(p.getMainHandStack(), stack) || same(p.getOffHandStack(), stack))
                         && p.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) return ExcaliburItem.REVEALED;
             }
             return ExcaliburItem.VEILED;
@@ -74,7 +74,12 @@ public class FateUBWClient implements ClientModInitializer {
                         && !(entity instanceof PlayerEntity p && p.getItemCooldownManager().isCoolingDown(FateUBW.CALADBOLG)) ? 1.0F : 0.0F);
     }
 
+    // En primera persona se dibuja una copia del ítem de la mano, no el mismo objeto: se compara por contenido
     private static boolean using(@Nullable LivingEntity entity, ItemStack stack) {
-        return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack;
+        return entity != null && entity.isUsingItem() && same(entity.getActiveItem(), stack);
+    }
+
+    private static boolean same(ItemStack a, ItemStack b) {
+        return a == b || ItemStack.areItemsAndComponentsEqual(a, b);
     }
 }
