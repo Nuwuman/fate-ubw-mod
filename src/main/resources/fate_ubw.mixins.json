@@ -2,6 +2,9 @@
   "required": true,
   "package": "com.nuwuman.fateubw.mixin",
   "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SlotMixin"
+  ],
   "client": [
     "BipedEntityModelMixin"
   ],

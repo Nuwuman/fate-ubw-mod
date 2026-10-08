@@ -441,6 +441,38 @@ public class ServantAssets {
         return m;
     }
 
+    // Trace On: contorno azul brillante que late a lo largo de la hoja
+    static Paint traceLine() {
+        return (x, y, w, h, s) -> 0xff000000 | lerp(0x1f6fd6, 0xc8f6ff, 0.5 + 0.5 * Math.sin(2 * Math.PI * FRAME / FRAMES - y * 0.35));
+    }
+
+    // Relleno casi transparente con una franja de escaneo que recorre la hoja
+    static Paint traceFill() {
+        return (x, y, w, h, s) -> {
+            double scan = Math.abs((double) y / Math.max(1, h - 1) - (1.0 - (double) FRAME / FRAMES));
+            return ((scan < 0.12 ? 150 : 40) << 24) | 0x6fd8ff;
+        };
+    }
+
+    // Una espada a medio proyectar: solo las aristas y un relleno translúcido
+    static Model traceOn() {
+        Model m = new Model();
+        Paint line = traceLine(), fill = traceFill();
+        m.box(7.4, -0.5, 7.4, 8.6, 0.5, 8.6, line);                 // pomo
+        m.box(7.5, 0.5, 7.85, 7.75, 4.5, 8.15, line);               // empuñadura
+        m.box(8.25, 0.5, 7.85, 8.5, 4.5, 8.15, line);
+        m.box(7.75, 0.5, 7.95, 8.25, 4.5, 8.05, fill);
+        m.box(6.3, 4.5, 7.7, 9.7, 5.0, 8.3, line);                  // guarda
+        m.box(7.1, 5.0, 7.85, 7.35, 19.5, 8.15, line);              // filos
+        m.box(8.65, 5.0, 7.85, 8.9, 19.5, 8.15, line);
+        m.box(7.35, 5.0, 7.95, 8.65, 19.5, 8.05, fill);
+        m.box(7.35, 19.5, 7.85, 7.75, 20.5, 8.15, line);            // punta
+        m.box(8.25, 19.5, 7.85, 8.65, 20.5, 8.15, line);
+        m.box(7.75, 19.5, 7.95, 8.25, 20.5, 8.05, fill);
+        m.box(7.75, 20.5, 7.85, 8.25, 22, 8.15, line);
+        return m;
+    }
+
     static void geoModel(Path root, String name, List<Bone> bones) throws IOException {
         List<Cube> all = new ArrayList<>();
         for (Bone bone : bones) all.addAll(bone.model.cubes);
@@ -1080,6 +1112,7 @@ public class ServantAssets {
 
         // ---------- Unlimited Blade Works ----------
         itemModel(root, "unlimited_blade_works", ubwSword(), handheld(0.8), null, 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
+        itemModel(root, "trace_on", traceOn(), handheld(0.8), null, 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
         // Espadas clavadas: cada modelo del mod, boca abajo y enterrado; el blockstate elige uno y un giro al azar
         Map<String, Model> graves = new LinkedHashMap<>();
         graves.put("kanshou", buried(falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL), 20, 5));

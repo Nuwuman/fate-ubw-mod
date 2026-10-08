@@ -28,6 +28,12 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
   Quien esté dentro queda atrapado contigo. Dentro, click derecho hace surgir espadas del suelo que vuelan hacia el
   enemigo; agachado + click derecho lo deshace. A los 60 s el Marble se deshace y cada bloque vuelve a como estaba,
   cofres y su contenido incluidos. Si el servidor se cae durante el Marble, los bloques se restauran al arrancar.
+- **Trace On** (proyección): agachado + click derecho analiza el arma de quien miras (o la de tu otra mano) y la guarda
+  en la memoria. Click derecho proyecta una copia en tu mano, con encantamientos incluidos, y Trace On pasa al inventario;
+  sin nada analizado proyecta a Kanshō y Bakuya. Las proyecciones se desvanecen al minuto y no se pueden meter en cofres
+  ni usar para craftear. Si tiras una (Q), sale volando y estalla al chocar: **Broken Phantasm**.
+
+![Trace On](docs/trace_on.png)
 
 ![Unlimited Blade Works](docs/ubw.png)
 

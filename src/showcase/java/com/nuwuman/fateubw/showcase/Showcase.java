@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class Showcase implements ClientModInitializer {
     private final List<String> sections = System.getenv("FATE_SHOWCASE") == null
-            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh", "ubw") : List.of(System.getenv("FATE_SHOWCASE").split(","));
+            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh", "ubw", "trace") : List.of(System.getenv("FATE_SHOWCASE").split(","));
     private int ticks;
     private int worldTicks;
     private boolean started;
@@ -104,6 +104,7 @@ public class Showcase implements ClientModInitializer {
             case "rider" -> rider(client, p, st);
             case "gilgamesh" -> gilgamesh(client, p, st);
             case "ubw" -> ubw(client, p, st);
+            case "trace" -> trace(client, p, st);
             default -> true;
         };
         if (done) {
@@ -543,6 +544,51 @@ public class Showcase implements ClientModInitializer {
                 log("cofre tras el Marble: " + (chest instanceof net.minecraft.inventory.Inventory inv ? inv.getStack(0) : "no está"));
             }
             case 310 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean trace(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
+                    "armor.feet with fate_ubw:archer_boots", "hotbar.0 with fate_ubw:trace_on"}, new String[]{});
+            case 2 -> p.networkHandler.sendChatCommand(
+                    "summon husk ~ ~ ~6 {NoAI:1b,PersistenceRequired:1b,HandItems:[{id:\"minecraft:netherite_sword\",count:1}]}");
+            // Analizar la espada del husk
+            case 30 -> holdSneak = true;
+            case 34 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 38 -> holdSneak = false;
+            case 42 -> shot(c, "trace_01_analyze");
+            // Proyectarla
+            case 50 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 60 -> shot(c, "trace_02_projected_firstperson");
+            case 62 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 72 -> shot(c, "trace_03_projected_front");
+            // Sin memoria: Kanshō y Bakuya
+            case 80 -> p.networkHandler.sendChatCommand("item replace entity @s weapon.mainhand with fate_ubw:trace_on");
+            case 90 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 100 -> shot(c, "trace_04_kanshou_bakuya");
+            // Broken Phantasm: tirar la proyección
+            case 102 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                pitch = -10.0F;
+            }
+            case 106 -> p.dropSelectedItem(false);
+            case 107 -> {
+                if (waitUntil(clientHas(c, net.minecraft.entity.EntityType.ITEM), 60)) return false;
+                shot(c, "trace_05_thrown");
+            }
+            case 108 -> {
+                if (waitUntil(!clientHas(c, net.minecraft.entity.EntityType.ITEM), 60)) return false;
+                shot(c, "trace_06_broken_phantasm");
+            }
+            case 140 -> {
+                pitch = 0.0F;
                 return true;
             }
             default -> {

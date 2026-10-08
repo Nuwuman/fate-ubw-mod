@@ -8,6 +8,7 @@ import com.nuwuman.fateubw.archer.SwordArrowEntity;
 import com.nuwuman.fateubw.archer.ThrownFalchionEntity;
 import com.nuwuman.fateubw.archer.UbwCoreEntity;
 import com.nuwuman.fateubw.archer.UbwItem;
+import com.nuwuman.fateubw.archer.TraceOnItem;
 import com.nuwuman.fateubw.archer.UnlimitedBladeWorks;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -87,6 +88,7 @@ public class FateUBW implements ModInitializer {
             new Block(AbstractBlock.Settings.create().noCollision().strength(-1.0F, 3600000.0F).dropsNothing().nonOpaque()
                     .sounds(BlockSoundGroup.METAL)));
     public static final Item UNLIMITED_BLADE_WORKS = item("unlimited_blade_works", new UbwItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item TRACE_ON = item("trace_on", new TraceOnItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
 
     public static final Item KANSHOU = item("kanshou", new FalchionItem(true, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item BAKUYA = item("bakuya", new FalchionItem(false, new Item.Settings().rarity(Rarity.EPIC)));
@@ -181,6 +183,7 @@ public class FateUBW implements ModInitializer {
                 entries.add(ARCHER_LEGGINGS);
                 entries.add(ARCHER_BOOTS);
                 entries.add(UNLIMITED_BLADE_WORKS);
+                entries.add(TRACE_ON);
                 entries.add(GAE_BOLG);
                 entries.add(LANCER_CHESTPLATE);
                 entries.add(LANCER_LEGGINGS);
@@ -241,5 +244,6 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         UnlimitedBladeWorks.register();
+        TraceOnItem.register();
     }
 }
