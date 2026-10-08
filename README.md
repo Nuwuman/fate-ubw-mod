@@ -20,11 +20,12 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 ## Contenido
 
 **Saber (Artoria)**
-- **Excalibur** (modelo 3D): mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora
+- **Excalibur** (modelo de GeckoLib): mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora
   armadura): un torrente redondo con ondas y anillos de luz que deja una estela brillante (y el suelo ardiendo con
-  `fateAbilitiesBreakBlocks`). Mientras cargas, la hoja se vuelve dorada y la alzas con las dos manos.
-  Agachado + click derecho: **Strike Air**, ráfaga de viento en cono. **Invisible Air**: el viento la oculta (solo se
-  ve un remolino) hasta que cargas el Noble Phantasm o liberas Strike Air.
+  `fateAbilitiesBreakBlocks`). Mientras cargas, la hoja se vuelve dorada, brilla en la oscuridad con un halo que
+  late, y la alzas con las dos manos. Agachado + click derecho: **Strike Air**, ráfaga de viento en cono.
+  **Invisible Air**: un remolino de viento la oculta; al cargar el Noble Phantasm o liberar Strike Air el viento se
+  abre y se deshace, y al terminar vuelve a envolverla. En el inventario se ve siempre la espada.
 - **Armadura** (coraza, faldar, escarpes) con modelo 3D de GeckoLib y falda animada.
   Conjunto completo: Regeneración I y **Resistencia Mágica** (inmune al daño mágico y al Wither).
   Habilidades: **Avalon** (5 s invulnerable) y **Mana Burst** (embestida que arrolla a quien esté en medio).
@@ -49,7 +50,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
     y la habilidad lanza ráfagas de 16 espadas; agachado lo deshace. No se pueden romper ni poner bloques dentro.
     A los 60 s el Marble se deshace y cada bloque vuelve a como estaba, cofres y su contenido incluidos. Si el servidor
     se cae durante el Marble, los bloques se restauran al arrancar.
-  - **Hrunting**: el perro de caza rojo, una espada-flecha que persigue a quien miras, estalla al alcanzarlo y vuelve a
+  - **Hrunting**: el perro de caza rojo (sus partes rojas brillan en la oscuridad), una espada-flecha que persigue a quien miras, estalla al alcanzarlo y vuelve a
     lanzarse contra él hasta tres veces.
 
 ![Trace On](docs/trace_on.png)
@@ -57,7 +58,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 ![Unlimited Blade Works](docs/ubw.png)
 
 **Lancer (Cú Chulainn)**
-- **Gáe Bolg**: lanza carmesí con más alcance. Mantén 1 s y suelta: **la lanza que atraviesa con la muerte**,
+- **Gáe Bolg**: lanza carmesí con runas y filo que brillan en la oscuridad, y más alcance. Mantén 1 s y suelta: **la lanza que atraviesa con la muerte**,
   embiste al objetivo que miras (12 bloques) y le atraviesa el corazón sin fallar (ignora armadura, deja Wither).
   Agachado, mantén 2 s y suelta: **la lanza que vuela con la muerte**, saltas y la lanzas; persigue al objetivo
   y estalla en un área de 6 bloques.
@@ -93,7 +94,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 ![Gilgamesh](docs/gilgamesh.png)
 
 **Caster (Medea)**
-- **Rule Breaker**: daga en zigzag de colores. Click derecho a quien tienes delante: la puñalada que rompe todo contrato
+- **Rule Breaker**: daga en zigzag de colores que brillan en la oscuridad. Click derecho a quien tienes delante: la puñalada que rompe todo contrato
   mágico. Le quita todos los efectos, rompe la doma (el animal pasa a ser tuyo), disipa a Pegaso y deshace su Reality
   Marble.
 - **Túnica** (túnica, faldones, botas) con capa animada. Conjunto completo: Regeneración I y sin daño por caída.
@@ -197,7 +198,7 @@ El jar sale en `build/libs/`.
 ## Herramientas de desarrollo
 
 - `java tools/ServantAssets.java src/main/resources/assets/fate_ubw`: regenera los modelos 3D de los servants
-  (ítems JSON, geo de GeckoLib) y sus texturas, incluidas las animadas de Excalibur.
+  (ítems JSON, geo de GeckoLib) y sus texturas, con las partes que brillan (_glowmask).
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,

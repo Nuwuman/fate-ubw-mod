@@ -26,13 +26,36 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
 
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
 import java.util.List;
 
 /**
  * Rule Breaker, la daga de Medea. Click derecho a quien tienes delante: la puñalada que rompe todo contrato mágico.
  * Le quita todos los efectos, rompe la doma (el animal pasa a ser tuyo), disipa a Pegaso y deshace su Reality Marble.
  */
-public class RuleBreakerItem extends SwordItem {
+public class RuleBreakerItem extends SwordItem implements GeoItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // GeckoLib la dibuja para que brillen sus partes (textura _glowmask); no tiene animaciones
+    @Override
+    public void createGeoRenderer(java.util.function.Consumer<GeoRenderProvider> consumer) {
+        com.nuwuman.fateubw.GlowingGeo.renderer(consumer, "rule_breaker");
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
     public static final int COOLDOWN = 20 * 20;
     private static final double REACH = 5.0;
     private static final DustParticleEffect[] RAINBOW = {

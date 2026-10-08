@@ -11,10 +11,6 @@
 
 ## Ideas que quedan para más adelante
 
-- **Excalibur con GeckoLib**, como Ea: hoja que brilla en la oscuridad al cargar y el viento de Invisible Air
-  deshaciéndose de verdad. Es más delicado que Ea porque Excalibur cambia de postura al cargar (dos modelos JSON
-  distintos) y habría que hacerlo con animaciones.
-- **Más armas en GeckoLib** con partes que brillan: Gáe Bolg (runas), Rule Breaker, Hrunting.
 - **Servants aliados**: invocar un servant que luche a tu lado en vez de llevar su equipo.
 - **Servants enemigos guardando estructuras** (ahora aparecen sueltos de noche).
 - **Guerra del Santo Grial guardada**: ahora vive en memoria; si el servidor se reinicia, la guerra termina.
@@ -23,16 +19,14 @@
 
 - Las animaciones de Player Animator solo se ven en tercera persona y para los demás; en primera persona sigues
   viendo los brazos normales.
-
 - Las habilidades de Rider necesitan también la venda (4 piezas), como su bonus de conjunto.
 - Las teclas R, G y V pueden chocar con otros mods: se cambian en Opciones → Controles → Fate: Unlimited Blade Works.
 - Los ítems antiguos (Unlimited Blade Works, Trace On, Bellerophon, Gate of Babylon) ya no salen en el creativo ni
   tienen receta, pero los que ya tengas siguen funcionando.
-- Todas las Ea comparten la animación: si un jugador carga la suya, los cilindros de todas giran deprisa.
-- Invisible Air también oculta Excalibur en el icono del inventario (se ve el remolino).
 
 ## Sin probar
 
+- Dos Excalibur o dos Ea a la vez: cada una debería animarse por su cuenta (ahora tienen identificador propio).
 - Servidor dedicado y varios jugadores a la vez (HUD, habilidades, maná y Sellos usan red normal de Fabric).
 - La Guerra del Santo Grial con dos o más jugadores, y `fatePlayerDamagePercent` (necesitan dos jugadores).
 - Que el Marble restaure los bloques si el servidor se cae (el cierre normal sí está probado).

@@ -203,7 +203,7 @@ public class FateUBW implements ModInitializer {
     public static final Item NINE_LIVES = item("nine_lives", new Item(new Item.Settings()));
     public static final Item MAD_ENHANCEMENT = item("mad_enhancement", new Item(new Item.Settings()));
     // Hrunting: modelo del proyectil y clave de su recarga
-    public static final Item HRUNTING = item("hrunting", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item HRUNTING = item("hrunting", new com.nuwuman.fateubw.archer.HruntingItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item BLOOD_FORT_ANDROMEDA = item("blood_fort_andromeda", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------

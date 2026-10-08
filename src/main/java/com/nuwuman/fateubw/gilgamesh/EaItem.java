@@ -86,6 +86,12 @@ public class EaItem extends SwordItem implements GeoItem {
         return cache;
     }
 
+    // Cada Ea con su propia animación: si no, al cargar una giraban todas
+    @Override
+    public void inventoryTick(ItemStack stack, World world, net.minecraft.entity.Entity entity, int slot, boolean selected) {
+        if (world instanceof ServerWorld server) GeoItem.getOrAssignId(stack, server);
+    }
+
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.NONE;

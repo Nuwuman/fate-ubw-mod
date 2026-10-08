@@ -47,10 +47,17 @@ public class FateUBWClient implements ClientModInitializer {
         // Excalibur y Ea: normal / cargando / cargada
         ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("charge"),
                 (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
-        // Invisible Air: el viento la oculta salvo al cargar el Noble Phantasm o justo después de liberar Strike Air
-        ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("air"),
-                (stack, world, entity, seed) -> entity instanceof LivingEntity user && !using(user, stack)
-                        && !(user instanceof PlayerEntity p && p.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) ? 1.0F : 0.0F);
+        // Invisible Air (GeckoLib): el viento la tapa salvo al cargar el Noble Phantasm o justo después de liberar Strike Air
+        ExcaliburItem.airState = stack -> {
+            net.minecraft.client.world.ClientWorld world = net.minecraft.client.MinecraftClient.getInstance().world;
+            if (world == null) return ExcaliburItem.VEILED;
+            for (PlayerEntity p : world.getPlayers()) {
+                if (using(p, stack)) return ExcaliburItem.chargeProgress(p) >= 1.0F ? ExcaliburItem.CHARGED : ExcaliburItem.CHARGING;
+                if ((p.getMainHandStack() == stack || p.getOffHandStack() == stack)
+                        && p.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) return ExcaliburItem.REVEALED;
+            }
+            return ExcaliburItem.VEILED;
+        };
         // Ea (GeckoLib): sus cilindros giran deprisa mientras alguien la carga
         com.nuwuman.fateubw.gilgamesh.EaItem.charging = stack -> {
             net.minecraft.client.world.ClientWorld world = net.minecraft.client.MinecraftClient.getInstance().world;

@@ -29,13 +29,36 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
 import java.util.List;
 
 /**
  * Gáe Bolg. Mantener y soltar: estocada que siempre acierta al corazón.
  * Agachado, mantener y soltar: salta y lanza la lanza, que persigue al objetivo y estalla.
  */
-public class GaeBolgItem extends SwordItem {
+public class GaeBolgItem extends SwordItem implements GeoItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // GeckoLib la dibuja para que brillen sus partes (textura _glowmask); no tiene animaciones
+    @Override
+    public void createGeoRenderer(java.util.function.Consumer<GeoRenderProvider> consumer) {
+        com.nuwuman.fateubw.GlowingGeo.renderer(consumer, "gae_bolg");
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
     public static final int PIERCE_CHARGE = 20;
     public static final int SOARING_CHARGE = 40;
     public static final int PIERCE_COOLDOWN = 20 * 15;

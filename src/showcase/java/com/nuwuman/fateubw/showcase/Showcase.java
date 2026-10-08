@@ -1013,7 +1013,8 @@ public class Showcase implements ClientModInitializer {
     // De noche: las líneas de Ea brillan en la oscuridad y sus cilindros giran
     private boolean glow(MinecraftClient c, ClientPlayerEntity p, int t) {
         switch (t) {
-            case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:ea"}, new String[]{});
+            case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:ea", "hotbar.1 with fate_ubw:excalibur",
+                    "hotbar.2 with fate_ubw:gae_bolg", "hotbar.3 with fate_ubw:rule_breaker", "hotbar.4 with fate_ubw:hrunting"}, new String[]{});
             case 2 -> p.networkHandler.sendChatCommand("time set midnight");
             case 30 -> shot(c, "glow_01_ea_night_firstperson");
             case 32 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
@@ -1021,7 +1022,39 @@ public class Showcase implements ClientModInitializer {
             case 46 -> use(c, p);
             case 70 -> shot(c, "glow_03_ea_charging_night");
             case 72 -> holdUse = false;
-            case 80 -> {
+
+            // Excalibur: tapada por Invisible Air, cargando (dorada y brillante) y revelada por Strike Air
+            case 80 -> p.getInventory().selectedSlot = 1;
+            case 100 -> shot(c, "glow_04_excalibur_veiled_night");
+            case 102 -> use(c, p);
+            case 105, 108, 111 -> shot(c, "glow_05_excalibur_unveil_t" + t);
+            case 130 -> shot(c, "glow_06_excalibur_charging_night");
+            case 140 -> {
+                if (waitCharge(c, p, 62)) return false;
+                shot(c, "glow_07_excalibur_charged_night");
+            }
+            case 142 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 145 -> shot(c, "glow_08_excalibur_charged_firstperson");
+            case 147 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+                holdUse = false;
+            }
+            case 200 -> shot(c, "glow_09_excalibur_veiled_again");
+            case 205 -> holdSneak = true;
+            case 208 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 210, 214, 220 -> shot(c, "glow_10_strike_air_reveal_t" + t);
+            case 222 -> holdSneak = false;
+
+            // Armas que brillan: Gáe Bolg, Rule Breaker y Hrunting
+            case 240 -> p.getInventory().selectedSlot = 2;
+            case 255 -> shot(c, "glow_11_gae_bolg_night");
+            case 257 -> p.getInventory().selectedSlot = 3;
+            case 272 -> shot(c, "glow_12_rule_breaker_night");
+            case 274 -> p.getInventory().selectedSlot = 4;
+            case 289 -> shot(c, "glow_13_hrunting_night");
+            case 291 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 300 -> shot(c, "glow_14_hrunting_firstperson");
+            case 310 -> {
                 p.networkHandler.sendChatCommand("time set noon");
                 return true;
             }

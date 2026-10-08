@@ -505,7 +505,7 @@ public class ServantAssets {
         int[] colors = {0xb84de0, 0xf06fb4, 0xf5d74a, 0x5ad6a6, 0x5aa8f0};
         for (int i = 0; i < 5; i++) {
             double y0 = 5.3 + i * 2.0;
-            m.box(left[i], y0, 7.7, left[i] + 1.4, y0 + 2.1, 8.3, metal(colors[i]));
+            m.box(left[i], y0, 7.7, left[i] + 1.4, y0 + 2.1, 8.3, metal(colors[i])).glow(solid(colors[i]));
         }
         m.box(7.6, 15.3, 7.8, 8.3, 17, 8.2, metal(0x5aa8f0));
         return m;
@@ -723,12 +723,13 @@ public class ServantAssets {
         m.box(6.8, b + 4, 7.5, 9.2, b + 4.8, 8.5, HRUNT_RED);
         for (int i = 0; i < 5; i++) {
             double y0 = b + 4.8 + i * 2.4;
-            m.box(7.3, y0, 7.75, 8.7, y0 + 2.4, 8.25, i % 2 == 0 ? HRUNT_RED : HRUNT_DARK);
-            m.box(6.6, y0 + 0.4, 7.85, 7.3, y0 + 1.2, 8.15, HRUNT_RED);        // púas
-            m.box(8.7, y0 + 1.2, 7.85, 9.4, y0 + 2.0, 8.15, HRUNT_RED);
+            Cube seg = m.box(7.3, y0, 7.75, 8.7, y0 + 2.4, 8.25, i % 2 == 0 ? HRUNT_RED : HRUNT_DARK);
+            if (i % 2 == 0) seg.glow((x, y, w, h, s) -> Math.floorMod(y, 3) == 0 ? 0xff2a40 : 0);
+            m.box(6.6, y0 + 0.4, 7.85, 7.3, y0 + 1.2, 8.15, HRUNT_RED).glow(solid(0xff3050));        // púas
+            m.box(8.7, y0 + 1.2, 7.85, 9.4, y0 + 2.0, 8.15, HRUNT_RED).glow(solid(0xff3050));
         }
-        m.box(7.6, b + 16.8, 7.8, 8.4, b + 18.6, 8.2, HRUNT_RED);
-        m.box(7.85, b + 18.6, 7.85, 8.15, b + 19.6, 8.15, HRUNT_RED);
+        m.box(7.6, b + 16.8, 7.8, 8.4, b + 18.6, 8.2, HRUNT_RED).glow(solid(0xff3050));
+        m.box(7.85, b + 18.6, 7.85, 8.15, b + 19.6, 8.15, HRUNT_RED).glow(solid(0xff6070));
         return m;
     }
 
@@ -768,19 +769,6 @@ public class ServantAssets {
         m.box(7, 8.6, 9, 10, 9, 13, WIRE).rot("x", 22.5, 8.5, 8.8, 9);           // alas
         m.box(7, 8.6, 3, 10, 9, 7, WIRE).rot("x", -22.5, 8.5, 8.8, 7);
         m.box(4.5, 7.6, 7.6, 6.5, 8.4, 8.4, WIRE);                               // cola
-        return m;
-    }
-
-    // Invisible Air: el viento que envuelve a Excalibur. Solo se ven la empuñadura y un remolino translúcido
-    static Paint wind() {
-        return (x, y, w, h, s) -> Math.floorMod(x + y + FRAME * 2, 6) < 2 ? (110 << 24) | 0xe4f2ff : (40 << 24) | 0xbcd6ff;
-    }
-
-    static Model excaliburAir() {
-        Model m = new Model();
-        m.box(7.2, -1, 7.2, 8.8, 0.5, 8.8, GOLD);
-        m.box(7.5, 0.5, 7.5, 8.5, 4.5, 8.5, EX_GRIP);
-        m.box(6.0, 4.5, 6.9, 10.0, 24.5, 9.1, wind());
         return m;
     }
 
@@ -824,10 +812,22 @@ public class ServantAssets {
         return img;
     }
 
-    static void geoModel(Path root, String name, List<Bone> bones, String kind) throws IOException {
+    // Textura (y _glowmask) de unos huesos. Con los mismos cubos sale la misma distribución: sirve para variantes
+    static BufferedImage geoTexture(Path root, String kind, String name, List<Bone> bones) throws IOException {
         List<Cube> all = new ArrayList<>();
         for (Bone bone : bones) all.addAll(bone.model.cubes);
         BufferedImage img = atlas(all);
+        Path tex = root.resolve("textures/" + kind + name + ".png");
+        Files.createDirectories(tex.getParent());
+        ImageIO.write(img, "png", tex.toFile());
+        if (all.stream().anyMatch(c -> c.glow != null)) {
+            ImageIO.write(glowmask(all, img), "png", root.resolve("textures/" + kind + name + "_glowmask.png").toFile());
+        }
+        return img;
+    }
+
+    static void geoModel(Path root, String name, List<Bone> bones, String kind) throws IOException {
+        BufferedImage img = geoTexture(root, kind, name, bones);
         StringBuilder b = new StringBuilder();
         b.append("{\n  \"format_version\": \"1.12.0\",\n  \"minecraft:geometry\": [{\n");
         b.append("    \"description\": { \"identifier\": \"geometry.").append(name).append("\", \"texture_width\": ").append(img.getWidth())
@@ -863,12 +863,24 @@ public class ServantAssets {
         Path geo = root.resolve("geo/" + kind + name + ".geo.json");
         Files.createDirectories(geo.getParent());
         Files.writeString(geo, b);
-        Path tex = root.resolve("textures/" + kind + name + ".png");
-        Files.createDirectories(tex.getParent());
-        ImageIO.write(img, "png", tex.toFile());
-        if (all.stream().anyMatch(c -> c.glow != null)) {
-            ImageIO.write(glowmask(all, img), "png", root.resolve("textures/" + kind + name + "_glowmask.png").toFile());
+    }
+
+    // Ítem dibujado por GeckoLib: el JSON solo da las posiciones en mano (y los overrides, si los hay)
+    static void builtinModel(Path root, String name, String texture, String display, String overrides) throws IOException {
+        Files.writeString(root.resolve("models/item/" + name + ".json"), "{\n  \"parent\": \"builtin/entity\",\n  \"textures\": { \"particle\": \"fate_ubw:item/"
+                + texture + "\" },\n  \"display\": " + display + (overrides != null ? ",\n  \"overrides\": " + overrides : "") + "\n}\n");
+    }
+
+    // Un modelo de ítem de una pieza como geo de GeckoLib (coordenadas del JSON menos 8)
+    static List<Bone> oneBone(Model m) {
+        Bone root = new Bone("root", null, 0, 0, 0);
+        for (Cube c : m.cubes) {
+            Cube n = root.model.box(c.from[0] - 8, c.from[1] - 8, c.from[2] - 8, c.to[0] - 8, c.to[1] - 8, c.to[2] - 8, c.paint);
+            n.inflate = c.inflate;
+            n.glow = c.glow;
+            if (c.axis != null) n.rot(c.axis, c.angle, c.origin[0] - 8, c.origin[1] - 8, c.origin[2] - 8);
         }
+        return List.of(root);
     }
 
     // Ea para GeckoLib: empuñadura fija y tres cilindros (y la punta) que giran cada uno a su ritmo.
@@ -1082,6 +1094,39 @@ public class ServantAssets {
         m.box(7.85, 23, 7.8, 8.15, 24, 8.2, steel);
         if (mode == 2) m.box(6.4, 5.7, 7.1, 9.6, 24.5, 8.9, aura());
         return m;
+    }
+
+    // Lo que brilla de Excalibur cargada: la hoja dorada y la gema
+    static Paint exGlow(int color) {
+        return (x, y, w, h, s) -> lerp(color, 0xffffff, 0.25 * noise(x, y, s));
+    }
+
+    // Vetas del viento de Invisible Air, translúcidas
+    static Paint windStreaks() {
+        return (x, y, w, h, s) -> Math.floorMod(x * 2 + y, 7) < 2 ? (150 << 24) | 0xeef6ff : (45 << 24) | 0xc4dcff;
+    }
+
+    // Excalibur para GeckoLib: empuñadura, hoja (brilla al cargar), halo y el viento de Invisible Air.
+    // mode como en exBlade: cambia solo la pintura, la distribución de la textura es la misma
+    static List<Bone> excaliburBones(int mode) {
+        Model m = excalibur(mode);
+        if (mode != 2) m.box(6.4, 5.7, 7.1, 9.6, 24.5, 8.9, aura());
+        List<Cube> cubes = oneBone(m).get(0).model.cubes;
+        Bone hilt = new Bone("hilt", null, 0, -5.5, 0);
+        Bone blade = new Bone("blade", "hilt", 0, -2.3, 0);
+        Bone halo = new Bone("aura", "blade", 0, -2.3, 0);
+        Bone wind = new Bone("wind", "hilt", 0, 6, 0);
+        for (int i = 0; i < cubes.size(); i++) {
+            Cube c = cubes.get(i);
+            if (i == 1) c.glow(exGlow(0x9fe4ff));                     // gema
+            if (i < 9) hilt.model.cubes.add(c);
+            else if (i == cubes.size() - 1) halo.model.cubes.add(c);
+            else blade.model.cubes.add(c.glow(exGlow(i == 10 ? 0xffe9a0 : 0xffd060)));
+        }
+        Paint air = windStreaks();
+        for (int a = 0; a < 180; a += 60) wind.model.box(-2.4, -3, -0.03, 2.4, 17, 0.03, air).rot("y", a, 0, 6, 0);
+        wind.model.box(-1.6, -3, -1.6, 1.6, 17, 1.6, air).rot("y", 45, 0, 6, 0);
+        return List.of(hilt, blade, halo, wind);
     }
 
     // Igual que handheld, pero en primera persona la espada se alza (zRot ya incluye los -45° del modelo vertical)
@@ -1338,16 +1383,26 @@ public class ServantAssets {
         return List.of(head, body, tassets, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // Runas de Gáe Bolg: marcas cortas cada pocos píxeles en la parte alta del asta
+    static Paint gaeRunes() {
+        return (x, y, w, h, s) -> y < h * 0.45 && Math.floorMod(y, 5) < 2 && Math.floorMod(x + y / 5, 2) == 0 ? 0xff2a3a : 0;
+    }
+
+    // Filo de la hoja: brillan los bordes y una línea central
+    static Paint gaeEdge() {
+        return (x, y, w, h, s) -> x == 0 || x == w - 1 || x == w / 2 ? 0xff4050 : 0;
+    }
+
     // Gáe Bolg: lanza carmesí con púas. Agarre en y≈2.5, igual que las espadas; total de -12 a 30.5
     static Model gaeBolg() {
         Model m = new Model();
         m.box(7.4, -12, 7.4, 8.6, -10.5, 8.6, SPEAR_METAL);     // regatón
-        m.box(7.6, -10.5, 7.6, 8.4, 21, 8.4, SPEAR_SHAFT);      // asta
+        m.box(7.6, -10.5, 7.6, 8.4, 21, 8.4, SPEAR_SHAFT).glow(gaeRunes());   // asta con runas
         m.box(7.35, 0.5, 7.35, 8.65, 4.5, 8.65, SPEAR_GRIP);    // agarre
         m.box(7.2, 21, 7.2, 8.8, 22, 8.8, SPEAR_METAL);         // anillo
-        m.box(7.0, 22, 7.6, 9.0, 26, 8.4, SPEAR_HEAD);          // hoja
-        m.box(7.4, 26, 7.65, 8.6, 29, 8.35, SPEAR_HEAD);
-        m.box(7.75, 29, 7.7, 8.25, 30.5, 8.3, SPEAR_EDGE);      // punta
+        m.box(7.0, 22, 7.6, 9.0, 26, 8.4, SPEAR_HEAD).glow(gaeEdge());          // hoja
+        m.box(7.4, 26, 7.65, 8.6, 29, 8.35, SPEAR_HEAD).glow(gaeEdge());
+        m.box(7.75, 29, 7.7, 8.25, 30.5, 8.3, SPEAR_EDGE).glow(solid(0xff6070));      // punta
         // Púas que apuntan hacia atrás, a ambos lados de la hoja
         for (double y : new double[]{22.5, 25.0}) {
             m.box(5.6, y, 7.75, 7.0, y + 0.8, 8.25, SPEAR_EDGE).rot("z", 45, 7.0, y + 0.4, 8);
@@ -1411,19 +1466,18 @@ public class ServantAssets {
         Files.createDirectories(root.resolve("textures/item"));
 
         // ---------- Saber ----------
-        // Gana la última que encaje: el viento primero, y cargar la revela
+        // Excalibur la dibuja GeckoLib: el viento de Invisible Air, la hoja que brilla al cargar y su halo.
+        // Las texturas de carga son variantes con la misma distribución; los JSON alzan la espada en primera persona
+        geoModel(root, "excalibur", excaliburBones(0), "item/");
+        geoTexture(root, "item/", "excalibur_charging", excaliburBones(1));
+        geoTexture(root, "item/", "excalibur_charged", excaliburBones(2));
         String exOverrides = "[\n"
-                + "    { \"predicate\": { \"fate_ubw:air\": 1.0 }, \"model\": \"fate_ubw:item/excalibur_air\" },\n"
                 + "    { \"predicate\": { \"fate_ubw:charge\": 0.01 }, \"model\": \"fate_ubw:item/excalibur_charging\" },\n"
                 + "    { \"predicate\": { \"fate_ubw:charge\": 1.0 }, \"model\": \"fate_ubw:item/excalibur_charged\" }\n"
                 + "  ]";
-        itemModel(root, "excalibur", excalibur(0), handheld(0.7), exOverrides,
-                16, "{\"animation\":{\"frames\":[{\"index\":0,\"time\":60}," + range(1, 16) + "]}}");
-        itemModel(root, "excalibur_air", excaliburAir(), handheld(0.7), null, 8, "{\"animation\":{\"frametime\":2}}");
-        itemModel(root, "excalibur_charging", excalibur(1), raised(0.7, -35, 5.0, 0.0, 0.75), null,
-                12, "{\"animation\":{\"frametime\":1}}");
-        itemModel(root, "excalibur_charged", excalibur(2), raised(0.7, -50, 6.5, -0.5, 0.8), null,
-                8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
+        builtinModel(root, "excalibur", "excalibur", handheld(0.7), exOverrides);
+        builtinModel(root, "excalibur_charging", "excalibur", raised(0.7, -35, 5.0, 0.0, 0.75), null);
+        builtinModel(root, "excalibur_charged", "excalibur", raised(0.7, -50, 6.5, -0.5, 0.8), null);
         List<Bone> saber = saberArmor();
         // saber_armor.geo.json y su textura se editan a mano en Blockbench (saber_armor.geo.bbmodel): no se regeneran
         itemModel(root, "saber_chestplate", bonesToModel(saber, 8, -4, 8, "armorBody", "skirtFront", "skirtBack", "skirtLeft",
@@ -1461,7 +1515,8 @@ public class ServantAssets {
         itemModel(root, "archer_boots", bonesToModel(armor, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Lancer ----------
-        itemModel(root, "gae_bolg", gaeBolg(), handheld(0.5, 0.5), null);
+        geoModel(root, "gae_bolg", oneBone(gaeBolg()), "item/");
+        builtinModel(root, "gae_bolg", "gae_bolg", handheld(0.5, 0.5), null);
         List<Bone> lancer = lancerArmor();
         geoModel(root, "lancer_armor", lancer);
         itemModel(root, "lancer_chestplate", bonesToModel(lancer, 8, -4, 8, "armorBody", "ponytail", "armorRightArm", "armorLeftArm"),
@@ -1484,8 +1539,7 @@ public class ServantAssets {
         // ---------- Gilgamesh ----------
         // Ea la dibuja GeckoLib (cilindros que giran y líneas que brillan); el JSON solo da las posiciones en mano
         geoModel(root, "ea", eaBones(), "item/");
-        Files.writeString(root.resolve("models/item/ea.json"),
-                "{\n  \"parent\": \"builtin/entity\",\n  \"textures\": { \"particle\": \"fate_ubw:item/ea\" },\n  \"display\": " + handheld(0.7) + "\n}\n");
+        builtinModel(root, "ea", "ea", handheld(0.7), null);
         itemModel(root, "gate_of_babylon", babylonKey(), handheld(0.9), null);
         List<Bone> gilgamesh = gilgameshArmor();
         geoModel(root, "gilgamesh_armor", gilgamesh);
@@ -1501,7 +1555,8 @@ public class ServantAssets {
         // ---------- Guerra del Santo Grial y Masters ----------
         itemModel(root, "holy_grail", holyGrail(), HELD_OBJECT, null, 8, "{\"animation\":{\"frametime\":3,\"interpolate\":true}}");
         itemModel(root, "summoning_circle", summoningCircle(), FLAT_ICON, null);
-        itemModel(root, "hrunting", hrunting(-0.5), handheld(0.8), null);
+        geoModel(root, "hrunting", oneBone(hrunting(-0.5)), "item/");
+        builtinModel(root, "hrunting", "hrunting", handheld(0.8), null);
         itemModel(root, "rin_jewel", rinJewel(), HELD_OBJECT, null);
         itemModel(root, "shirou_poster", shirouPoster(), handheld(0.8), null);
         itemModel(root, "zelzeriz", zelzeriz(), HELD_OBJECT, null);
@@ -1510,7 +1565,8 @@ public class ServantAssets {
         skin(root, "assassin", 0xecd0b4, 0x4b3a8f, 0x3a5fd0);
 
         // ---------- Caster ----------
-        itemModel(root, "rule_breaker", ruleBreaker(), handheld(1.0), null);
+        geoModel(root, "rule_breaker", oneBone(ruleBreaker()), "item/");
+        builtinModel(root, "rule_breaker", "rule_breaker", handheld(1.0), null);
         List<Bone> caster = casterArmor();
         geoModel(root, "caster_armor", caster);
         itemModel(root, "caster_chestplate", bonesToModel(caster, 8, -4, 8, "armorBody", "capeBack", "capeLeft", "capeRight",

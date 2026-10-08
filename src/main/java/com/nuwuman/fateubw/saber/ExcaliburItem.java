@@ -25,19 +25,82 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.constant.DataTickets;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
 
-public class ExcaliburItem extends SwordItem {
+/**
+ * Excalibur. La dibuja GeckoLib: el viento de Invisible Air la tapa y se deshace al cargar o tras Strike Air,
+ * y la hoja se vuelve dorada y brilla en la oscuridad mientras carga.
+ */
+public class ExcaliburItem extends SwordItem implements GeoItem {
     // 3 s de carga para el Noble Phantasm
     public static final int FULL_CHARGE = 60;
     private static final int EXCALIBUR_COOLDOWN = 20 * 20;
     private static final int STRIKE_AIR_COOLDOWN = 20 * 2;
     private static final DustParticleEffect GOLD_DUST = new DustParticleEffect(new Vector3f(1.0F, 0.8F, 0.25F), 1.3F);
 
+    public static final int VEILED = 0, REVEALED = 1, CHARGING = 2, CHARGED = 3;
+    /** Estado de Invisible Air de esta Excalibur. Lo rellena el cliente (aquí no se puede tocar código de cliente). */
+    public static ToIntFunction<ItemStack> airState = stack -> VEILED;
+    private static final RawAnimation VEIL = RawAnimation.begin().thenPlay("animation.excalibur.veil").thenLoop("animation.excalibur.veiled");
+    private static final RawAnimation UNVEIL = RawAnimation.begin().thenPlay("animation.excalibur.unveil").thenLoop("animation.excalibur.revealed");
+    private static final RawAnimation UNVEIL_CHARGE = RawAnimation.begin().thenPlay("animation.excalibur.unveil").thenLoop("animation.excalibur.charge");
+    private static final RawAnimation REVEALED_LOOP = RawAnimation.begin().thenLoop("animation.excalibur.revealed");
+    private static final RawAnimation CHARGE_LOOP = RawAnimation.begin().thenLoop("animation.excalibur.charge");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public ExcaliburItem(Item.Settings settings) {
         super(ToolMaterials.NETHERITE, settings.attributeModifiers(
                 SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 6, -2.4F)));
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private com.nuwuman.fateubw.client.ExcaliburRenderer renderer;
+
+            @Override
+            public net.minecraft.client.render.item.BuiltinModelItemRenderer getGeoItemRenderer() {
+                if (renderer == null) renderer = new com.nuwuman.fateubw.client.ExcaliburRenderer();
+                return renderer;
+            }
+        });
+    }
+
+    // El viento se deshace al revelarse y vuelve a formarse al taparla; entre revelada y cargando no hay viento
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        RawAnimation[] current = {null};
+        controllers.add(new AnimationController<>(this, "air", 0, state -> {
+            ItemStack stack = state.getData(DataTickets.ITEMSTACK);
+            int air = stack == null ? VEILED : airState.applyAsInt(stack);
+            boolean charging = air >= CHARGING;
+            if (air == VEILED) current[0] = VEIL;
+            else if (current[0] == null || current[0] == VEIL) current[0] = charging ? UNVEIL_CHARGE : UNVEIL;
+            else if (charging != (current[0] == UNVEIL_CHARGE || current[0] == CHARGE_LOOP)) current[0] = charging ? CHARGE_LOOP : REVEALED_LOOP;
+            return state.setAndContinue(current[0]);
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    // Cada Excalibur con su propia animación (si no, todas compartirían el estado del viento)
+    @Override
+    public void inventoryTick(ItemStack stack, World world, net.minecraft.entity.Entity entity, int slot, boolean selected) {
+        if (world instanceof ServerWorld server) GeoItem.getOrAssignId(stack, server);
     }
 
     // 0..1, lo usan el modelo (cambio de textura) y la pose de brazos en el cliente
