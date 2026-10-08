@@ -1,5 +1,6 @@
 package com.nuwuman.fateubw.saber;
 
+import com.nuwuman.fateubw.FateUBW;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -55,10 +56,19 @@ public class ExcaliburItem extends SwordItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
+        // Cada habilidad con su propio cooldown, como la Gáe Bolg
         if (user.isSneaking()) {
+            if (user.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) {
+                if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN, "strike_air");
+                return TypedActionResult.fail(stack);
+            }
             if (world instanceof ServerWorld server) strikeAir(server, user);
-            user.getItemCooldownManager().set(this, STRIKE_AIR_COOLDOWN);
+            user.getItemCooldownManager().set(FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN);
             return TypedActionResult.success(stack, world.isClient());
+        }
+        if (user.getItemCooldownManager().isCoolingDown(FateUBW.EXCALIBUR_NP)) {
+            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN, "excalibur");
+            return TypedActionResult.fail(stack);
         }
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
@@ -105,7 +115,7 @@ public class ExcaliburItem extends SwordItem {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         if (charge < FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
 
-        player.getItemCooldownManager().set(this, EXCALIBUR_COOLDOWN);
+        player.getItemCooldownManager().set(FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
 
         ExcaliburBeamEntity.fire(server, player);

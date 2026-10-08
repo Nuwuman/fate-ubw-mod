@@ -1,6 +1,6 @@
 package com.nuwuman.fateubw.mixin;
 
-import com.nuwuman.fateubw.archer.TraceOnItem;
+import com.nuwuman.fateubw.archer.TraceOn;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -21,6 +21,6 @@ public abstract class SlotMixin {
 
     @Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
     private void fateubw$keepProjections(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (!(inventory instanceof PlayerInventory) && TraceOnItem.isProjection(stack)) cir.setReturnValue(false);
+        if (!(inventory instanceof PlayerInventory) && TraceOn.isProjection(stack)) cir.setReturnValue(false);
     }
 }

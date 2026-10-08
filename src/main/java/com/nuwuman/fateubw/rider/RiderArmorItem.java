@@ -36,5 +36,6 @@ public class RiderArmorItem extends ServantArmorItem {
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.fate_ubw.rider_armor.tooltip.set").formatted(Formatting.LIGHT_PURPLE));
+        tooltip.add(Text.translatable("item.fate_ubw.rider_armor.tooltip.abilities").formatted(Formatting.LIGHT_PURPLE));
     }
 }

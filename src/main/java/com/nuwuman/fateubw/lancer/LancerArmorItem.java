@@ -15,7 +15,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.entity.projectile.SmallFireballEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -31,6 +34,7 @@ import java.util.List;
 public class LancerArmorItem extends ServantArmorItem {
     private static final float ARROW_PROTECTION_CHANCE = 0.75F;
     public static final int BATTLE_CONTINUATION_COOLDOWN = 20 * 60 * 5;
+    public static final int ANSUZ_COOLDOWN = 20 * 8;
 
     public LancerArmorItem(ArmorItem.Type type, Item.Settings settings) {
         super(FateUBW.LANCER_MATERIAL, type, settings, "lancer_armor");
@@ -75,10 +79,32 @@ public class LancerArmorItem extends ServantArmorItem {
         return false;
     }
 
+    /** Runa Ansuz: tres bolas de fuego en abanico. */
+    public static boolean ansuz(ServerPlayerEntity player) {
+        ServerWorld world = player.getServerWorld();
+        Vec3d eye = player.getEyePos();
+        for (int i = -1; i <= 1; i++) {
+            Vec3d dir = Vec3d.fromPolar(player.getPitch(), player.getYaw() + i * 10.0F);
+            SmallFireballEntity fireball = new SmallFireballEntity(world, player, dir.multiply(1.5));
+            fireball.setPosition(eye.add(dir.multiply(1.0)).add(0.0, -0.2, 0.0));
+            world.spawnEntity(fireball);
+        }
+        // La runa trazada en el aire
+        Vec3d front = eye.add(player.getRotationVec(1.0F).multiply(1.2));
+        for (int i = 0; i < 16; i++) {
+            double t = i / 15.0;
+            world.spawnParticles(ParticleTypes.FLAME, front.x + (t - 0.5) * 0.6, front.y + 0.4 - t * 0.8, front.z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 1.2F, 0.9F);
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.2F);
+        return true;
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.fate_ubw.lancer_armor.tooltip.set").formatted(Formatting.GOLD));
         tooltip.add(Text.translatable("item.fate_ubw.lancer_armor.tooltip.arrows").formatted(Formatting.GRAY));
         tooltip.add(Text.translatable("item.fate_ubw.lancer_armor.tooltip.battle").formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("item.fate_ubw.lancer_armor.tooltip.abilities").formatted(Formatting.LIGHT_PURPLE));
     }
 }

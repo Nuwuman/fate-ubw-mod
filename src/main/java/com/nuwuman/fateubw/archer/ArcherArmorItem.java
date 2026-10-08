@@ -42,5 +42,6 @@ public class ArcherArmorItem extends ServantArmorItem {
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.fate_ubw.archer_armor.tooltip.set").formatted(Formatting.GOLD));
+        tooltip.add(Text.translatable("item.fate_ubw.archer_armor.tooltip.abilities").formatted(Formatting.LIGHT_PURPLE));
     }
 }

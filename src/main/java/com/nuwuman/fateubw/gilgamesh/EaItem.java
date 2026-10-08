@@ -1,5 +1,6 @@
 package com.nuwuman.fateubw.gilgamesh;
 
+import com.nuwuman.fateubw.FateUBW;
 import com.nuwuman.fateubw.saber.ExcaliburItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,8 +47,13 @@ public class EaItem extends SwordItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        if (user.getItemCooldownManager().isCoolingDown(FateUBW.ENUMA_ELISH_NP)) {
+            if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.ENUMA_ELISH_NP, COOLDOWN, "enuma_elish");
+            return TypedActionResult.fail(stack);
+        }
         user.setCurrentHand(hand);
-        return TypedActionResult.consume(user.getStackInHand(hand));
+        return TypedActionResult.consume(stack);
     }
 
     // Viento rojo que gira alrededor del portador mientras carga
@@ -75,7 +81,7 @@ public class EaItem extends SwordItem {
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         if (charge < ExcaliburItem.FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
-        player.getItemCooldownManager().set(this, COOLDOWN);
+        player.getItemCooldownManager().set(FateUBW.ENUMA_ELISH_NP, COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
 
         EnumaElishEntity.fire(server, player);

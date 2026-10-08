@@ -1,5 +1,12 @@
 package com.nuwuman.fateubw;
 
+import com.nuwuman.fateubw.ability.Abilities;
+import com.nuwuman.fateubw.assassin.AssassinArmorItem;
+import com.nuwuman.fateubw.assassin.MonohoshizaoItem;
+import com.nuwuman.fateubw.berserker.BerserkerArmorItem;
+import com.nuwuman.fateubw.berserker.NineLivesItem;
+import com.nuwuman.fateubw.caster.CasterArmorItem;
+import com.nuwuman.fateubw.caster.RuleBreakerItem;
 import com.nuwuman.fateubw.archer.ArcherArmorItem;
 import com.nuwuman.fateubw.archer.ArcherBowItem;
 import com.nuwuman.fateubw.archer.FalchionItem;
@@ -8,6 +15,7 @@ import com.nuwuman.fateubw.archer.SwordArrowEntity;
 import com.nuwuman.fateubw.archer.ThrownFalchionEntity;
 import com.nuwuman.fateubw.archer.UbwCoreEntity;
 import com.nuwuman.fateubw.archer.UbwItem;
+import com.nuwuman.fateubw.archer.TraceOn;
 import com.nuwuman.fateubw.archer.TraceOnItem;
 import com.nuwuman.fateubw.archer.UnlimitedBladeWorks;
 import net.minecraft.block.AbstractBlock;
@@ -124,7 +132,32 @@ public class FateUBW implements ModInitializer {
     public static final Item GILGAMESH_LEGGINGS = item("gilgamesh_leggings", new GilgameshArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item GILGAMESH_BOOTS = item("gilgamesh_boots", new GilgameshArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Caster ----------
+    public static final RegistryEntry<ArmorMaterial> CASTER_MATERIAL = armorMaterial("caster");
+
+    public static final Item RULE_BREAKER = item("rule_breaker", new RuleBreakerItem(new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item CASTER_CHESTPLATE = item("caster_chestplate", new CasterArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item CASTER_LEGGINGS = item("caster_leggings", new CasterArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item CASTER_BOOTS = item("caster_boots", new CasterArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
+    // ---------- Assassin ----------
+    public static final RegistryEntry<ArmorMaterial> ASSASSIN_MATERIAL = armorMaterial("assassin");
+
+    public static final Item MONOHOSHIZAO = item("monohoshizao", new MonohoshizaoItem(new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item ASSASSIN_CHESTPLATE = item("assassin_chestplate", new AssassinArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item ASSASSIN_LEGGINGS = item("assassin_leggings", new AssassinArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item ASSASSIN_BOOTS = item("assassin_boots", new AssassinArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
+    // ---------- Berserker ----------
+    public static final RegistryEntry<ArmorMaterial> BERSERKER_MATERIAL = armorMaterial("berserker");
+
+    public static final Item BERSERKER_AXE_SWORD = item("berserker_axe_sword", new NineLivesItem(new Item.Settings().rarity(Rarity.EPIC).fireproof()));
+    public static final Item BERSERKER_CHESTPLATE = item("berserker_chestplate", new BerserkerArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item BERSERKER_LEGGINGS = item("berserker_leggings", new BerserkerArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item BERSERKER_BOOTS = item("berserker_boots", new BerserkerArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
     // Sin pestaña: modelos que usan los proyectiles y claves de cooldown de las habilidades
+    // (cada habilidad tiene la suya, así una no bloquea a las demás del mismo arma o conjunto)
     public static final Item CALADBOLG = item("caladbolg", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item SWORD_ARROW = item("sword_arrow", new Item(new Item.Settings()));
     public static final Item RHO_AIAS = item("rho_aias", new Item(new Item.Settings()));
@@ -134,6 +167,21 @@ public class FateUBW implements ModInitializer {
     public static final Item MYSTIC_EYES = item("mystic_eyes", new Item(new Item.Settings()));
     public static final Item BELLEROPHON_CHARGE = item("bellerophon_charge", new Item(new Item.Settings()));
     public static final Item UBW_COOLDOWN = item("ubw_cooldown", new Item(new Item.Settings()));
+    public static final Item UBW_BARRAGE = item("ubw_barrage", new Item(new Item.Settings()));
+    public static final Item EXCALIBUR_NP = item("excalibur_np", new Item(new Item.Settings()));
+    public static final Item STRIKE_AIR = item("strike_air", new Item(new Item.Settings()));
+    public static final Item AVALON = item("avalon", new Item(new Item.Settings()));
+    public static final Item MANA_BURST = item("mana_burst", new Item(new Item.Settings()));
+    public static final Item ANSUZ = item("ansuz", new Item(new Item.Settings()));
+    public static final Item ENUMA_ELISH_NP = item("enuma_elish_np", new Item(new Item.Settings()));
+    public static final Item ENKIDU = item("enkidu", new Item(new Item.Settings()));
+    public static final Item RULE_BREAKER_NP = item("rule_breaker_np", new Item(new Item.Settings()));
+    public static final Item DIVINE_WORDS = item("divine_words", new Item(new Item.Settings()));
+    public static final Item SPATIAL_TRANSFER = item("spatial_transfer", new Item(new Item.Settings()));
+    public static final Item TSUBAME_GAESHI = item("tsubame_gaeshi", new Item(new Item.Settings()));
+    public static final Item PRESENCE_CONCEALMENT = item("presence_concealment", new Item(new Item.Settings()));
+    public static final Item NINE_LIVES = item("nine_lives", new Item(new Item.Settings()));
+    public static final Item MAD_ENHANCEMENT = item("mad_enhancement", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);
@@ -182,23 +230,31 @@ public class FateUBW implements ModInitializer {
                 entries.add(ARCHER_CHESTPLATE);
                 entries.add(ARCHER_LEGGINGS);
                 entries.add(ARCHER_BOOTS);
-                entries.add(UNLIMITED_BLADE_WORKS);
-                entries.add(TRACE_ON);
                 entries.add(GAE_BOLG);
                 entries.add(LANCER_CHESTPLATE);
                 entries.add(LANCER_LEGGINGS);
                 entries.add(LANCER_BOOTS);
                 entries.add(RIDER_DAGGER);
-                entries.add(BELLEROPHON);
                 entries.add(RIDER_HELMET);
                 entries.add(RIDER_CHESTPLATE);
                 entries.add(RIDER_LEGGINGS);
                 entries.add(RIDER_BOOTS);
-                entries.add(GATE_OF_BABYLON);
                 entries.add(EA);
                 entries.add(GILGAMESH_CHESTPLATE);
                 entries.add(GILGAMESH_LEGGINGS);
                 entries.add(GILGAMESH_BOOTS);
+                entries.add(RULE_BREAKER);
+                entries.add(CASTER_CHESTPLATE);
+                entries.add(CASTER_LEGGINGS);
+                entries.add(CASTER_BOOTS);
+                entries.add(MONOHOSHIZAO);
+                entries.add(ASSASSIN_CHESTPLATE);
+                entries.add(ASSASSIN_LEGGINGS);
+                entries.add(ASSASSIN_BOOTS);
+                entries.add(BERSERKER_AXE_SWORD);
+                entries.add(BERSERKER_CHESTPLATE);
+                entries.add(BERSERKER_LEGGINGS);
+                entries.add(BERSERKER_BOOTS);
             })
             .build());
 
@@ -242,8 +298,13 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(LancerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(SaberArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(CasterArmorItem::allowDamage);
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(AssassinArmorItem::allowDamage);
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(BerserkerArmorItem::allowDamage);
+        ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         UnlimitedBladeWorks.register();
-        TraceOnItem.register();
+        TraceOn.register();
+        Abilities.register();
     }
 }

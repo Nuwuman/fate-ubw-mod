@@ -14,6 +14,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -43,15 +44,6 @@ public class RiderDaggerItem extends SwordItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (user.isSneaking()) {
-            if (user.getItemCooldownManager().isCoolingDown(FateUBW.MYSTIC_EYES)) {
-                if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.MYSTIC_EYES, MYSTIC_EYES_COOLDOWN, "mystic_eyes");
-                return TypedActionResult.fail(stack);
-            }
-            if (world instanceof ServerWorld server) mysticEyes(server, user);
-            user.getItemCooldownManager().set(FateUBW.MYSTIC_EYES, MYSTIC_EYES_COOLDOWN);
-            return TypedActionResult.success(stack, world.isClient());
-        }
         if (world instanceof ServerWorld server) {
             ChainDaggerEntity.toss(server, user, stack);
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.BLOCK_CHAIN_PLACE, SoundCategory.PLAYERS, 1.2F, 0.8F);
@@ -60,8 +52,9 @@ public class RiderDaggerItem extends SwordItem {
         return TypedActionResult.success(stack, world.isClient());
     }
 
-    // Cybele: quien mira a Medusa y está delante de ella queda casi petrificado
-    private void mysticEyes(ServerWorld world, PlayerEntity player) {
+    /** Cybele (habilidad de Breaker Gorgon): quien mira a Medusa y está delante de ella queda casi petrificado. */
+    public static boolean mysticEyes(ServerPlayerEntity player) {
+        ServerWorld world = player.getServerWorld();
         Vec3d eye = player.getEyePos();
         Vec3d dir = player.getRotationVec(1.0F);
         world.spawnParticles(PURPLE, eye.x + dir.x * 0.4, eye.y, eye.z + dir.z * 0.4, 20, 0.15, 0.05, 0.15, 0.0);
@@ -78,11 +71,11 @@ public class RiderDaggerItem extends SwordItem {
                     target.getWidth() / 2, target.getHeight() / 3, target.getWidth() / 2, 0.0);
             world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BLOCK_STONE_PLACE, SoundCategory.PLAYERS, 1.0F, 0.6F);
         }
+        return true;
     }
 
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.fate_ubw.rider_dagger.tooltip.throw").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.fate_ubw.rider_dagger.tooltip.eyes").formatted(Formatting.LIGHT_PURPLE));
     }
 }

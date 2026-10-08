@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class Showcase implements ClientModInitializer {
     private final List<String> sections = System.getenv("FATE_SHOWCASE") == null
-            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh", "ubw", "trace") : List.of(System.getenv("FATE_SHOWCASE").split(","));
+            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh", "ubw", "trace", "hud", "caster", "assassin", "berserker") : List.of(System.getenv("FATE_SHOWCASE").split(","));
     private int ticks;
     private int worldTicks;
     private boolean started;
@@ -105,6 +105,10 @@ public class Showcase implements ClientModInitializer {
             case "gilgamesh" -> gilgamesh(client, p, st);
             case "ubw" -> ubw(client, p, st);
             case "trace" -> trace(client, p, st);
+            case "hud" -> hud(client, p, st);
+            case "caster" -> caster(client, p, st);
+            case "assassin" -> assassin(client, p, st);
+            case "berserker" -> berserker(client, p, st);
             default -> true;
         };
         if (done) {
@@ -325,7 +329,7 @@ public class Showcase implements ClientModInitializer {
             case 0 -> setup(c, p, new String[]{
                     "armor.head with fate_ubw:rider_helmet", "armor.chest with fate_ubw:rider_chestplate",
                     "armor.legs with fate_ubw:rider_leggings", "armor.feet with fate_ubw:rider_boots",
-                    "hotbar.0 with fate_ubw:rider_dagger", "hotbar.1 with fate_ubw:bellerophon",
+                    "hotbar.0 with fate_ubw:rider_dagger",
                     "hotbar.2 with fate_ubw:rider_helmet", "hotbar.3 with fate_ubw:rider_chestplate",
                     "hotbar.4 with fate_ubw:rider_leggings", "hotbar.5 with fate_ubw:rider_boots"},
                     new String[]{"~ ~ ~8", "~-3 ~ ~12", "~2 ~ ~14"});
@@ -365,19 +369,14 @@ public class Showcase implements ClientModInitializer {
             }
 
             // Ojos Místicos
-            case 120 -> holdSneak = true;
-            case 122 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 124 -> holdSneak = false;
+            case 122 -> ability(0);
             case 127 -> shot(c, "rider_07_mystic_eyes");
             case 129 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
             case 133 -> shot(c, "rider_08_mystic_eyes_front");
 
             // Bellerophon: invocar, montar, despegar, volar y embestir
-            case 140 -> {
-                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-                p.getInventory().selectedSlot = 1;
-            }
-            case 145 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 140 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 145 -> ability(1);
             case 165 -> shot(c, "rider_09_pegasus_mounted");
             case 167 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
             case 180 -> shot(c, "rider_10_pegasus_front");
@@ -399,7 +398,7 @@ public class Showcase implements ClientModInitializer {
                 yaw = 0.0F;
                 holdForward = false;
             }
-            case 250 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 250 -> ability(1);
             case 252 -> {
                 if (waitUntil(p.getVehicle() instanceof com.nuwuman.fateubw.rider.PegasusEntity peg && peg.getCharge() > 0, 40)) return false;
             }
@@ -424,7 +423,7 @@ public class Showcase implements ClientModInitializer {
         switch (t) {
             case 0 -> setup(c, p, new String[]{
                     "armor.chest with fate_ubw:gilgamesh_chestplate", "armor.legs with fate_ubw:gilgamesh_leggings",
-                    "armor.feet with fate_ubw:gilgamesh_boots", "hotbar.0 with fate_ubw:gate_of_babylon",
+                    "armor.feet with fate_ubw:gilgamesh_boots",
                     "hotbar.1 with fate_ubw:ea", "hotbar.2 with fate_ubw:gilgamesh_chestplate",
                     "hotbar.3 with fate_ubw:gilgamesh_leggings", "hotbar.4 with fate_ubw:gilgamesh_boots"},
                     new String[]{"~-2 ~ ~10", "~2 ~ ~12", "~ ~ ~16"});
@@ -435,7 +434,7 @@ public class Showcase implements ClientModInitializer {
             case 70 -> shot(c, "gilgamesh_03_back");
 
             // Gate of Babylon
-            case 80 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 80 -> ability(0);
             case 82 -> {
                 if (waitUntil(clientHas(c, com.nuwuman.fateubw.FateUBW.BABYLON_PORTAL), 40)) return false;
             }
@@ -448,6 +447,9 @@ public class Showcase implements ClientModInitializer {
             }
             case 112 -> shot(c, "gilgamesh_06_gate_barrage");
             case 130 -> yaw = 0.0F;
+            // Enkidu contra el husk del centro
+            case 136 -> ability(1);
+            case 141 -> shot(c, "gilgamesh_06b_enkidu");
 
             // Ea: carga y Enuma Elish
             case 150 -> {
@@ -484,7 +486,7 @@ public class Showcase implements ClientModInitializer {
         switch (t) {
             case 0 -> setup(c, p, new String[]{
                     "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
-                    "armor.feet with fate_ubw:archer_boots", "hotbar.0 with fate_ubw:unlimited_blade_works"},
+                    "armor.feet with fate_ubw:archer_boots"},
                     new String[]{"~-2 ~ ~6", "~2 ~ ~8", "~ ~ ~10"});
             // Algo que el Marble debe devolver tal cual: una torre y un cofre con diamantes
             case 2 -> {
@@ -493,12 +495,9 @@ public class Showcase implements ClientModInitializer {
                 chestPos = p.getBlockPos().add(-4, 0, 4);
             }
             case 30 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 40 -> use(c, p);
+            // La habilidad del conjunto: el aria dura 3 s y el Marble se despliega solo
+            case 40 -> ability(1);
             case 70 -> shot(c, "ubw_01_chant");
-            case 105 -> {
-                if (waitCharge(c, p, 62)) return false;
-                holdUse = false;
-            }
             case 107 -> {
                 if (waitUntil(inside, 100)) return false;
             }
@@ -522,16 +521,26 @@ public class Showcase implements ClientModInitializer {
                 pitch = 0.0F;
                 c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
             }
-            case 182 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 182 -> ability(1);
             case 184 -> yaw = 25.0F;
             case 190 -> shot(c, "ubw_06_barrage");
             case 196 -> shot(c, "ubw_07_barrage_late");
-            // Deshacer el Marble (después de la recarga de 1,5 s de la ráfaga)
-            case 228 -> {
+            // Las espadas que llueven solas sobre los demás y el HUD con la ráfaga
+            case 210 -> {
                 yaw = 0.0F;
-                holdSneak = true;
+                c.options.setPerspective(Perspective.FIRST_PERSON);
             }
-            case 232 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 214 -> shot(c, "ubw_07a_sword_rain_hud");
+            // No se puede romper ni poner bloques dentro
+            case 216 -> c.interactionManager.attackBlock(p.getBlockPos().down(), net.minecraft.util.math.Direction.UP);
+            case 222 -> {
+                var server = c.getServer();
+                var below = p.getBlockPos().down();
+                log("suelo tras intentar romperlo: " + server.submit(() -> server.getOverworld().getBlockState(below)).join());
+            }
+            // Deshacer el Marble
+            case 228 -> holdSneak = true;
+            case 232 -> ability(1);
             case 236 -> holdSneak = false;
             case 238 -> {
                 if (waitUntil(!inside, 100)) return false;
@@ -556,23 +565,24 @@ public class Showcase implements ClientModInitializer {
         switch (t) {
             case 0 -> setup(c, p, new String[]{
                     "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
-                    "armor.feet with fate_ubw:archer_boots", "hotbar.0 with fate_ubw:trace_on"}, new String[]{});
+                    "armor.feet with fate_ubw:archer_boots"}, new String[]{});
             case 2 -> p.networkHandler.sendChatCommand(
                     "summon husk ~ ~ ~6 {NoAI:1b,PersistenceRequired:1b,HandItems:[{id:\"minecraft:netherite_sword\",count:1}]}");
+            // Sin nada analizado: Kanshō y Bakuya
+            case 30 -> ability(0);
+            case 40 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 50 -> shot(c, "trace_04_kanshou_bakuya");
+            case 52 -> c.options.setPerspective(Perspective.FIRST_PERSON);
             // Analizar la espada del husk
-            case 30 -> holdSneak = true;
-            case 34 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 38 -> holdSneak = false;
-            case 42 -> shot(c, "trace_01_analyze");
-            // Proyectarla
-            case 50 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 60 -> shot(c, "trace_02_projected_firstperson");
-            case 62 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-            case 72 -> shot(c, "trace_03_projected_front");
-            // Sin memoria: Kanshō y Bakuya
-            case 80 -> p.networkHandler.sendChatCommand("item replace entity @s weapon.mainhand with fate_ubw:trace_on");
-            case 90 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 100 -> shot(c, "trace_04_kanshou_bakuya");
+            case 56 -> holdSneak = true;
+            case 60 -> ability(0);
+            case 64 -> holdSneak = false;
+            case 68 -> shot(c, "trace_01_analyze");
+            // Proyectarla: va al primer hueco libre de la barra y se selecciona
+            case 72 -> ability(0);
+            case 84 -> shot(c, "trace_02_projected_firstperson");
+            case 86 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 98 -> shot(c, "trace_03_projected_front");
             // Broken Phantasm: tirar la proyección
             case 102 -> {
                 c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
@@ -595,6 +605,172 @@ public class Showcase implements ClientModInitializer {
             }
         }
         return false;
+    }
+
+    // Las habilidades de Saber y Lancer, y el HUD al cambiar de habilidad con la tecla
+    private boolean hud(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:saber_chestplate", "armor.legs with fate_ubw:saber_leggings",
+                    "armor.feet with fate_ubw:saber_boots", "hotbar.0 with fate_ubw:excalibur"},
+                    new String[]{"~-1 ~ ~6", "~1 ~ ~7"});
+            case 30 -> shot(c, "hud_01_saber");
+            case 32 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 36 -> ability(0);
+            case 44 -> shot(c, "hud_02_avalon");
+            case 46 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+            }
+            case 50 -> ability(1);
+            case 53 -> shot(c, "hud_03_mana_burst");
+            // Excalibur tiene ahora un cooldown por habilidad: Strike Air no bloquea el haz
+            case 60 -> holdSneak = true;
+            case 62 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 64 -> holdSneak = false;
+            case 66 -> log("Strike Air en cooldown: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.STRIKE_AIR)
+                    + ", haz de Excalibur bloqueado: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.EXCALIBUR_NP));
+            case 70 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:lancer_chestplate", "armor.legs with fate_ubw:lancer_leggings",
+                    "armor.feet with fate_ubw:lancer_boots"}, new String[]{"~ ~ ~8"});
+            case 100 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                ability(0);
+            }
+            case 104 -> shot(c, "hud_04_ansuz");
+            case 120 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean caster(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:caster_chestplate", "armor.legs with fate_ubw:caster_leggings",
+                    "armor.feet with fate_ubw:caster_boots", "hotbar.0 with fate_ubw:rule_breaker",
+                    "hotbar.1 with fate_ubw:caster_chestplate", "hotbar.2 with fate_ubw:caster_leggings", "hotbar.3 with fate_ubw:caster_boots"},
+                    new String[]{});
+            case 40 -> shot(c, "caster_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "caster_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "caster_03_back");
+            case 72 -> yaw = 90.0F;
+            case 82 -> shot(c, "caster_04_side");
+            case 84 -> {
+                yaw = 0.0F;
+                husks(p, "~ ~ ~3", "~-3 ~ ~10", "~3 ~ ~12");
+            }
+            case 90 -> ability(0);
+            case 93 -> shot(c, "caster_05_divine_words");
+            case 100 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 103 -> shot(c, "caster_06_rule_breaker");
+            case 110 -> {
+                pitch = 30.0F;
+                pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+            }
+            case 114 -> ability(1);
+            case 120 -> {
+                pitch = 0.0F;
+                shot(c, "caster_07_spatial_transfer");
+            }
+            case 130 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean assassin(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:assassin_chestplate", "armor.legs with fate_ubw:assassin_leggings",
+                    "armor.feet with fate_ubw:assassin_boots", "hotbar.0 with fate_ubw:monohoshizao",
+                    "hotbar.1 with fate_ubw:assassin_chestplate", "hotbar.2 with fate_ubw:assassin_leggings", "hotbar.3 with fate_ubw:assassin_boots"},
+                    new String[]{"~ ~ ~5"});
+            case 40 -> shot(c, "assassin_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "assassin_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "assassin_03_back");
+            case 72 -> yaw = 90.0F;
+            case 82 -> shot(c, "assassin_04_side");
+            case 84 -> yaw = 0.0F;
+            case 90 -> use(c, p);
+            case 112 -> {
+                if (waitCharge(c, p, 22)) return false;
+                holdUse = false;
+            }
+            case 114 -> shot(c, "assassin_05_tsubame_gaeshi");
+            case 120 -> ability(0);
+            case 126 -> shot(c, "assassin_06_presence_concealment");
+            case 140 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean berserker(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:berserker_chestplate", "armor.legs with fate_ubw:berserker_leggings",
+                    "armor.feet with fate_ubw:berserker_boots", "hotbar.0 with fate_ubw:berserker_axe_sword",
+                    "hotbar.1 with fate_ubw:berserker_chestplate", "hotbar.2 with fate_ubw:berserker_leggings", "hotbar.3 with fate_ubw:berserker_boots"},
+                    new String[]{});
+            case 40 -> shot(c, "berserker_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "berserker_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "berserker_03_back");
+            case 72 -> yaw = 90.0F;
+            case 82 -> shot(c, "berserker_04_side");
+            case 84 -> {
+                yaw = 0.0F;
+                husks(p, "~ ~ ~4", "~-2 ~ ~5", "~2 ~ ~5");
+            }
+            case 90 -> use(c, p);
+            case 122 -> {
+                if (waitCharge(c, p, 32)) return false;
+                holdUse = false;
+            }
+            case 124 -> shot(c, "berserker_05_nine_lives");
+            case 130 -> ability(0);
+            case 134 -> shot(c, "berserker_06_mad_enhancement");
+            // God Hand: morir con el conjunto puesto resucita y gasta una vida
+            case 140 -> p.networkHandler.sendChatCommand("kill @s");
+            case 150 -> {
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+                log("vivo tras /kill: " + p.isAlive() + ", vidas: " + com.nuwuman.fateubw.berserker.BerserkerArmorItem.lives(p));
+            }
+            case 152 -> shot(c, "berserker_07_god_hand");
+            case 160 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private static void husks(ClientPlayerEntity p, String... positions) {
+        for (String pos : positions) p.networkHandler.sendChatCommand("summon husk " + pos + " {NoAI:1b,PersistenceRequired:1b}");
+    }
+
+    private static void ability(int index) {
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.nuwuman.fateubw.ability.UseAbilityPayload(index));
+    }
+
+    private static void pressKey(int key) {
+        net.minecraft.client.option.KeyBinding.onKeyPressed(net.minecraft.client.util.InputUtil.Type.KEYSYM.createFromCode(key));
     }
 
     private void use(MinecraftClient c, ClientPlayerEntity p) {

@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -20,7 +21,7 @@ import java.util.List;
 /** Bridas de Bellerophon. Click derecho: invoca a Pegaso y lo monta. Montado: la embestida de Bellerophon. */
 public class BellerophonItem extends Item {
     // Corto: también bloquea la embestida justo después de montar
-    private static final int SUMMON_COOLDOWN = 20;
+    public static final int SUMMON_COOLDOWN = 20;
     public static final int CHARGE_COOLDOWN = 20 * 30;
 
     public BellerophonItem(Item.Settings settings) {
@@ -28,31 +29,37 @@ public class BellerophonItem extends Item {
     }
 
     @Override
+    // El ítem (ya no se fabrica: ahora es habilidad del conjunto de Rider) funciona igual que la habilidad
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (user.getVehicle() instanceof PegasusEntity pegasus) {
-            if (user.getItemCooldownManager().isCoolingDown(FateUBW.BELLEROPHON_CHARGE)) {
-                if (!world.isClient) FateUBW.cooldownMessage(user, FateUBW.BELLEROPHON_CHARGE, CHARGE_COOLDOWN, "bellerophon");
-                return TypedActionResult.fail(stack);
-            }
-            if (!world.isClient) pegasus.startCharge();
-            user.getItemCooldownManager().set(FateUBW.BELLEROPHON_CHARGE, CHARGE_COOLDOWN);
-            return TypedActionResult.success(stack, world.isClient());
+        Item key = user.getVehicle() instanceof PegasusEntity ? FateUBW.BELLEROPHON_CHARGE : FateUBW.BELLEROPHON;
+        if (user.getItemCooldownManager().isCoolingDown(key)) {
+            if (!world.isClient) FateUBW.cooldownMessage(user, key, key == FateUBW.BELLEROPHON ? SUMMON_COOLDOWN : CHARGE_COOLDOWN, "bellerophon");
+            return TypedActionResult.fail(stack);
         }
-
-        if (world instanceof ServerWorld server) {
-            PegasusEntity pegasus = FateUBW.PEGASUS.create(server);
-            if (pegasus == null) return TypedActionResult.fail(stack);
-            pegasus.refreshPositionAndAngles(user.getX(), user.getY(), user.getZ(), user.getYaw(), 0.0F);
-            server.spawnEntity(pegasus);
-            user.startRiding(pegasus, true);
-            server.spawnParticles(ParticleTypes.END_ROD, user.getX(), user.getBodyY(0.5), user.getZ(), 40, 1.0, 1.0, 1.0, 0.1);
-            server.spawnParticles(ParticleTypes.CLOUD, user.getX(), user.getY() + 0.5, user.getZ(), 20, 1.0, 0.3, 1.0, 0.05);
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_HORSE_AMBIENT, SoundCategory.PLAYERS, 1.2F, 1.2F);
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, SoundCategory.PLAYERS, 1.0F, 1.4F);
+        if (user instanceof ServerPlayerEntity player && ability(player)) {
+            player.getItemCooldownManager().set(key, key == FateUBW.BELLEROPHON ? SUMMON_COOLDOWN : CHARGE_COOLDOWN);
         }
-        user.getItemCooldownManager().set(this, SUMMON_COOLDOWN);
         return TypedActionResult.success(stack, world.isClient());
+    }
+
+    /** Montado en Pegaso: la embestida. Si no: invoca a Pegaso y lo monta. */
+    public static boolean ability(ServerPlayerEntity user) {
+        if (user.getVehicle() instanceof PegasusEntity pegasus) {
+            pegasus.startCharge();
+            return true;
+        }
+        ServerWorld server = user.getServerWorld();
+        PegasusEntity pegasus = FateUBW.PEGASUS.create(server);
+        if (pegasus == null) return false;
+        pegasus.refreshPositionAndAngles(user.getX(), user.getY(), user.getZ(), user.getYaw(), 0.0F);
+        server.spawnEntity(pegasus);
+        user.startRiding(pegasus, true);
+        server.spawnParticles(ParticleTypes.END_ROD, user.getX(), user.getBodyY(0.5), user.getZ(), 40, 1.0, 1.0, 1.0, 0.1);
+        server.spawnParticles(ParticleTypes.CLOUD, user.getX(), user.getY() + 0.5, user.getZ(), 20, 1.0, 0.3, 1.0, 0.05);
+        server.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_HORSE_AMBIENT, SoundCategory.PLAYERS, 1.2F, 1.2F);
+        server.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, SoundCategory.PLAYERS, 1.0F, 1.4F);
+        return true;
     }
 
     @Override

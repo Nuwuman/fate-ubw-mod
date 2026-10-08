@@ -1,0 +1,13 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.berserker_armor.idle": {
+      "loop": true,
+      "animation_length": 2.0,
+      "bones": {
+        "loinFront": { "rotation": { "0.0": [-3, 0, 0], "1.0": [-7, 0, 0], "2.0": [-3, 0, 0] } },
+        "loinBack": { "rotation": { "0.0": [4, 0, 0], "1.0": [8, 0, 0], "2.0": [4, 0, 0] } }
+      }
+    }
+  }
+}

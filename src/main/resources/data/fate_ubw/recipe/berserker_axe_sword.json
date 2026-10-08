@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["SSS", "SNS", " L "],
+  "key": {
+    "S": { "item": "minecraft:polished_deepslate" },
+    "N": { "item": "minecraft:netherite_ingot" },
+    "L": { "item": "minecraft:leather" }
+  },
+  "result": { "id": "fate_ubw:berserker_axe_sword", "count": 1 }
+}

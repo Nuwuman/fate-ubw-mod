@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["N N", "B B"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "B": { "item": "minecraft:leather" }
+  },
+  "result": { "id": "fate_ubw:berserker_boots", "count": 1 }
+}

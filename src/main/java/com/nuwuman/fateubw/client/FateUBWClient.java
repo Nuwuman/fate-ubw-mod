@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class FateUBWClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        AbilityHud.register();
         EntityRendererRegistry.register(FateUBW.BEAM, ExcaliburBeamRenderer::new);
         EntityRendererRegistry.register(FateUBW.THROWN_FALCHION, ThrownFalchionRenderer::new);
         EntityRendererRegistry.register(FateUBW.SWORD_ARROW_ENTITY, ctx -> {

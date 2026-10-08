@@ -3,6 +3,22 @@ package com.nuwuman.fateubw.archer;
 import com.nuwuman.fateubw.FateUBW;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import com.nuwuman.fateubw.gilgamesh.BabylonPortalEntity;
+import com.nuwuman.fateubw.gilgamesh.BabylonWeaponEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.ActionResult;
+import org.joml.Vector3f;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -59,6 +75,12 @@ public final class UnlimitedBladeWorks {
     public static final int RADIUS = 32;
     /** Lo que tarda el Marble en extenderse hasta su radio. */
     public static final int SPREAD_TICKS = 30;
+    public static final int MARBLE_COOLDOWN = 20 * 120;
+    public static final int BARRAGE_COOLDOWN = 20;
+    public static final int CHANT_TICKS = 60;
+    private static final int BARRAGE_SWORDS = 16;
+    private static final int RAIN_INTERVAL = 30;
+    private static final DustParticleEffect EMBER = new DustParticleEffect(new Vector3f(1.0F, 0.45F, 0.1F), 1.5F);
     private static final int FLOOR_DEPTH = 3;
     private static final int WALL = RADIUS - 2; // a partir de aquí, barrera
     private static final int ARENA_RADIUS = 6;
@@ -157,6 +179,8 @@ public final class UnlimitedBladeWorks {
     private static final PersistentState.Type<Saved> SAVED_TYPE = new PersistentState.Type<>(Saved::new, Saved::load,
             DataFixTypes.SAVED_DATA_COMMAND_STORAGE); // null rompe la lectura en vanilla; con la versión actual no cambia nada
     private static final Map<UUID, Marble> MARBLES = new HashMap<>();
+    // Quien está recitando el aria (habilidad del conjunto) y cuántos ticks lleva
+    private static final Map<UUID, Integer> CHANTS = new HashMap<>();
     // Marbles que se están deshaciendo: el mundo vuelve de fuera adentro en RESTORE_TICKS
     private static final List<Marble> CLOSING = new ArrayList<>();
     private static final int RESTORE_TICKS = 20;
@@ -189,7 +213,123 @@ public final class UnlimitedBladeWorks {
             CLOSING.clear();
             if (saved != null) saved.markDirty();
         });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> saved = null);
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            saved = null;
+            CHANTS.clear();
+        });
+
+        // Dentro del Marble no se rompen ni se ponen bloques (el mundo de fuera está guardado debajo)
+        PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> !protects(world, pos));
+        UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+            ItemStack stack = player.getStackInHand(hand);
+            boolean places = stack.getItem() instanceof BlockItem || stack.getItem() instanceof BucketItem
+                    || stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE);
+            if (!world.isClient && places && (protects(world, hit.getBlockPos()) || protects(world, hit.getBlockPos().offset(hit.getSide())))) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
+    }
+
+    private static boolean protects(World world, BlockPos pos) {
+        for (Marble m : MARBLES.values()) {
+            if (m.world == world.getRegistryKey() && pos.getY() >= m.center.getY() - FLOOR_DEPTH
+                    && dist2(m.center, pos) < RADIUS * RADIUS) return true;
+        }
+        return false;
+    }
+
+    /** Dentro de un Marble; en el cliente, donde no se conocen los Marbles, por la cercanía de su núcleo. */
+    public static boolean isInsideAny(PlayerEntity player) {
+        if (!player.getWorld().isClient) return isInside(player);
+        return !player.getWorld().getEntitiesByClass(UbwCoreEntity.class, player.getBoundingBox().expand(WALL), e -> true).isEmpty();
+    }
+
+    /**
+     * La habilidad del conjunto de Archer. Fuera: empieza el aria (3 s) y al acabar despliega el Marble.
+     * Dentro: ráfaga de espadas; agachado, deshace el Marble propio.
+     */
+    public static boolean useAbility(ServerPlayerEntity player) {
+        if (isInside(player)) {
+            if (player.isSneaking()) {
+                end(player);
+                return false;
+            }
+            barrage(player.getServerWorld(), player);
+            return true;
+        }
+        if (!CHANTS.containsKey(player.getUuid())) {
+            CHANTS.put(player.getUuid(), 0);
+            player.sendMessage(Text.translatable("message.fate_ubw.ubw_chant").formatted(Formatting.RED, Formatting.ITALIC), true);
+        }
+        return false;
+    }
+
+    // Un anillo de fuego que se extiende por el suelo mientras se recita el aria
+    public static void chantEffects(ServerWorld world, LivingEntity user, int charge) {
+        double radius = (RADIUS - 2) * Math.min(1.0, charge / (double) CHANT_TICKS);
+        for (int i = 0; i < 64; i++) {
+            double angle = i * Math.PI * 2 / 64 + charge * 0.05;
+            world.spawnParticles(ParticleTypes.FLAME, user.getX() + Math.cos(angle) * radius, user.getY() + 0.1,
+                    user.getZ() + Math.sin(angle) * radius, 1, 0.0, 0.05, 0.0, 0.01);
+        }
+        world.spawnParticles(EMBER, user.getX(), user.getBodyY(0.5), user.getZ(), 2, 0.6, 0.8, 0.6, 0.0);
+        if (charge % 20 == 0 && charge > 0 && charge <= CHANT_TICKS) {
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 1.0F, 0.6F + charge / 100.0F);
+        }
+    }
+
+    private static final ItemStack[] SWORDS = {new ItemStack(FateUBW.KANSHOU), new ItemStack(FateUBW.BAKUYA),
+            new ItemStack(FateUBW.SWORD_ARROW), new ItemStack(FateUBW.CALADBOLG), new ItemStack(Items.IRON_SWORD),
+            new ItemStack(Items.DIAMOND_SWORD)};
+
+    private static ItemStack randomSword(ServerWorld world) {
+        return SWORDS[world.random.nextInt(SWORDS.length)].copy();
+    }
+
+    /** Espadas que surgen del suelo detrás del lanzador y salen disparadas hacia lo que mira. */
+    public static void barrage(ServerWorld world, PlayerEntity player) {
+        Vec3d target = BabylonPortalEntity.aimPoint(world, player, 48.0);
+        Vec3d forward = Vec3d.fromPolar(0.0F, player.getYaw());
+        Vec3d right = forward.crossProduct(new Vec3d(0.0, 1.0, 0.0));
+        for (int i = 0; i < BARRAGE_SWORDS; i++) {
+            Vec3d from = player.getPos()
+                    .add(right.multiply((i - (BARRAGE_SWORDS - 1) / 2.0) * 0.7))
+                    .subtract(forward.multiply(1.5 + world.random.nextDouble()))
+                    .add(0.0, 0.4 + world.random.nextDouble() * 1.4, 0.0);
+            BabylonWeaponEntity sword = new BabylonWeaponEntity(world, player, randomSword(world));
+            sword.setPosition(from);
+            Vec3d dir = target.subtract(from).normalize();
+            sword.setVelocity(dir.x, dir.y, dir.z, 2.8F, 1.5F);
+            world.spawnEntity(sword);
+            world.spawnParticles(ParticleTypes.CRIT, from.x, from.y, from.z, 4, 0.1, 0.1, 0.1, 0.1);
+        }
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 1.5F, 0.6F);
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_TRIDENT_THROW.value(), SoundCategory.PLAYERS, 1.0F, 0.8F);
+    }
+
+    // El Marble es el mundo de EMIYA: él se fortalece y sobre todos los demás llueven espadas
+    private static void empower(ServerWorld world, Marble m, ServerPlayerEntity caster, int age) {
+        if (age % 40 == 0) {
+            caster.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 60, 1, true, false));
+            caster.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 60, 0, true, false));
+            caster.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 60, 0, true, false));
+            caster.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 60, 0, true, false));
+        }
+        if (age < SPREAD_TICKS || age % RAIN_INTERVAL != 0) return;
+        for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, new Box(m.center).expand(RADIUS),
+                e -> e != caster && e.isAlive() && !e.isSpectator() && !(e instanceof ArmorStandEntity)
+                        && !(e instanceof PlayerEntity p && p.isCreative()) && contains(m, e.getBlockPos()))) {
+            for (int i = 0; i < 3; i++) {
+                Vec3d from = target.getPos().add(world.random.nextDouble() * 4 - 2, 7 + world.random.nextDouble() * 3,
+                        world.random.nextDouble() * 4 - 2);
+                Vec3d dir = target.getBoundingBox().getCenter().subtract(from).normalize();
+                BabylonWeaponEntity sword = new BabylonWeaponEntity(world, caster, randomSword(world));
+                sword.setPosition(from);
+                sword.setVelocity(dir.x, dir.y, dir.z, 2.2F, 2.0F);
+                world.spawnEntity(sword);
+            }
+        }
     }
 
     // Distancia² al centro: esfera por encima del suelo, cilindro por debajo
@@ -268,6 +408,7 @@ public final class UnlimitedBladeWorks {
         world.playSound(null, base.x, base.y, base.z, SoundEvents.BLOCK_END_PORTAL_SPAWN, SoundCategory.PLAYERS, 1.0F, 0.6F);
         world.playSound(null, base.x, base.y, base.z, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 2.0F, 0.5F);
         caster.sendMessage(Text.translatable("message.fate_ubw.ubw_open").formatted(Formatting.RED), true);
+        caster.getItemCooldownManager().set(FateUBW.UBW_COOLDOWN, MARBLE_COOLDOWN);
         return true;
     }
 
@@ -347,10 +488,24 @@ public final class UnlimitedBladeWorks {
                     || caster.getWorld().getRegistryKey() != m.world || !contains(m, caster.getBlockPos())) {
                 ended.add(m);
                 it.remove();
-            } else if (m.ticksLeft == 200) {
-                caster.sendMessage(Text.translatable("message.fate_ubw.ubw_ending").formatted(Formatting.GOLD), true);
+            } else {
+                if (m.ticksLeft == 200) caster.sendMessage(Text.translatable("message.fate_ubw.ubw_ending").formatted(Formatting.GOLD), true);
+                if (world != null) empower(world, m, caster, DURATION - m.ticksLeft);
             }
         }
+
+        // El aria: se cancela si se quita la ropa o muere; al terminar, se despliega el Marble
+        CHANTS.entrySet().removeIf(entry -> {
+            ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
+            if (player == null || !player.isAlive() || !com.nuwuman.fateubw.ServantArmorItem.wearsSet(player,
+                    FateUBW.ARCHER_CHESTPLATE, FateUBW.ARCHER_LEGGINGS, FateUBW.ARCHER_BOOTS)) return true;
+            int charge = entry.getValue() + 1;
+            entry.setValue(charge);
+            chantEffects(player.getServerWorld(), player, charge);
+            if (charge < CHANT_TICKS) return false;
+            open(player);
+            return true;
+        });
         for (Marble m : ended) close(server, m);
         boolean restored = CLOSING.removeIf(m -> {
             ServerWorld world = server.getWorld(m.world);

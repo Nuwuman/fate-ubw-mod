@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["N N", "BPB", "BBB"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "P": { "item": "minecraft:gold_ingot" },
+    "B": { "item": "minecraft:purple_wool" }
+  },
+  "result": { "id": "fate_ubw:caster_chestplate", "count": 1 }
+}
