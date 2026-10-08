@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class Showcase implements ClientModInitializer {
     private final List<String> sections = System.getenv("FATE_SHOWCASE") == null
-            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh") : List.of(System.getenv("FATE_SHOWCASE").split(","));
+            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh", "ubw") : List.of(System.getenv("FATE_SHOWCASE").split(","));
     private int ticks;
     private int worldTicks;
     private boolean started;
@@ -102,6 +102,7 @@ public class Showcase implements ClientModInitializer {
             case "lancer" -> lancer(client, p, st);
             case "rider" -> rider(client, p, st);
             case "gilgamesh" -> gilgamesh(client, p, st);
+            case "ubw" -> ubw(client, p, st);
             default -> true;
         };
         if (done) {
@@ -468,6 +469,66 @@ public class Showcase implements ClientModInitializer {
             case 240 -> shot(c, "gilgamesh_10_enuma_elish_late");
             case 260 -> {
                 yaw = 0.0F;
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean ubw(MinecraftClient c, ClientPlayerEntity p, int t) {
+        boolean inside = c.world.getRegistryKey() == com.nuwuman.fateubw.archer.UnlimitedBladeWorks.WORLD;
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
+                    "armor.feet with fate_ubw:archer_boots", "hotbar.0 with fate_ubw:unlimited_blade_works"},
+                    new String[]{"~-2 ~ ~6", "~2 ~ ~8", "~ ~ ~10"});
+            case 30 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 40 -> use(c, p);
+            case 70 -> shot(c, "ubw_01_chant");
+            case 105 -> {
+                if (waitCharge(c, p, 62)) return false;
+                holdUse = false;
+            }
+            case 107 -> {
+                if (waitUntil(inside, 100)) return false;
+            }
+            case 140 -> shot(c, "ubw_02_arrival_back");
+            case 142 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 152 -> shot(c, "ubw_03_arrival_front");
+            case 154 -> {
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+                pitch = -20.0F;
+                yaw = 120.0F;
+            }
+            case 164 -> shot(c, "ubw_04_sky_gears");
+            case 166 -> {
+                yaw = 250.0F;
+                pitch = 5.0F;
+            }
+            case 176 -> shot(c, "ubw_05_sword_field");
+            case 178 -> {
+                yaw = 0.0F;
+                pitch = 0.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            }
+            case 182 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 184 -> yaw = 25.0F;
+            case 190 -> shot(c, "ubw_06_barrage");
+            case 196 -> shot(c, "ubw_07_barrage_late");
+            // Deshacer el Marble (después de la recarga de 1,5 s de la ráfaga)
+            case 228 -> {
+                yaw = 0.0F;
+                holdSneak = true;
+            }
+            case 232 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 236 -> holdSneak = false;
+            case 238 -> {
+                if (waitUntil(!inside, 100)) return false;
+            }
+            case 300 -> shot(c, "ubw_08_returned");
+            case 310 -> {
                 return true;
             }
             default -> {

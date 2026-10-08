@@ -54,6 +54,17 @@
   "item.fate_ubw.mystic_eyes": "Ojos Místicos",
   "item.fate_ubw.bellerophon_charge": "Embestida de Bellerophon",
 
+  "item.fate_ubw.unlimited_blade_works": "Unlimited Blade Works",
+  "item.fate_ubw.unlimited_blade_works.tooltip.open": "Mantén 3 s y suelta: despliega el Reality Marble (tú y quien esté a 16 bloques)",
+  "item.fate_ubw.unlimited_blade_works.tooltip.inside": "Dentro, click derecho: espadas que surgen del suelo hacia el enemigo",
+  "item.fate_ubw.unlimited_blade_works.tooltip.end": "Dentro, agachado + click derecho: deshace el Marble (dura 60 s)",
+  "item.fate_ubw.ubw_cooldown": "Unlimited Blade Works",
+  "block.fate_ubw.ubw_sword": "Espada clavada",
+  "entity.fate_ubw.ubw_core": "Unlimited Blade Works",
+  "message.fate_ubw.ubw_open": "Unlimited Blade Works",
+  "message.fate_ubw.ubw_ending": "El Reality Marble se deshace en 10 s",
+  "ability.fate_ubw.unlimited_blade_works": "Unlimited Blade Works",
+
   "item.fate_ubw.gate_of_babylon": "Llave de Babilonia",
   "item.fate_ubw.gate_of_babylon.tooltip": "Click derecho: Gate of Babylon, lluvia de armas del tesoro",
   "item.fate_ubw.ea": "Ea",

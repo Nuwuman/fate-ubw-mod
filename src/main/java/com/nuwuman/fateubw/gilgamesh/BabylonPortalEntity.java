@@ -99,12 +99,16 @@ public class BabylonPortalEntity extends Entity {
         world.playSound(null, from.x, from.y, from.z, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.2F, 0.6F);
     }
 
-    // El enemigo al que mira el dueño o, si no hay, el bloque al que apunta (o 64 bloques al frente)
     private Vec3d aimPoint(ServerWorld world) {
-        LivingEntity target = GaeBolgItem.findTarget(world, owner, RANGE, 0.97);
+        return aimPoint(world, owner, RANGE);
+    }
+
+    /** El enemigo al que mira el jugador o, si no hay, el bloque al que apunta (o el punto a esa distancia al frente). */
+    public static Vec3d aimPoint(ServerWorld world, PlayerEntity player, double range) {
+        LivingEntity target = GaeBolgItem.findTarget(world, player, range, 0.97);
         if (target != null) return target.getBoundingBox().getCenter();
-        HitResult hit = owner.raycast(RANGE, 1.0F, false);
-        return hit.getType() == HitResult.Type.MISS ? owner.getEyePos().add(owner.getRotationVec(1.0F).multiply(RANGE)) : hit.getPos();
+        HitResult hit = player.raycast(range, 1.0F, false);
+        return hit.getType() == HitResult.Type.MISS ? player.getEyePos().add(player.getRotationVec(1.0F).multiply(range)) : hit.getPos();
     }
 
     // El tesoro guarda los prototipos de todos los Noble Phantasm... y armas corrientes de oro y diamante

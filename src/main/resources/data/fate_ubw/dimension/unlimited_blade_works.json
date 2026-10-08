@@ -1,0 +1,17 @@
+{
+  "type": "fate_ubw:unlimited_blade_works",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "fate_ubw:unlimited_blade_works",
+      "lakes": false,
+      "features": false,
+      "layers": [
+        { "block": "minecraft:bedrock", "height": 1 },
+        { "block": "minecraft:terracotta", "height": 3 },
+        { "block": "minecraft:red_sand", "height": 1 }
+      ],
+      "structure_overrides": []
+    }
+  }
+}

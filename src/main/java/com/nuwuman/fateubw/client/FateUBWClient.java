@@ -29,6 +29,7 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(FateUBW.CHAIN_DAGGER, ChainDaggerRenderer::new);
         EntityRendererRegistry.register(FateUBW.PEGASUS, PegasusRenderer::new);
         EntityRendererRegistry.register(FateUBW.ENUMA_ELISH, EnumaElishRenderer::new);
+        EntityRendererRegistry.register(FateUBW.UBW_CORE, UbwCoreRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_PORTAL, BabylonPortalRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_WEAPON, ctx -> new OrientedItemRenderer<BabylonWeaponEntity>(ctx, BabylonWeaponEntity::getStack, e -> false));
 

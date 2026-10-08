@@ -22,6 +22,13 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
   que explota al impactar (Broken Phantasm).
 - **Armadura** (peto, grebas, botas) con modelo 3D de GeckoLib y faldón animado.
   Conjunto completo: visión nocturna y los monstruos cercanos brillan.
+- **Unlimited Blade Works** (Reality Marble): mantén 3 s y suelta. Un anillo de fuego se extiende y tú y todos los seres
+  vivos a 16 bloques sois llevados a la dimensión Unlimited Blade Works: un páramo rojizo bajo un cielo de atardecer,
+  con cientos de espadas clavadas y engranajes gigantes girando en el cielo. Dentro, click derecho hace surgir espadas del
+  suelo que vuelan hacia el enemigo; agachado + click derecho lo deshace. A los 60 s todos vuelven a donde estaban.
+  Si el servidor se cierra durante el Marble, quien siga dentro vuelve a su punto de respawn.
+
+![Unlimited Blade Works](docs/ubw.png)
 
 **Lancer (Cú Chulainn)**
 - **Gáe Bolg**: lanza carmesí con más alcance. Mantén 1 s y suelta: **la lanza que atraviesa con la muerte**,
@@ -92,7 +99,7 @@ El jar sale en `build/libs/`.
   (ítems JSON, geo de GeckoLib) y sus texturas, incluidas las animadas de Excalibur.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
-  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, o varios separados por comas)
+  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, o varios separados por comas)
   solo prueba a esos servants.
 
 ---

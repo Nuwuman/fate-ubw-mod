@@ -360,12 +360,25 @@ public class ServantAssets {
 
     static void itemModel(Path root, String name, Model model, String display, String overrides,
                           int frames, String mcmeta) throws IOException {
+        writeModel(root, "item", name, model, display, overrides, frames, mcmeta);
+    }
+
+    // Modelo de bloque con los mismos cubos (sin transformaciones de vista)
+    static void blockModel(Path root, String name, Model model) throws IOException {
+        Files.createDirectories(root.resolve("models/block"));
+        Files.createDirectories(root.resolve("textures/block"));
+        writeModel(root, "block", name, model, null, null, 1, null);
+    }
+
+    static void writeModel(Path root, String folder, String name, Model model, String display, String overrides,
+                           int frames, String mcmeta) throws IOException {
         BufferedImage img = atlas(model.cubes, frames);
-        if (mcmeta != null) Files.writeString(root.resolve("textures/item/" + name + ".png.mcmeta"), mcmeta + "\n");
+        if (mcmeta != null) Files.writeString(root.resolve("textures/" + folder + "/" + name + ".png.mcmeta"), mcmeta + "\n");
         double k = 16.0 / img.getWidth();
+        String tex = "fate_ubw:" + folder + "/" + name;
         StringBuilder b = new StringBuilder();
-        b.append("{\n  \"gui_light\": \"front\",\n");
-        b.append("  \"textures\": { \"0\": \"fate_ubw:item/").append(name).append("\", \"particle\": \"fate_ubw:item/").append(name).append("\" },\n");
+        b.append(folder.equals("item") ? "{\n  \"gui_light\": \"front\",\n" : "{\n  \"ambientocclusion\": false,\n");
+        b.append("  \"textures\": { \"0\": \"").append(tex).append("\", \"particle\": \"").append(tex).append("\" },\n");
         b.append("  \"elements\": [\n");
         for (int i = 0; i < model.cubes.size(); i++) {
             Cube c = model.cubes.get(i);
@@ -385,11 +398,47 @@ public class ServantAssets {
             }
             b.append(" } }").append(i < model.cubes.size() - 1 ? "," : "").append("\n");
         }
-        b.append("  ],\n  \"display\": ").append(display);
+        b.append("  ]");
+        if (display != null) b.append(",\n  \"display\": ").append(display);
         if (overrides != null) b.append(",\n  \"overrides\": ").append(overrides);
         b.append("\n}\n");
-        Files.writeString(root.resolve("models/item/" + name + ".json"), b);
-        ImageIO.write(img, "png", root.resolve("textures/item/" + name + ".png").toFile());
+        Files.writeString(root.resolve("models/" + folder + "/" + name + ".json"), b);
+        ImageIO.write(img, "png", root.resolve("textures/" + folder + "/" + name + ".png").toFile());
+    }
+
+    // Da la vuelta a un arma (punta abajo) y la hunde 'bury' unidades en el suelo: una espada clavada
+    static Model buried(Model m, double top, double bury) {
+        Model out = new Model();
+        for (Cube c : m.cubes) {
+            Cube n = out.box(c.from[0], top - c.to[1] - bury, c.from[2], c.to[0], top - c.from[1] - bury, c.to[2], c.paint);
+            n.inflate = c.inflate;
+            if (c.axis != null) {
+                double angle = c.axis.equals("y") ? c.angle : -c.angle; // al reflejar en Y, los giros en X/Z cambian de sentido
+                n.rot(c.axis, angle, c.origin[0], top - c.origin[1] - bury, c.origin[2]);
+            }
+        }
+        return out;
+    }
+
+    // Unlimited Blade Works: espada de hoja gris con runas rojas que laten
+    static Paint runes() {
+        return (x, y, w, h, s) -> {
+            double pulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * FRAME / FRAMES + y * 0.3);
+            boolean rune = Math.floorMod(x * 3 + y, 5) == 0;
+            int c = rune ? lerp(0x7a1010, 0xff4020, pulse) : mul(0xb8bcc6, 1.1 - 0.25 * y / Math.max(1, h - 1));
+            return shade(c, x, y, w, h, s, 0.04);
+        };
+    }
+
+    static Model ubwSword() {
+        Model m = new Model();
+        m.box(7.4, -0.5, 7.4, 8.6, 0.5, 8.6, solid(0x7a1010));     // pomo
+        m.box(7.5, 0.5, 7.5, 8.5, 4.5, 8.5, wrap(0x1a1214, 0x0a0607));
+        m.box(6.3, 4.5, 7.4, 9.7, 5.3, 8.6, solid(0x7a1010));      // guarda
+        Paint blade = runes();
+        m.box(7.2, 5.3, 7.65, 8.8, 20, 8.35, blade);
+        m.box(7.6, 20, 7.75, 8.4, 22, 8.25, blade);
+        return m;
     }
 
     static void geoModel(Path root, String name, List<Bone> bones) throws IOException {
@@ -1028,5 +1077,29 @@ public class ServantAssets {
                 armorIcon(0.5), null);
         itemModel(root, "gilgamesh_leggings", bonesToModel(gilgamesh, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "gilgamesh_boots", bonesToModel(gilgamesh, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+
+        // ---------- Unlimited Blade Works ----------
+        itemModel(root, "unlimited_blade_works", ubwSword(), handheld(0.8), null, 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
+        // Espadas clavadas: cada modelo del mod, boca abajo y enterrado; el blockstate elige uno y un giro al azar
+        Map<String, Model> graves = new LinkedHashMap<>();
+        graves.put("kanshou", buried(falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL), 20, 5));
+        graves.put("bakuya", buried(falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL), 20, 5));
+        graves.put("arrow", buried(swordArrow(-0.5), 16, 4));
+        graves.put("caladbolg", buried(caladbolg(-0.5), 24.3, 6));
+        graves.put("excalibur", buried(excalibur(0), 24.5, 6));
+        graves.put("gae_bolg", buried(gaeBolg(), 30.5, 12));
+        graves.put("ubw", buried(ubwSword(), 22, 5));
+        StringBuilder variants = new StringBuilder("{\n  \"variants\": {\n    \"\": [\n");
+        int v = 0;
+        for (Map.Entry<String, Model> grave : graves.entrySet()) {
+            blockModel(root, "ubw_sword_" + grave.getKey(), grave.getValue());
+            for (int rot = 0; rot < 360; rot += 90) {
+                if (v++ > 0) variants.append(",\n");
+                variants.append("      { \"model\": \"fate_ubw:block/ubw_sword_").append(grave.getKey()).append("\", \"y\": ").append(rot).append(" }");
+            }
+        }
+        variants.append("\n    ]\n  }\n}\n");
+        Files.createDirectories(root.resolve("blockstates"));
+        Files.writeString(root.resolve("blockstates/ubw_sword.json"), variants);
     }
 }

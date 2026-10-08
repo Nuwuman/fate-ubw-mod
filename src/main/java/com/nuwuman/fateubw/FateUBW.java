@@ -6,6 +6,12 @@ import com.nuwuman.fateubw.archer.FalchionItem;
 import com.nuwuman.fateubw.archer.RhoAiasEntity;
 import com.nuwuman.fateubw.archer.SwordArrowEntity;
 import com.nuwuman.fateubw.archer.ThrownFalchionEntity;
+import com.nuwuman.fateubw.archer.UbwCoreEntity;
+import com.nuwuman.fateubw.archer.UbwItem;
+import com.nuwuman.fateubw.archer.UnlimitedBladeWorks;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.sound.BlockSoundGroup;
 import com.nuwuman.fateubw.gilgamesh.BabylonPortalEntity;
 import com.nuwuman.fateubw.gilgamesh.BabylonWeaponEntity;
 import com.nuwuman.fateubw.gilgamesh.EaItem;
@@ -76,6 +82,12 @@ public class FateUBW implements ModInitializer {
     // ---------- Archer ----------
     public static final RegistryEntry<ArmorMaterial> ARCHER_MATERIAL = armorMaterial("archer");
 
+    // Espadas clavadas en el suelo de Unlimited Blade Works: sin colisión e irrompibles
+    public static final Block UBW_SWORD = Registry.register(Registries.BLOCK, id("ubw_sword"),
+            new Block(AbstractBlock.Settings.create().noCollision().strength(-1.0F, 3600000.0F).dropsNothing().nonOpaque()
+                    .sounds(BlockSoundGroup.METAL)));
+    public static final Item UNLIMITED_BLADE_WORKS = item("unlimited_blade_works", new UbwItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+
     public static final Item KANSHOU = item("kanshou", new FalchionItem(true, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item BAKUYA = item("bakuya", new FalchionItem(false, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item ARCHER_BOW = item("archer_bow", new ArcherBowItem(new Item.Settings().maxDamage(1200).rarity(Rarity.EPIC)));
@@ -119,6 +131,7 @@ public class FateUBW implements ModInitializer {
     public static final Item BATTLE_CONTINUATION = item("battle_continuation", new Item(new Item.Settings()));
     public static final Item MYSTIC_EYES = item("mystic_eyes", new Item(new Item.Settings()));
     public static final Item BELLEROPHON_CHARGE = item("bellerophon_charge", new Item(new Item.Settings()));
+    public static final Item UBW_COOLDOWN = item("ubw_cooldown", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);
@@ -130,6 +143,7 @@ public class FateUBW implements ModInitializer {
     public static final EntityType<EnumaElishEntity> ENUMA_ELISH = entity("enuma_elish", EnumaElishEntity::new, 20);
     public static final EntityType<BabylonPortalEntity> BABYLON_PORTAL = entity("babylon_portal", BabylonPortalEntity::new, 1);
     public static final EntityType<BabylonWeaponEntity> BABYLON_WEAPON = entity("babylon_weapon", BabylonWeaponEntity::new, 20);
+    public static final EntityType<UbwCoreEntity> UBW_CORE = entity("ubw_core", UbwCoreEntity::new, 20);
     public static final EntityType<PegasusEntity> PEGASUS = Registry.register(Registries.ENTITY_TYPE, id("pegasus"),
             EntityType.Builder.create(PegasusEntity::new, SpawnGroup.MISC)
                     .dimensions(1.4F, 1.6F)
@@ -166,6 +180,7 @@ public class FateUBW implements ModInitializer {
                 entries.add(ARCHER_CHESTPLATE);
                 entries.add(ARCHER_LEGGINGS);
                 entries.add(ARCHER_BOOTS);
+                entries.add(UNLIMITED_BLADE_WORKS);
                 entries.add(GAE_BOLG);
                 entries.add(LANCER_CHESTPLATE);
                 entries.add(LANCER_LEGGINGS);
@@ -225,5 +240,6 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(SaberArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
+        UnlimitedBladeWorks.register();
     }
 }
