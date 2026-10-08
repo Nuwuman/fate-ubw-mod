@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["RLR", "LPL", "RLR"],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "L": { "item": "minecraft:lapis_lazuli" },
+    "P": { "item": "minecraft:paper" }
+  },
+  "result": { "id": "fate_ubw:summoning_circle", "count": 1 }
+}

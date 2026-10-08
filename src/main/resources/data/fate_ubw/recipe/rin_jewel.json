@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["R R", " D ", "R R"],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "D": { "item": "minecraft:diamond" }
+  },
+  "result": { "id": "fate_ubw:rin_jewel", "count": 4 }
+}

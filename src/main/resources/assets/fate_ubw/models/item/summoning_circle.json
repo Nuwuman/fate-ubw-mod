@@ -1,0 +1,16 @@
+{
+  "gui_light": "front",
+  "textures": { "0": "fate_ubw:item/summoning_circle", "particle": "fate_ubw:item/summoning_circle" },
+  "elements": [
+    { "from": [1, 0, 1], "to": [15, 0.4, 15], "faces": { "north": { "uv": [0, 7, 7, 7.25], "texture": "#0" }, "south": { "uv": [7, 7, 14, 7.25], "texture": "#0" }, "east": { "uv": [0, 7.25, 7, 7.5], "texture": "#0" }, "west": { "uv": [7, 7.25, 14, 7.5], "texture": "#0" }, "up": { "uv": [0, 0, 7, 7], "texture": "#0" }, "down": { "uv": [7, 0, 14, 7], "texture": "#0" } } }
+  ],
+  "display": {
+    "thirdperson_righthand": { "rotation": [0, 0, 0], "translation": [0, 3, 1], "scale": [0.5, 0.5, 0.5] },
+    "thirdperson_lefthand": { "rotation": [0, 0, 0], "translation": [0, 3, 1], "scale": [0.5, 0.5, 0.5] },
+    "firstperson_righthand": { "rotation": [-60, 0, 0], "translation": [1.13, 3.2, 1.13], "scale": [0.5, 0.5, 0.5] },
+    "firstperson_lefthand": { "rotation": [-60, 0, 0], "translation": [1.13, 3.2, 1.13], "scale": [0.5, 0.5, 0.5] },
+    "gui": { "rotation": [90, 0, 0], "scale": [1, 1, 1] },
+    "ground": { "translation": [0, 2, 0], "scale": [0.5, 0.5, 0.5] },
+    "fixed": { "rotation": [90, 0, 0], "scale": [1, 1, 1] }
+  }
+}

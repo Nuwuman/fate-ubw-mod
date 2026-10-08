@@ -160,5 +160,6 @@ public class ExcaliburItem extends SwordItem {
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.fate_ubw.excalibur.tooltip.charge").formatted(Formatting.GOLD));
         tooltip.add(Text.translatable("item.fate_ubw.excalibur.tooltip.strike_air").formatted(Formatting.AQUA));
+        tooltip.add(Text.translatable("item.fate_ubw.excalibur.tooltip.air").formatted(Formatting.GRAY));
     }
 }

@@ -3,6 +3,15 @@ package com.nuwuman.fateubw;
 import com.nuwuman.fateubw.ability.Abilities;
 import com.nuwuman.fateubw.ability.CommandSeals;
 import com.nuwuman.fateubw.ability.Mana;
+import com.nuwuman.fateubw.archer.HruntingEntity;
+import com.nuwuman.fateubw.master.IllyaWireItem;
+import com.nuwuman.fateubw.master.RinJewelEntity;
+import com.nuwuman.fateubw.master.RinJewelItem;
+import com.nuwuman.fateubw.master.ShirouPosterItem;
+import com.nuwuman.fateubw.master.ZelzerizEntity;
+import com.nuwuman.fateubw.grail.GrailWar;
+import com.nuwuman.fateubw.grail.HolyGrailItem;
+import com.nuwuman.fateubw.grail.SummoningCircleItem;
 import com.nuwuman.fateubw.assassin.AssassinArmorItem;
 import com.nuwuman.fateubw.assassin.MonohoshizaoItem;
 import com.nuwuman.fateubw.berserker.BerserkerArmorItem;
@@ -134,6 +143,15 @@ public class FateUBW implements ModInitializer {
     public static final Item GILGAMESH_LEGGINGS = item("gilgamesh_leggings", new GilgameshArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item GILGAMESH_BOOTS = item("gilgamesh_boots", new GilgameshArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Guerra del Santo Grial ----------
+    public static final Item SUMMONING_CIRCLE = item("summoning_circle", new SummoningCircleItem(new Item.Settings().rarity(Rarity.RARE)));
+    public static final Item HOLY_GRAIL = item("holy_grail", new HolyGrailItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).fireproof()));
+
+    // ---------- Objetos de los Masters ----------
+    public static final Item RIN_JEWEL = item("rin_jewel", new RinJewelItem(new Item.Settings().maxCount(16).rarity(Rarity.RARE)));
+    public static final Item SHIROU_POSTER = item("shirou_poster", new ShirouPosterItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
+    public static final Item ZELZERIZ = item("zelzeriz", new IllyaWireItem(new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
+
     // ---------- Caster ----------
     public static final RegistryEntry<ArmorMaterial> CASTER_MATERIAL = armorMaterial("caster");
 
@@ -199,6 +217,9 @@ public class FateUBW implements ModInitializer {
     public static final EntityType<BabylonPortalEntity> BABYLON_PORTAL = entity("babylon_portal", BabylonPortalEntity::new, 1);
     public static final EntityType<BabylonWeaponEntity> BABYLON_WEAPON = entity("babylon_weapon", BabylonWeaponEntity::new, 20);
     public static final EntityType<UbwCoreEntity> UBW_CORE = entity("ubw_core", UbwCoreEntity::new, 20);
+    public static final EntityType<HruntingEntity> HRUNTING_ENTITY = entity("hrunting", HruntingEntity::new, 1);
+    public static final EntityType<RinJewelEntity> RIN_JEWEL_ENTITY = entity("rin_jewel", RinJewelEntity::new, 10);
+    public static final EntityType<ZelzerizEntity> ZELZERIZ_ENTITY = entity("zelzeriz", ZelzerizEntity::new, 1);
     public static final EntityType<PegasusEntity> PEGASUS = Registry.register(Registries.ENTITY_TYPE, id("pegasus"),
             EntityType.Builder.create(PegasusEntity::new, SpawnGroup.MISC)
                     .dimensions(1.4F, 1.6F)
@@ -265,6 +286,14 @@ public class FateUBW implements ModInitializer {
                 entries.add(BERSERKER_CHESTPLATE);
                 entries.add(BERSERKER_LEGGINGS);
                 entries.add(BERSERKER_BOOTS);
+                entries.add(SUMMONING_CIRCLE);
+                entries.add(HOLY_GRAIL);
+                entries.add(RIN_JEWEL);
+                entries.add(SHIROU_POSTER);
+                entries.add(ZELZERIZ);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.BERSERKER_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.LANCER_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.ASSASSIN_EGG);
             })
             .build());
 
@@ -317,6 +346,10 @@ public class FateUBW implements ModInitializer {
         Voices.register();
         Mana.register();
         CommandSeals.register();
+        SummoningCircleItem.register();
+        com.nuwuman.fateubw.rider.RiderArmorItem.register();
+        com.nuwuman.fateubw.npc.ServantNpcs.register();
+        GrailWar.register();
         UnlimitedBladeWorks.register();
         TraceOn.register();
         Abilities.register();

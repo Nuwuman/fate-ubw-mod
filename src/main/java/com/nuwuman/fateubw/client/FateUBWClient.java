@@ -32,11 +32,22 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(FateUBW.ENUMA_ELISH, EnumaElishRenderer::new);
         EntityRendererRegistry.register(FateUBW.UBW_CORE, UbwCoreRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_PORTAL, BabylonPortalRenderer::new);
+        ItemStack hrunting = new ItemStack(FateUBW.HRUNTING);
+        EntityRendererRegistry.register(FateUBW.HRUNTING_ENTITY, ctx -> new OrientedItemRenderer<com.nuwuman.fateubw.archer.HruntingEntity>(ctx, e -> hrunting, e -> false));
+        EntityRendererRegistry.register(FateUBW.RIN_JEWEL_ENTITY, net.minecraft.client.render.entity.FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(FateUBW.ZELZERIZ_ENTITY, ZelzerizRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.BERSERKER, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.LANCER, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.ASSASSIN, HostileServantRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_WEAPON, ctx -> new OrientedItemRenderer<BabylonWeaponEntity>(ctx, BabylonWeaponEntity::getStack, e -> false));
 
         // Excalibur y Ea: normal / cargando / cargada
         ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("charge"),
                 (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
+        // Invisible Air: el viento la oculta salvo al cargar el Noble Phantasm o justo después de liberar Strike Air
+        ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("air"),
+                (stack, world, entity, seed) -> entity instanceof LivingEntity user && !using(user, stack)
+                        && !(user instanceof PlayerEntity p && p.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) ? 1.0F : 0.0F);
         ModelPredicateProviderRegistry.register(FateUBW.EA, FateUBW.id("charge"),
                 (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
 

@@ -113,6 +113,10 @@ public class Showcase implements ClientModInitializer {
             case "trace" -> trace(client, p, st);
             case "hud" -> hud(client, p, st);
             case "mana" -> mana(client, p, st);
+            case "grail" -> grail(client, p, st);
+            case "masters" -> masters(client, p, st);
+            case "npc" -> npc(client, p, st);
+            case "newnps" -> newNps(client, p, st);
             case "caster" -> caster(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
@@ -797,6 +801,169 @@ public class Showcase implements ClientModInitializer {
             case 50 -> {
                 p.networkHandler.sendChatCommand("gamerule fateCooldownPercent 100");
                 p.networkHandler.sendChatCommand("gamemode creative");
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Usar el objeto de la mano sobre el bloque al que apunta la mira
+    private static void useOnBlock(MinecraftClient c, ClientPlayerEntity p) {
+        if (c.crosshairTarget instanceof net.minecraft.util.hit.BlockHitResult hit) {
+            c.interactionManager.interactBlock(p, Hand.MAIN_HAND, hit);
+        } else {
+            log("la mira no apunta a un bloque");
+        }
+    }
+
+    private static long countNear(MinecraftClient c, ClientPlayerEntity p, net.minecraft.entity.EntityType<?> type) {
+        var server = c.getServer();
+        var center = p.getPos();
+        return server.submit(() -> server.getOverworld().getEntitiesByType(type,
+                new net.minecraft.util.math.Box(center, center).expand(24), e -> e.isAlive()).size()).join();
+    }
+
+    // Invocación con catalizador y el Santo Grial
+    private boolean grail(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:summoning_circle", "weapon.offhand with minecraft:prismarine_shard"},
+                    new String[]{});
+            case 10 -> pitch = 45.0F;
+            case 20 -> useOnBlock(c, p);
+            case 24 -> {
+                pitch = 25.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            }
+            case 50 -> shot(c, "grail_01_summoning");
+            case 90 -> {
+                shot(c, "grail_02_summoned_lancer");
+                var server = c.getServer();
+                var center = p.getPos();
+                log("objetos invocados: " + server.submit(() -> server.getOverworld().getEntitiesByClass(net.minecraft.entity.ItemEntity.class,
+                        new net.minecraft.util.math.Box(center, center).expand(8), e -> true).stream()
+                        .map(e -> net.minecraft.registry.Registries.ITEM.getId(e.getStack().getItem()).getPath()).toList()).join());
+            }
+            case 95 -> {
+                pitch = 0.0F;
+                p.networkHandler.sendChatCommand("item replace entity @s weapon.mainhand with fate_ubw:holy_grail");
+            }
+            case 105 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 110 -> shot(c, "grail_03_wish");
+            case 115 -> p.networkHandler.sendChatCommand("grailwar start");
+            case 125 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Joya de Tohsaka, póster reforzado de Shirou y Zelzeriz de Illya
+    private boolean masters(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:rin_jewel 16", "hotbar.1 with fate_ubw:shirou_poster",
+                    "hotbar.2 with fate_ubw:zelzeriz", "weapon.offhand with minecraft:iron_sword[damage=200]"},
+                    new String[]{"~-2 ~ ~8", "~2 ~ ~9", "~ ~ ~12"});
+            case 30 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 35 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 44 -> shot(c, "masters_01_rin_jewel");
+            case 50 -> {
+                p.getInventory().selectedSlot = 1;
+                log("espada antes del Refuerzo: " + p.getOffHandStack().getDamage());
+            }
+            case 54 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 62 -> {
+                log("espada tras el Refuerzo: " + p.getOffHandStack().getDamage());
+                shot(c, "masters_02_reinforcement");
+            }
+            case 66 -> p.getInventory().selectedSlot = 2;
+            case 70 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 90 -> shot(c, "masters_03_zelzeriz");
+            case 96 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 104 -> shot(c, "masters_04_zelzeriz_front");
+            case 130 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Servants enemigos: Berserker (jefe), Lancer y Assassin
+    private boolean npc(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{}, new String[]{});
+            case 5 -> {
+                p.networkHandler.sendChatCommand("summon fate_ubw:berserker_servant ~ ~ ~7 {NoAI:1b,Rotation:[180f,0f]}");
+                p.networkHandler.sendChatCommand("summon fate_ubw:lancer_servant ~-3 ~ ~6 {NoAI:1b,Rotation:[180f,0f]}");
+                p.networkHandler.sendChatCommand("summon fate_ubw:assassin_servant ~3 ~ ~6 {NoAI:1b,Rotation:[180f,0f]}");
+            }
+            case 40 -> shot(c, "npc_01_servants");
+            case 42 -> {
+                pitch = 10.0F;
+                yaw = -15.0F;
+            }
+            case 50 -> shot(c, "npc_02_berserker_bossbar");
+            // God Hand: /kill no basta para matarlo
+            case 55 -> p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:berserker_servant]");
+            case 65 -> log("Berserker tras /kill: " + countNear(c, p, com.nuwuman.fateubw.npc.ServantNpcs.BERSERKER) + " vivo(s)");
+            // Lancer con IA contra un gólem: debe lanzarse con la Gáe Bolg
+            case 70 -> {
+                yaw = 0.0F;
+                pitch = 0.0F;
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:lancer_servant]");
+                p.networkHandler.sendChatCommand("summon fate_ubw:lancer_servant ~ ~ ~16");
+                p.networkHandler.sendChatCommand("summon iron_golem ~ ~ ~10");
+            }
+            case 160 -> shot(c, "npc_03_lancer_vs_golem");
+            case 200 -> {
+                p.networkHandler.sendChatCommand("kill @e[type=iron_golem]");
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:lancer_servant]");
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:assassin_servant]");
+                p.networkHandler.sendChatCommand("tp @e[type=fate_ubw:berserker_servant] ~ -200 ~");
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Hrunting, Blood Fort Andromeda e Invisible Air
+    private boolean newNps(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
+                    "armor.feet with fate_ubw:archer_boots"}, new String[]{"~ ~ ~12"});
+            case 25 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+                pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+            }
+            case 30 -> ability(2);
+            case 33 -> shot(c, "np_01_hrunting");
+            case 38 -> shot(c, "np_02_hrunting_hit");
+            case 50 -> setup(c, p, new String[]{
+                    "armor.head with fate_ubw:rider_helmet", "armor.chest with fate_ubw:rider_chestplate",
+                    "armor.legs with fate_ubw:rider_leggings", "armor.feet with fate_ubw:rider_boots"},
+                    new String[]{"~-3 ~ ~4", "~3 ~ ~5", "~ ~ ~7"});
+            case 75 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                ability(2);
+            }
+            case 100 -> shot(c, "np_03_blood_fort_andromeda");
+            case 130 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:excalibur"}, new String[]{});
+            case 150 -> shot(c, "np_04_invisible_air_firstperson");
+            case 152 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 160 -> shot(c, "np_05_invisible_air_front");
+            case 162 -> use(c, p);
+            case 185 -> shot(c, "np_06_revealed_charging");
+            case 187 -> holdUse = false;
+            case 200 -> {
                 return true;
             }
             default -> {

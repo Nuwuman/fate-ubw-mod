@@ -22,7 +22,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 **Saber (Artoria)**
 - **Excalibur** (modelo 3D): mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora
   armadura). Mientras cargas, la hoja se vuelve dorada y la alzas con las dos manos.
-  Agachado + click derecho: **Strike Air**, ráfaga de viento en cono.
+  Agachado + click derecho: **Strike Air**, ráfaga de viento en cono. **Invisible Air**: el viento la oculta (solo se
+  ve un remolino) hasta que cargas el Noble Phantasm o liberas Strike Air.
 - **Armadura** (coraza, faldar, escarpes) con modelo 3D de GeckoLib y falda animada.
   Conjunto completo: Regeneración I y **Resistencia Mágica** (inmune al daño mágico y al Wither).
   Habilidades: **Avalon** (5 s invulnerable) y **Mana Burst** (embestida que arrolla a quien esté en medio).
@@ -47,6 +48,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
     y la habilidad lanza ráfagas de 16 espadas; agachado lo deshace. No se pueden romper ni poner bloques dentro.
     A los 60 s el Marble se deshace y cada bloque vuelve a como estaba, cofres y su contenido incluidos. Si el servidor
     se cae durante el Marble, los bloques se restauran al arrancar.
+  - **Hrunting**: el perro de caza rojo, una espada-flecha que persigue a quien miras, estalla al alcanzarlo y vuelve a
+    lanzarse contra él hasta tres veces.
 
 ![Trace On](docs/trace_on.png)
 
@@ -73,6 +76,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   - **Bellerophon**: invoca a **Pegaso** (modelo 3D animado) y lo montas. Mira hacia arriba y avanza para despegar;
     vuela hacia donde miras. Montado, la habilidad lanza **la embestida de Bellerophon**, un cometa de luz que arrolla
     todo a su paso. Pegaso desaparece si se queda sin jinete.
+  - **Blood Fort Andromeda**: un templo de sangre de 10 bloques que durante 10 s absorbe la vida de los demás y te cura.
 
 ![Rider](docs/rider.png)
 
@@ -109,6 +113,30 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 ![Caster, Assassin y Berserker](docs/new_servants.png)
 
+**Servants enemigos**
+- **Berserker** (jefe, con barra de vida): 300 de vida, God Hand con once vidas, ignora golpes débiles y usa Nine Lives.
+  Solo aparece con su huevo; suelta su hacha-espada.
+- **Lancer**: rápido, esquiva casi todos los proyectiles y se lanza con la Gáe Bolg.
+- **Assassin**: invisible hasta que te tiene cerca, esquiva golpes y usa Tsubame Gaeshi.
+- Lancer y Assassin aparecen de noche muy de vez en cuando (`fateServantSpawns` lo quita) y a veces sueltan su arma
+  o una pieza de ropa.
+
+**Guerra del Santo Grial**
+- **Círculo de invocación**: click derecho en el suelo con un catalizador en la otra mano. Tras un ritual de 3 s aparece
+  el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de prismarina → Lancer, ojo de
+  ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero → Berserker (sin catalizador,
+  uno al azar).
+- **`/grailwar start`** (operadores): a cada jugador conectado le toca un servant distinto, con su equipo, el maná lleno
+  y tres Sellos de Comando. Quien muere queda de espectador; el último en pie gana el **Santo Grial**.
+  `/grailwar status` dice quién sigue y `/grailwar stop` la termina.
+- **Santo Grial**: click derecho pide tu deseo: vida y maná al máximo, los tres Sellos de Comando y un Noble Phantasm.
+
+**Objetos de los Masters**
+- **Joya de Tohsaka** (Rin): se lanza y libera su maná en una explosión.
+- **Póster reforzado** (Shirou): pega como una espada de hierro; click derecho, Refuerzo: repara una cuarta parte de lo
+  que llevas en la otra mano y te da Fuerza I.
+- **Zelzeriz** (Illya): tres pájaros de alambre de plata vuelan a tu alrededor 15 s y atacan a los monstruos cercanos.
+
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
 ## Líneas de voz
@@ -126,6 +154,8 @@ Rho Aias, Bellerophon, Rule Breaker, Tsubame Gaeshi y Nine Lives dicen su nombre
 | `fatePlayerDamagePercent` | `100` | Porcentaje del daño de las armas y habilidades del mod contra otros jugadores |
 | `fateMana` | `true` | Las habilidades gastan maná |
 | `fateVoiceLines` | `true` | Los Noble Phantasm dicen su nombre |
+| `fateServantSpawns` | `true` | Lancer y Assassin enemigos aparecen de noche |
+| `fateServantSpawns` | `true` | Lancer y Assassin enemigos aparecen de noche |
 
 Con el PvP del servidor desactivado (`pvp=false`), las habilidades tampoco atraen, petrifican, encadenan ni empujan a
 otros jugadores (antes solo se evitaba el daño).

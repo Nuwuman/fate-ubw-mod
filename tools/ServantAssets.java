@@ -651,6 +651,149 @@ public class ServantAssets {
         return List.of(head, body, clothFront, clothBack, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // ---------- Guerra del Santo Grial, Noble Phantasm nuevos y objetos de los Masters ----------
+    static final Paint GRAIL_GOLD = metal(0xe2b13c), GRAIL_RIM = metal(0xffe08a), RUBY = metal(0xd0162a);
+
+    // Luz dorada que late dentro de la copa
+    static Paint grailLight() {
+        return (x, y, w, h, s) -> lerp(0xffd86b, 0xffffff, 0.5 + 0.5 * Math.sin(2 * Math.PI * FRAME / FRAMES)) | 0xff000000;
+    }
+
+    static Model holyGrail() {
+        Model m = new Model();
+        m.box(5, 0, 5, 11, 0.8, 11, GRAIL_GOLD);               // pie
+        m.box(6.5, 0.8, 6.5, 9.5, 1.6, 9.5, GRAIL_GOLD);
+        m.box(7.4, 1.6, 7.4, 8.6, 5, 8.6, GRAIL_GOLD);         // tallo
+        m.box(6.8, 3, 6.8, 9.2, 3.8, 9.2, RUBY);               // nudo con rubíes
+        m.box(6.2, 5, 6.2, 9.8, 6, 9.8, GRAIL_GOLD);           // copa
+        m.box(5.2, 6, 5.2, 10.8, 8, 10.8, GRAIL_GOLD);
+        m.box(4.6, 8, 4.6, 11.4, 10, 11.4, GRAIL_GOLD);
+        m.box(4.4, 10, 4.4, 11.6, 10.6, 11.6, GRAIL_RIM);      // borde
+        m.box(5.0, 9.6, 5.0, 11.0, 10.4, 11.0, grailLight());  // la luz que llena la copa
+        return m;
+    }
+
+    // Pergamino con el círculo de invocación: anillo rojo y pentagrama
+    static Paint summoningPaint() {
+        return (x, y, w, h, s) -> {
+            if (w < 6 || h < 6) return shade(0xd8c8a0, x, y, w, h, s, 0.05);
+            double u = (x + 0.5) / w * 2 - 1, v = (y + 0.5) / h * 2 - 1, r = Math.sqrt(u * u + v * v);
+            boolean ink = Math.abs(r - 0.82) < 0.09;
+            for (int p = 0; p < 5 && !ink; p++) {
+                double a0 = p * Math.PI * 2 / 5 - Math.PI / 2, a1 = (p + 2) * Math.PI * 2 / 5 - Math.PI / 2;
+                double ax = Math.cos(a0) * 0.75, ay = Math.sin(a0) * 0.75, bx = Math.cos(a1) * 0.75, by = Math.sin(a1) * 0.75;
+                double t = Math.max(0, Math.min(1, ((u - ax) * (bx - ax) + (v - ay) * (by - ay)) / ((bx - ax) * (bx - ax) + (by - ay) * (by - ay))));
+                double dx = u - (ax + t * (bx - ax)), dy = v - (ay + t * (by - ay));
+                ink = Math.sqrt(dx * dx + dy * dy) < 0.07;
+            }
+            return shade(ink ? 0xb3121c : 0xe8dcc0, x, y, w, h, s, 0.04);
+        };
+    }
+
+    static Model summoningCircle() {
+        Model m = new Model();
+        m.box(1, 0, 1, 15, 0.4, 15, summoningPaint());
+        return m;
+    }
+
+    static final String FLAT_ICON = "{\n"
+            + "    \"thirdperson_righthand\": { \"rotation\": [0, 0, 0], \"translation\": [0, 3, 1], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"thirdperson_lefthand\": { \"rotation\": [0, 0, 0], \"translation\": [0, 3, 1], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"firstperson_righthand\": { \"rotation\": [-60, 0, 0], \"translation\": [1.13, 3.2, 1.13], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"firstperson_lefthand\": { \"rotation\": [-60, 0, 0], \"translation\": [1.13, 3.2, 1.13], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"gui\": { \"rotation\": [90, 0, 0], \"scale\": [1, 1, 1] },\n"
+            + "    \"ground\": { \"translation\": [0, 2, 0], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"fixed\": { \"rotation\": [90, 0, 0], \"scale\": [1, 1, 1] }\n"
+            + "  }";
+
+    // Hrunting: la espada-flecha roja y negra que persigue a su presa
+    static final Paint HRUNT_RED = metal(0xb01024), HRUNT_DARK = solid(0x1a0a0e);
+
+    static Model hrunting(double b) {
+        Model m = new Model();
+        m.box(7.6, b, 7.6, 8.4, b + 4, 8.4, wrap(0x1a0a0e, 0x3a0a12));
+        m.box(6.8, b + 4, 7.5, 9.2, b + 4.8, 8.5, HRUNT_RED);
+        for (int i = 0; i < 5; i++) {
+            double y0 = b + 4.8 + i * 2.4;
+            m.box(7.3, y0, 7.75, 8.7, y0 + 2.4, 8.25, i % 2 == 0 ? HRUNT_RED : HRUNT_DARK);
+            m.box(6.6, y0 + 0.4, 7.85, 7.3, y0 + 1.2, 8.15, HRUNT_RED);        // púas
+            m.box(8.7, y0 + 1.2, 7.85, 9.4, y0 + 2.0, 8.15, HRUNT_RED);
+        }
+        m.box(7.6, b + 16.8, 7.8, 8.4, b + 18.6, 8.2, HRUNT_RED);
+        m.box(7.85, b + 18.6, 7.85, 8.15, b + 19.6, 8.15, HRUNT_RED);
+        return m;
+    }
+
+    // Joya de Tohsaka: un rubí tallado que guarda maná
+    static Model rinJewel() {
+        Model m = new Model();
+        m.box(6.5, 6.5, 6.5, 9.5, 9.5, 9.5, RUBY).rot("y", 45, 8, 8, 8);
+        m.box(7, 9.5, 7, 9, 10.5, 9, metal(0xff5a6a)).rot("y", 45, 8, 8, 8);
+        m.box(7, 5.5, 7, 9, 6.5, 9, metal(0x8a0a18)).rot("y", 45, 8, 8, 8);
+        return m;
+    }
+
+    // El póster enrollado que Shirou refuerza para pelear
+    static Paint posterPaint() {
+        return (x, y, w, h, s) -> {
+            int[] bands = {0xf2ead2, 0x3d7fd6, 0xf2ead2, 0xe0b23a, 0xf2ead2, 0xd03a3a};
+            return shade(bands[Math.floorMod(y / 2, bands.length)], x, y, w, h, s, 0.05);
+        };
+    }
+
+    static Model shirouPoster() {
+        Model m = new Model();
+        m.box(7.1, 0, 7.1, 8.9, 18, 8.9, posterPaint());
+        m.box(6.9, 0, 6.9, 9.1, 1, 9.1, solid(0xd8ccb0));
+        m.box(6.9, 17, 6.9, 9.1, 18, 9.1, solid(0xd8ccb0));
+        return m;
+    }
+
+    // Zelzeriz: un pájaro de alambre de plata de Illya
+    static final Paint WIRE = metal(0xe6ebf2);
+
+    static Model zelzeriz() {
+        Model m = new Model();
+        m.box(6.5, 7, 7, 10.5, 9, 9, WIRE);                                      // cuerpo
+        m.box(10.5, 8, 7.5, 12, 9.5, 8.5, WIRE);                                 // cabeza
+        m.box(12, 8.5, 7.8, 13, 9, 8.2, metal(0xd08a3a));                        // pico
+        m.box(7, 8.6, 9, 10, 9, 13, WIRE).rot("x", 22.5, 8.5, 8.8, 9);           // alas
+        m.box(7, 8.6, 3, 10, 9, 7, WIRE).rot("x", -22.5, 8.5, 8.8, 7);
+        m.box(4.5, 7.6, 7.6, 6.5, 8.4, 8.4, WIRE);                               // cola
+        return m;
+    }
+
+    // Invisible Air: el viento que envuelve a Excalibur. Solo se ven la empuñadura y un remolino translúcido
+    static Paint wind() {
+        return (x, y, w, h, s) -> Math.floorMod(x + y + FRAME * 2, 6) < 2 ? (110 << 24) | 0xe4f2ff : (40 << 24) | 0xbcd6ff;
+    }
+
+    static Model excaliburAir() {
+        Model m = new Model();
+        m.box(7.2, -1, 7.2, 8.8, 0.5, 8.8, GOLD);
+        m.box(7.5, 0.5, 7.5, 8.5, 4.5, 8.5, EX_GRIP);
+        m.box(6.0, 4.5, 6.9, 10.0, 24.5, 9.1, wind());
+        return m;
+    }
+
+    // Piel de jugador 64x64 para los servants enemigos (casi todo lo tapa su ropa)
+    static void skin(Path root, String name, int skin, int hair, int eye) throws IOException {
+        BufferedImage img = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 16; y < 64; y++) for (int x = 0; x < 64; x++) img.setRGB(x, y, 0xff000000 | mul(skin, 0.95 + 0.05 * ((x + y) % 2)));
+        for (int y = 0; y < 16; y++) for (int x = 0; x < 32; x++) img.setRGB(x, y, 0xff000000 | (y < 8 || y < 11 && x != 9 && x != 14 ? hair : skin));
+        for (int x = 8; x < 16; x++) for (int y = 8; y < 16; y++) img.setRGB(x, y, 0xff000000 | (y < 10 ? hair : skin)); // cara
+        for (int x = 24; x < 32; x++) for (int y = 8; y < 16; y++) img.setRGB(x, y, 0xff000000 | hair);              // nuca
+        for (int[] e : new int[][]{{9, 12}, {14, 12}}) {
+            img.setRGB(e[0], e[1], 0xffffffff);
+            img.setRGB(e[0] == 9 ? 10 : 13, e[1], 0xff000000 | eye);
+        }
+        img.setRGB(11, 14, 0xff000000 | mul(skin, 0.7));
+        img.setRGB(12, 14, 0xff000000 | mul(skin, 0.7));
+        Path out = root.resolve("textures/entity/servant/" + name + ".png");
+        Files.createDirectories(out.getParent());
+        javax.imageio.ImageIO.write(img, "png", out.toFile());
+    }
+
     static void geoModel(Path root, String name, List<Bone> bones) throws IOException {
         List<Cube> all = new ArrayList<>();
         for (Bone bone : bones) all.addAll(bone.model.cubes);
@@ -1205,12 +1348,15 @@ public class ServantAssets {
         Files.createDirectories(root.resolve("textures/item"));
 
         // ---------- Saber ----------
+        // Gana la última que encaje: el viento primero, y cargar la revela
         String exOverrides = "[\n"
+                + "    { \"predicate\": { \"fate_ubw:air\": 1.0 }, \"model\": \"fate_ubw:item/excalibur_air\" },\n"
                 + "    { \"predicate\": { \"fate_ubw:charge\": 0.01 }, \"model\": \"fate_ubw:item/excalibur_charging\" },\n"
                 + "    { \"predicate\": { \"fate_ubw:charge\": 1.0 }, \"model\": \"fate_ubw:item/excalibur_charged\" }\n"
                 + "  ]";
         itemModel(root, "excalibur", excalibur(0), handheld(0.7), exOverrides,
                 16, "{\"animation\":{\"frames\":[{\"index\":0,\"time\":60}," + range(1, 16) + "]}}");
+        itemModel(root, "excalibur_air", excaliburAir(), handheld(0.7), null, 8, "{\"animation\":{\"frametime\":2}}");
         itemModel(root, "excalibur_charging", excalibur(1), raised(0.7, -35, 5.0, 0.0, 0.75), null,
                 12, "{\"animation\":{\"frametime\":1}}");
         itemModel(root, "excalibur_charged", excalibur(2), raised(0.7, -50, 6.5, -0.5, 0.8), null,
@@ -1291,6 +1437,17 @@ public class ServantAssets {
         // ---------- Unlimited Blade Works ----------
         itemModel(root, "unlimited_blade_works", ubwSword(), handheld(0.8), null, 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
         itemModel(root, "trace_on", traceOn(), handheld(0.8), null, 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
+
+        // ---------- Guerra del Santo Grial y Masters ----------
+        itemModel(root, "holy_grail", holyGrail(), HELD_OBJECT, null, 8, "{\"animation\":{\"frametime\":3,\"interpolate\":true}}");
+        itemModel(root, "summoning_circle", summoningCircle(), FLAT_ICON, null);
+        itemModel(root, "hrunting", hrunting(-0.5), handheld(0.8), null);
+        itemModel(root, "rin_jewel", rinJewel(), HELD_OBJECT, null);
+        itemModel(root, "shirou_poster", shirouPoster(), handheld(0.8), null);
+        itemModel(root, "zelzeriz", zelzeriz(), HELD_OBJECT, null);
+        skin(root, "berserker", 0x4a4b52, 0x141418, 0xd01020);
+        skin(root, "lancer", 0xe8c4a8, 0x1f3f9a, 0xc01020);
+        skin(root, "assassin", 0xecd0b4, 0x4b3a8f, 0x3a5fd0);
 
         // ---------- Caster ----------
         itemModel(root, "rule_breaker", ruleBreaker(), handheld(1.0), null);

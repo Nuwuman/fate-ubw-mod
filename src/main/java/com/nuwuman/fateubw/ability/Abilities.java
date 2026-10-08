@@ -62,6 +62,8 @@ public final class Abilities {
         cooldown(FateUBW.SPATIAL_TRANSFER, CasterArmorItem.SPATIAL_TRANSFER_COOLDOWN);
         cooldown(FateUBW.PRESENCE_CONCEALMENT, AssassinArmorItem.PRESENCE_CONCEALMENT_COOLDOWN);
         cooldown(FateUBW.MAD_ENHANCEMENT, BerserkerArmorItem.MAD_ENHANCEMENT_COOLDOWN);
+        cooldown(FateUBW.HRUNTING, 20 * 20);
+        cooldown(FateUBW.BLOOD_FORT_ANDROMEDA, com.nuwuman.fateubw.rider.RiderArmorItem.ANDROMEDA_COOLDOWN);
 
         PayloadTypeRegistry.playC2S().register(UseAbilityPayload.ID, UseAbilityPayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(UseAbilityPayload.ID, (payload, context) -> {
@@ -90,14 +92,17 @@ public final class Abilities {
                             new Ability("trace_on", FateUBW.TRACE_ON, FateUBW.TRACE_ON, TraceOn::use),
                             new Ability("unlimited_blade_works", FateUBW.UNLIMITED_BLADE_WORKS,
                                     player -> UnlimitedBladeWorks.isInsideAny(player) ? FateUBW.UBW_BARRAGE : FateUBW.UBW_COOLDOWN,
-                                    UnlimitedBladeWorks::useAbility))),
+                                    UnlimitedBladeWorks::useAbility),
+                            new Ability("hrunting", FateUBW.HRUNTING, FateUBW.HRUNTING, com.nuwuman.fateubw.archer.HruntingEntity::fire))),
                     new ServantSet(FateUBW.LANCER_CHESTPLATE, FateUBW.LANCER_LEGGINGS, FateUBW.LANCER_BOOTS, null, List.of(
                             new Ability("ansuz", Items.FIRE_CHARGE, FateUBW.ANSUZ, LancerArmorItem::ansuz))),
                     new ServantSet(FateUBW.RIDER_CHESTPLATE, FateUBW.RIDER_LEGGINGS, FateUBW.RIDER_BOOTS, FateUBW.RIDER_HELMET, List.of(
                             new Ability("mystic_eyes", Items.ENDER_EYE, FateUBW.MYSTIC_EYES, RiderDaggerItem::mysticEyes),
                             new Ability("bellerophon", FateUBW.BELLEROPHON,
                                     player -> player.getVehicle() instanceof PegasusEntity ? FateUBW.BELLEROPHON_CHARGE : FateUBW.BELLEROPHON,
-                                    BellerophonItem::ability))),
+                                    BellerophonItem::ability),
+                            new Ability("blood_fort_andromeda", Items.REDSTONE, FateUBW.BLOOD_FORT_ANDROMEDA,
+                                    com.nuwuman.fateubw.rider.RiderArmorItem::bloodFortAndromeda))),
                     new ServantSet(FateUBW.GILGAMESH_CHESTPLATE, FateUBW.GILGAMESH_LEGGINGS, FateUBW.GILGAMESH_BOOTS, null, List.of(
                             new Ability("gate_of_babylon", FateUBW.GATE_OF_BABYLON, FateUBW.GATE_OF_BABYLON, GilgameshArmorItem::gateOfBabylon),
                             new Ability("enkidu", Items.CHAIN, FateUBW.ENKIDU, GilgameshArmorItem::enkidu))),
