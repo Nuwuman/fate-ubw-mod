@@ -112,6 +112,7 @@ public class ExcaliburItem extends SwordItem {
         if (charge < FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
 
         Rules.commit(player, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
+        com.nuwuman.fateubw.PlayerAnims.play(player, "excalibur_swing");
         if (!(world instanceof ServerWorld server)) return;
 
         ExcaliburBeamEntity.fire(server, player);

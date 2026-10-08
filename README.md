@@ -144,6 +144,18 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
+## Animaciones del cuerpo
+
+Con [Player Animator](https://modrinth.com/mod/playeranimator) (va incluido en el jar), los demás jugadores y tú en
+tercera persona veis cómo se mueve todo el cuerpo:
+
+- **Excalibur y Ea**: alzas la espada a dos manos mientras cargas, con las piernas abiertas, y al soltar descargas el
+  golpe de arriba abajo.
+- **Monohoshizao**: guardia baja con el cuerpo girado mientras concentras, y los tres cortes de Tsubame Gaeshi.
+- **Kanshō y Bakuya**: el brazo que lanza (o los dos, si lanzas la pareja) con giro del torso.
+
+Las animaciones están en `src/main/resources/assets/fate_ubw/player_animations/` y se pueden editar con Blockbench.
+
 ## Líneas de voz
 
 Excalibur, Avalon, Gáe Bolg, Enuma Elish, Gate of Babylon, Unlimited Blade Works (y su aria), Trace On, Caladbolg,
@@ -159,7 +171,6 @@ Rho Aias, Bellerophon, Rule Breaker, Tsubame Gaeshi y Nine Lives dicen su nombre
 | `fatePlayerDamagePercent` | `100` | Porcentaje del daño de las armas y habilidades del mod contra otros jugadores |
 | `fateMana` | `true` | Las habilidades gastan maná |
 | `fateVoiceLines` | `true` | Los Noble Phantasm dicen su nombre |
-| `fateServantSpawns` | `true` | Lancer y Assassin enemigos aparecen de noche |
 | `fateServantSpawns` | `true` | Lancer y Assassin enemigos aparecen de noche |
 
 Con el PvP del servidor desactivado (`pvp=false`), las habilidades tampoco atraen, petrifican, encadenan ni empujan a

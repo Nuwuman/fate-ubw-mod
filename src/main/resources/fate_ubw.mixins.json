@@ -9,7 +9,6 @@
     "SlotMixin"
   ],
   "client": [
-    "BipedEntityModelMixin",
     "HeldItemFeatureRendererMixin",
     "InGameHudMixin",
     "PlayerEntityRendererMixin"

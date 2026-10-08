@@ -186,8 +186,13 @@ public class Showcase implements ClientModInitializer {
             }
             case 162 -> c.options.setPerspective(Perspective.FIRST_PERSON);
             case 165 -> shot(c, "saber_07_excalibur_charged_firstperson");
-            case 167 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 167 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                yaw = 90.0F;
+            }
+            case 168 -> shot(c, "saber_06b_excalibur_raised_side");
             case 170 -> holdUse = false;
+            case 171, 172, 173, 174, 175 -> shot(c, "saber_07b_excalibur_swing_t" + t);
             case 176 -> yaw = 35.0F; // el haz queda fijo; girar la cámara para verlo en diagonal
             case 180 -> shot(c, "saber_08_excalibur_beam");
             case 190 -> shot(c, "saber_09_excalibur_beam_late");
@@ -250,7 +255,9 @@ public class Showcase implements ClientModInitializer {
 
             // Kanshō y Bakuya lanzados a la vez
             case 200 -> p.getInventory().selectedSlot = 0;
+            case 202 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
             case 205 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 206, 207, 208, 209 -> shot(c, "archer_09a_throw_t" + t);
             case 210 -> shot(c, "archer_09_falchions_out");
             case 216 -> shot(c, "archer_10_falchions_cross");
 
@@ -719,14 +726,22 @@ public class Showcase implements ClientModInitializer {
             case 70 -> shot(c, "assassin_03_back");
             case 72 -> yaw = 90.0F;
             case 82 -> shot(c, "assassin_04_side");
-            case 84 -> yaw = 0.0F;
+            case 84 -> {
+                yaw = 60.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
             case 90 -> use(c, p);
+            case 108 -> shot(c, "assassin_04b_stance");
             case 112 -> {
                 if (waitCharge(c, p, 22)) return false;
                 holdUse = false;
             }
             case 114 -> shot(c, "assassin_05_tsubame_gaeshi");
-            case 120 -> ability(0);
+            case 115, 116, 117, 118, 119 -> shot(c, "assassin_05b_tsubame_t" + t);
+            case 120 -> {
+                yaw = 0.0F;
+                ability(0);
+            }
             case 122 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
             case 132 -> shot(c, "assassin_06_presence_concealment");
             case 140 -> {

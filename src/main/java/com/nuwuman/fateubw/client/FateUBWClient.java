@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class FateUBWClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        PlayerAnimsClient.register();
         AbilityHud.register();
         com.nuwuman.fateubw.grail.HolyGrailItem.openWishScreen =
                 () -> net.minecraft.client.MinecraftClient.getInstance().setScreen(new GrailWishScreen());

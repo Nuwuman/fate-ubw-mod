@@ -79,6 +79,7 @@ public class MonohoshizaoItem extends SwordItem {
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         if (!(user instanceof PlayerEntity player) || getMaxUseTime(stack, user) - remainingUseTicks < CHARGE) return;
         com.nuwuman.fateubw.Rules.commit(player, FateUBW.TSUBAME_GAESHI, COOLDOWN);
+        com.nuwuman.fateubw.PlayerAnims.play(player, "tsubame_gaeshi");
         if (!(world instanceof ServerWorld server)) return;
         player.swingHand(player.getActiveHand(), true);
         tsubameGaeshi(server, player);

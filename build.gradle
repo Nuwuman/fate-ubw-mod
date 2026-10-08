@@ -44,6 +44,10 @@ repositories {
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+    maven {
+        name = 'KosmX'
+        url = 'https://maven.kosmx.dev/'
+    }
 }
 
 dependencies {
@@ -52,6 +56,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "software.bernie.geckolib:geckolib-fabric-1.21.1:${project.geckolib_version}"
+    // Player Animator (KosmX, MIT): animaciones del cuerpo del jugador. Va dentro del jar, no hay que instalarlo aparte
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${project.player_anim_version}")
 }
 
 processResources {

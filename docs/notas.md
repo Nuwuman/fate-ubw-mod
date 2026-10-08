@@ -2,14 +2,11 @@
 
 ## Para mañana: lo que necesita tu intervención
 
-1. **Player Animator** (biblioteca de Fabric de KosmX): animaciones propias del jugador, como alzar Excalibur con las
-   dos manos de verdad, la postura de Tsubame Gaeshi o el giro al lanzar Kanshō y Bakuya. Es una dependencia nueva
-   que habría que instalar en cada PC y servidor: dime si la quieres.
-2. **Voces mono**: ahora son estéreo y no bajan con la distancia (solo las oyen los jugadores a menos de 16 bloques).
+1. **Voces mono**: ahora son estéreo y no bajan con la distancia (solo las oyen los jugadores a menos de 16 bloques).
    Para hacerlas mono hace falta un ffmpeg con `libvorbis`. Hay uno en `Downloads\YoutubeDownloader.win-x64`, pero no
    ejecuto programas de la carpeta de descargas sin tu permiso. Si encuentras voces mejores que las de Windows,
    basta con poner los `.ogg` con el mismo nombre en `src/main/resources/assets/fate_ubw/sounds/voice/`.
-3. **EULA**: permiso para aceptarlo y probar el mod en un servidor dedicado local, con dos clientes a la vez. Es la
+2. **EULA**: permiso para aceptarlo y probar el mod en un servidor dedicado local, con dos clientes a la vez. Es la
    única forma de probar de verdad la Guerra del Santo Grial (necesita dos jugadores) y el PvP.
 
 ## Ideas que quedan para más adelante
@@ -23,6 +20,9 @@
 - **Guerra del Santo Grial guardada**: ahora vive en memoria; si el servidor se reinicia, la guerra termina.
 
 ## Problemas conocidos
+
+- Las animaciones de Player Animator solo se ven en tercera persona y para los demás; en primera persona sigues
+  viendo los brazos normales.
 
 - Las habilidades de Rider necesitan también la venda (4 piezas), como su bonus de conjunto.
 - Las teclas R, G y V pueden chocar con otros mods: se cambian en Opciones → Controles → Fate: Unlimited Blade Works.

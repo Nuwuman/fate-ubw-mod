@@ -50,6 +50,8 @@ public class FalchionItem extends SwordItem {
         // Lanzar. Con la pareja en la otra mano salen las dos y se cruzan en el aire
         ItemStack other = user.getStackInHand(hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND);
         boolean pair = other.isOf(twin());
+        boolean right = (hand == Hand.MAIN_HAND) == (user.getMainArm() == net.minecraft.util.Arm.RIGHT);
+        com.nuwuman.fateubw.PlayerAnims.play(user, pair ? "falchion_throw_both" : right ? "falchion_throw_right" : "falchion_throw_left");
         if (world instanceof ServerWorld server) {
             ThrownFalchionEntity.toss(server, user, stack, kanshou ? -1.0F : 1.0F);
             if (pair) ThrownFalchionEntity.toss(server, user, other, kanshou ? 1.0F : -1.0F);

@@ -1,0 +1,81 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "tsubame_stance": {
+      "animation_length": 0.4,
+      "loop": "hold_on_last_frame",
+      "bones": {
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -25,
+              35,
+              25
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -45,
+              50,
+              0
+            ]
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              8,
+              25,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              -20,
+              0,
+              6
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              18,
+              0,
+              -6
+            ]
+          }
+        }
+      }
+    }
+  }
+}
