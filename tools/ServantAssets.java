@@ -1478,11 +1478,11 @@ public class ServantAssets {
     static List<Bone> riderArmor() {
         Paint dress = fabric(RID_BLACK), leather = plate(RID_LEATHER), purple = plate(RID_PURPLE), hairPaint = riderHair();
         Bone head = new Bone("armorHead", null, 0, 24, 0);
-        // Breaker Gorgon: solo la venda, tela magenta sobre los ojos con dos hebillas de metal en su lado izquierdo
+        // Breaker Gorgon: solo la venda, tela magenta sobre los ojos con dos hebillas de metal entre los ojos
         Paint band = gorgonBand(), buckle = plate(0xb8bcc6);
         head.model.box(-4, 26.3, -4, 4, 29.3, 4, band).inflate(0.45);
-        head.model.box(1.9, 27.9, -4.75, 3.5, 28.8, -4.4, buckle);            // hebillas
-        head.model.box(1.9, 26.8, -4.75, 3.5, 27.7, -4.4, buckle);
+        head.model.box(-0.8, 27.9, -4.75, 0.8, 28.8, -4.4, buckle);           // hebillas, entre los ojos
+        head.model.box(-0.8, 26.8, -4.75, 0.8, 27.7, -4.4, buckle);
 
         Bone body = new Bone("armorBody", null, 0, 24, 0);
         body.model.box(-4, 12, -2, 4, 22.6, 2, dress).inflate(0.45);
