@@ -11,7 +11,8 @@
   "client": [
     "BipedEntityModelMixin",
     "HeldItemFeatureRendererMixin",
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
