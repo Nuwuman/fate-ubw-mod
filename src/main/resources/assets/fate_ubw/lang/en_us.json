@@ -54,7 +54,19 @@
   "item.fate_ubw.mystic_eyes": "Mystic Eyes",
   "item.fate_ubw.bellerophon_charge": "Bellerophon's Charge",
 
+  "item.fate_ubw.gate_of_babylon": "Key of Babylon",
+  "item.fate_ubw.gate_of_babylon.tooltip": "Right-click: Gate of Babylon, a rain of treasured weapons",
+  "item.fate_ubw.ea": "Ea",
+  "item.fate_ubw.ea.tooltip": "Hold right-click and release: Enuma Elish",
+  "item.fate_ubw.gilgamesh_chestplate": "King of Heroes' Cuirass",
+  "item.fate_ubw.gilgamesh_leggings": "King of Heroes' Greaves",
+  "item.fate_ubw.gilgamesh_boots": "King of Heroes' Sabatons",
+  "item.fate_ubw.gilgamesh_armor.tooltip.set": "Full set: Golden Rule (Luck II and Resistance I)",
+
   "entity.fate_ubw.excalibur_beam": "Excalibur",
+  "entity.fate_ubw.enuma_elish": "Enuma Elish",
+  "entity.fate_ubw.babylon_portal": "Gate of Babylon",
+  "entity.fate_ubw.babylon_weapon": "Treasured Weapon",
   "entity.fate_ubw.chain_dagger": "Chain Dagger",
   "entity.fate_ubw.pegasus": "Pegasus",
   "entity.fate_ubw.thrown_falchion": "Thrown Falchion",
@@ -63,7 +75,7 @@
   "entity.fate_ubw.gae_bolg_spear": "Gáe Bolg",
 
   "gamerule.fateAbilitiesBreakBlocks": "Fate: abilities break blocks",
-  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur carves a tunnel; Caladbolg II and Gáe Bolg explode like TNT",
+  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur and Enuma Elish carve a tunnel; Caladbolg II and Gáe Bolg explode like TNT",
 
   "ability.fate_ubw.rho_aias": "Rho Aias",
   "ability.fate_ubw.caladbolg": "Caladbolg II",
@@ -79,5 +91,7 @@
   "death.attack.gae_bolg": "%1$s had their heart pierced",
   "death.attack.gae_bolg.player": "%1$s had their heart pierced by %2$s's Gáe Bolg",
   "death.attack.bellerophon": "%1$s was run down by a comet",
-  "death.attack.bellerophon.player": "%1$s was run down by %2$s's Bellerophon"
+  "death.attack.bellerophon.player": "%1$s was run down by %2$s's Bellerophon",
+  "death.attack.enuma_elish": "%1$s was torn apart by the spiral",
+  "death.attack.enuma_elish.player": "%1$s was torn apart by %2$s's Enuma Elish"
 }

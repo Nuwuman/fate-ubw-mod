@@ -6,6 +6,12 @@ import com.nuwuman.fateubw.archer.FalchionItem;
 import com.nuwuman.fateubw.archer.RhoAiasEntity;
 import com.nuwuman.fateubw.archer.SwordArrowEntity;
 import com.nuwuman.fateubw.archer.ThrownFalchionEntity;
+import com.nuwuman.fateubw.gilgamesh.BabylonPortalEntity;
+import com.nuwuman.fateubw.gilgamesh.BabylonWeaponEntity;
+import com.nuwuman.fateubw.gilgamesh.EaItem;
+import com.nuwuman.fateubw.gilgamesh.EnumaElishEntity;
+import com.nuwuman.fateubw.gilgamesh.GateOfBabylonItem;
+import com.nuwuman.fateubw.gilgamesh.GilgameshArmorItem;
 import com.nuwuman.fateubw.lancer.GaeBolgItem;
 import com.nuwuman.fateubw.lancer.GaeBolgSpearEntity;
 import com.nuwuman.fateubw.lancer.LancerArmorItem;
@@ -95,6 +101,15 @@ public class FateUBW implements ModInitializer {
     public static final Item RIDER_LEGGINGS = item("rider_leggings", new RiderArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item RIDER_BOOTS = item("rider_boots", new RiderArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Gilgamesh ----------
+    public static final RegistryEntry<ArmorMaterial> GILGAMESH_MATERIAL = armorMaterial("gilgamesh");
+
+    public static final Item GATE_OF_BABYLON = item("gate_of_babylon", new GateOfBabylonItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item EA = item("ea", new EaItem(new Item.Settings().rarity(Rarity.EPIC).fireproof()));
+    public static final Item GILGAMESH_CHESTPLATE = item("gilgamesh_chestplate", new GilgameshArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item GILGAMESH_LEGGINGS = item("gilgamesh_leggings", new GilgameshArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item GILGAMESH_BOOTS = item("gilgamesh_boots", new GilgameshArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
     // Sin pestaña: modelos que usan los proyectiles y claves de cooldown de las habilidades
     public static final Item CALADBOLG = item("caladbolg", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item SWORD_ARROW = item("sword_arrow", new Item(new Item.Settings()));
@@ -112,6 +127,9 @@ public class FateUBW implements ModInitializer {
     public static final EntityType<RhoAiasEntity> RHO_AIAS_ENTITY = entity("rho_aias", RhoAiasEntity::new, 1);
     public static final EntityType<GaeBolgSpearEntity> GAE_BOLG_SPEAR = entity("gae_bolg_spear", GaeBolgSpearEntity::new, 1);
     public static final EntityType<ChainDaggerEntity> CHAIN_DAGGER = entity("chain_dagger", ChainDaggerEntity::new, 1);
+    public static final EntityType<EnumaElishEntity> ENUMA_ELISH = entity("enuma_elish", EnumaElishEntity::new, 20);
+    public static final EntityType<BabylonPortalEntity> BABYLON_PORTAL = entity("babylon_portal", BabylonPortalEntity::new, 1);
+    public static final EntityType<BabylonWeaponEntity> BABYLON_WEAPON = entity("babylon_weapon", BabylonWeaponEntity::new, 20);
     public static final EntityType<PegasusEntity> PEGASUS = Registry.register(Registries.ENTITY_TYPE, id("pegasus"),
             EntityType.Builder.create(PegasusEntity::new, SpawnGroup.MISC)
                     .dimensions(1.4F, 1.6F)
@@ -124,6 +142,7 @@ public class FateUBW implements ModInitializer {
     public static final RegistryKey<DamageType> EXCALIBUR_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("excalibur"));
     public static final RegistryKey<DamageType> GAE_BOLG_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("gae_bolg"));
     public static final RegistryKey<DamageType> BELLEROPHON_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bellerophon"));
+    public static final RegistryKey<DamageType> ENUMA_ELISH_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("enuma_elish"));
 
     // /gamerule fateAbilitiesBreakBlocks true → Excalibur abre un túnel y Caladbolg explota como TNT
     public static final GameRules.Key<GameRules.BooleanRule> BREAK_BLOCKS = GameRuleRegistry.register(
@@ -157,6 +176,11 @@ public class FateUBW implements ModInitializer {
                 entries.add(RIDER_CHESTPLATE);
                 entries.add(RIDER_LEGGINGS);
                 entries.add(RIDER_BOOTS);
+                entries.add(GATE_OF_BABYLON);
+                entries.add(EA);
+                entries.add(GILGAMESH_CHESTPLATE);
+                entries.add(GILGAMESH_LEGGINGS);
+                entries.add(GILGAMESH_BOOTS);
             })
             .build());
 

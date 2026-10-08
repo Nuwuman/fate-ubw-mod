@@ -2,6 +2,7 @@ package com.nuwuman.fateubw.client;
 
 import com.nuwuman.fateubw.FateUBW;
 import com.nuwuman.fateubw.archer.SwordArrowEntity;
+import com.nuwuman.fateubw.gilgamesh.BabylonWeaponEntity;
 import com.nuwuman.fateubw.lancer.GaeBolgSpearEntity;
 import com.nuwuman.fateubw.saber.ExcaliburItem;
 import net.fabricmc.api.ClientModInitializer;
@@ -27,9 +28,14 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(FateUBW.GAE_BOLG_SPEAR, ctx -> new OrientedItemRenderer<GaeBolgSpearEntity>(ctx, GaeBolgSpearEntity::getStack, e -> false));
         EntityRendererRegistry.register(FateUBW.CHAIN_DAGGER, ChainDaggerRenderer::new);
         EntityRendererRegistry.register(FateUBW.PEGASUS, PegasusRenderer::new);
+        EntityRendererRegistry.register(FateUBW.ENUMA_ELISH, EnumaElishRenderer::new);
+        EntityRendererRegistry.register(FateUBW.BABYLON_PORTAL, BabylonPortalRenderer::new);
+        EntityRendererRegistry.register(FateUBW.BABYLON_WEAPON, ctx -> new OrientedItemRenderer<BabylonWeaponEntity>(ctx, BabylonWeaponEntity::getStack, e -> false));
 
-        // Excalibur: normal / cargando / cargada
+        // Excalibur y Ea: normal / cargando / cargada
         ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("charge"),
+                (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
+        ModelPredicateProviderRegistry.register(FateUBW.EA, FateUBW.id("charge"),
                 (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
 
         // Arco: mismos predicados que el vanilla + si lleva Caladbolg montado

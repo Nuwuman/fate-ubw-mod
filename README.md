@@ -46,6 +46,16 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
 
 ![Rider](docs/rider.png)
 
+**Gilgamesh**
+- **Llave de Babilonia**: click derecho abre el **Gate of Babylon**, ocho portales dorados detrás de ti que disparan una
+  lluvia de armas del tesoro (prototipos de los Noble Phantasm y armas de oro, diamante y netherita) hacia lo que miras.
+- **Ea**: mantén click derecho y suelta para **Enuma Elish**, un vórtice en espiral de 64 bloques que arrastra hacia su eje
+  lo que pasa cerca y desgarra lo que toca (ignora armadura).
+- **Armadura dorada** (coraza, grebas, escarpes) con escarcelas animadas. Conjunto completo: **Regla de Oro**
+  (Suerte II y Resistencia I).
+
+![Gilgamesh](docs/gilgamesh.png)
+
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
 ## Gamerule
@@ -54,8 +64,8 @@ Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene 
 /gamerule fateAbilitiesBreakBlocks true
 ```
 
-Desactivada por defecto. Activada: Excalibur abre un túnel por donde pasa, y Caladbolg II y la Gáe Bolg lanzada
-explotan como TNT.
+Desactivada por defecto. Activada: Excalibur y Enuma Elish abren un túnel por donde pasan, y Caladbolg II y la
+Gáe Bolg lanzada explotan como TNT.
 Bedrock, obsidiana y bloques igual de resistentes no se rompen.
 
 ## Instalar
@@ -82,7 +92,7 @@ El jar sale en `build/libs/`.
   (ítems JSON, geo de GeckoLib) y sus texturas, incluidas las animadas de Excalibur.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
-  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, o varios separados por comas)
+  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, o varios separados por comas)
   solo prueba a esos servants.
 
 ---

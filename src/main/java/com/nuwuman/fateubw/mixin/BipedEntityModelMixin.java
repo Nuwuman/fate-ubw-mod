@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Mientras se carga Excalibur, el portador la alza con las dos manos: de delante hasta encima de la cabeza. */
+/** Mientras se carga Excalibur (o Ea), el portador la alza con las dos manos: de delante hasta encima de la cabeza. */
 @Mixin(BipedEntityModel.class)
 public abstract class BipedEntityModelMixin<T extends LivingEntity> {
     @Shadow @Final public ModelPart rightArm;
@@ -22,7 +22,8 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> {
     @Inject(method = "setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
     private void fate_ubw$raiseSword(T entity, float limbAngle, float limbDistance, float animationProgress,
                                      float headYaw, float headPitch, CallbackInfo ci) {
-        if (!entity.isUsingItem() || !entity.getActiveItem().isOf(FateUBW.EXCALIBUR)) return;
+        if (!entity.isUsingItem()) return;
+        if (!entity.getActiveItem().isOf(FateUBW.EXCALIBUR) && !entity.getActiveItem().isOf(FateUBW.EA)) return;
 
         float pitch = MathHelper.lerp(ExcaliburItem.chargeProgress(entity), -1.5F, -2.9F);
         rightArm.pitch = pitch;

@@ -156,6 +156,28 @@ public class ServantAssets {
             DARK_STEEL = metal(0x5a5f6b), LEATHER = wrap(0x8a6420, 0x5c4214);
     static final Paint WHITE_COAT = solid(0xf3f3f6), MANE = cloth(0xf0e6c8), EYE_BLUE = metal(0x5aa0ff);
 
+    static final Paint GOLD_ARMOR = plates(0xd9a520, 0x9c6f0c), RED_TRIM = solid(0x9c1420), EA_GRIP = wrap(0x2a0d0d, 0x120505);
+
+    // Cilindros de Ea: negro con líneas rojas que se desplazan con el frame, como si giraran.
+    // mode 0: lentas; 1: cargando, rápidas y anaranjadas; 2: cargada, gruesas y brillantes
+    static Paint eaSegment(int mode) {
+        return (x, y, w, h, s) -> {
+            int speed = mode == 0 ? 1 : 3;
+            int period = mode == 2 ? 3 : 4;
+            boolean line = Math.floorMod(y + x / 2 + FRAME * speed, period) == 0;
+            int glow = mode == 0 ? 0xc81a14 : mode == 1 ? 0xff5a1e : 0xffb050;
+            return shade(line ? glow : 0x141016, x, y, w, h, s, 0.05);
+        };
+    }
+
+    // Halo rojo translúcido de Ea cargada
+    static Paint redAura() {
+        return (x, y, w, h, s) -> {
+            double pulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * FRAME / FRAMES);
+            return ((int) (50 + 50 * pulse) << 24) | 0xff3020;
+        };
+    }
+
     // Plumas de las alas de Pegaso
     static Paint feathers() {
         return (x, y, w, h, s) -> shade(Math.floorMod(x + y / 3, 3) == 0 ? 0xd7dce6 : 0xffffff, x, y, w, h, s, 0.04);
@@ -779,6 +801,78 @@ public class ServantAssets {
         return List.of(body, neck, head, legFL, legFR, legBL, legBR, wingL, wingR, tail);
     }
 
+    // Ea: tres cilindros (octogonales: un cubo y otro girado 45°) cada vez más finos, sobre una empuñadura dorada
+    static Model ea(int mode) {
+        Model m = new Model();
+        m.box(7.3, -1, 7.3, 8.7, 0.5, 8.7, GOLD);                  // pomo
+        m.box(7.5, 0.5, 7.5, 8.5, 4.5, 8.5, EA_GRIP);              // empuñadura
+        m.box(6.2, 4.5, 6.2, 9.8, 5.5, 9.8, GOLD);                 // guarda redonda
+        m.box(6.2, 4.5, 6.2, 9.8, 5.5, 9.8, GOLD).rot("y", 45, 8, 5, 8);
+        Paint seg = eaSegment(mode);
+        double[][] segments = {{1.3, 5.5, 11}, {1.1, 11.2, 16.5}, {0.9, 16.7, 21.5}, {0.5, 21.5, 24}};
+        for (double[] s : segments) {
+            double h = s[0];
+            m.box(8 - h, s[1], 8 - h, 8 + h, s[2], 8 + h, seg);
+            m.box(8 - h, s[1], 8 - h, 8 + h, s[2], 8 + h, seg).rot("y", 45, 8, s[1], 8);
+        }
+        m.box(6.8, 11, 6.8, 9.2, 11.2, 9.2, GOLD);                 // anillos entre cilindros
+        m.box(7.0, 16.5, 7.0, 9.0, 16.7, 9.0, GOLD);
+        if (mode == 2) m.box(5.8, 5.5, 5.8, 10.2, 24.5, 10.2, redAura());
+        return m;
+    }
+
+    // Llave de la Sala del Tesoro: anilla con gema roja, caña y paletón dorados
+    static Model babylonKey() {
+        Model m = new Model();
+        m.box(6, -1, 7.5, 10, 0, 8.5, GOLD);
+        m.box(6, 0, 7.5, 7, 3, 8.5, GOLD);
+        m.box(9, 0, 7.5, 10, 3, 8.5, GOLD);
+        m.box(6, 3, 7.5, 10, 4, 8.5, GOLD);
+        m.box(7.5, 0.8, 7.4, 8.5, 2.2, 8.6, solid(0xc8102e));     // gema
+        m.box(7, 4, 7, 9, 5, 9, GOLD);                             // collar
+        m.box(7.5, 5, 7.5, 8.5, 15, 8.5, GOLD);                    // caña
+        m.box(8.5, 11, 7.6, 10.5, 12, 8.4, GOLD);                  // paletón
+        m.box(8.5, 13, 7.6, 10, 14, 8.4, GOLD);
+        m.box(7.3, 15, 7.3, 8.7, 16, 8.7, GOLD);
+        return m;
+    }
+
+    // Gilgamesh: coraza dorada con gema azul, cinturón rojo, escarcelas (animadas), grandes hombreras, grebas y escarpes de oro
+    static List<Bone> gilgameshArmor() {
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, GOLD_ARMOR).inflate(1.0);
+        body.model.box(-4, 11.5, -2, 4, 13, 2, RED_TRIM).inflate(1.25);
+        body.model.box(-1, 19, -3.4, 1, 21, -3.0, EX_GEM);
+        Bone tassets = new Bone("tassets", "armorBody", 0, 12, 0);
+        tassets.model.box(-4.4, 5, -3.7, -0.3, 12, -3.2, GOLD_ARMOR);
+        tassets.model.box(0.3, 5, -3.7, 4.4, 12, -3.2, GOLD_ARMOR);
+        tassets.model.box(-4.4, 5, 3.2, 4.4, 12, 3.7, GOLD_ARMOR);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 20, 2, GOLD_ARMOR).inflate(0.9);
+        rightArm.model.box(-9.5, 20, -3, -3.5, 25, 3, GOLD_ARMOR).inflate(0.3);
+        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
+        leftArm.model.box(4, 12, -2, 8, 20, 2, GOLD_ARMOR).inflate(0.9);
+        leftArm.model.box(3.5, 20, -3, 9.5, 25, 3, GOLD_ARMOR).inflate(0.3);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 3, -2, 0, 12, 2, GOLD_ARMOR).inflate(0.5);
+        rightLeg.model.box(-3, 6, -3.0, -1, 8, -2.5, RED_TRIM);
+        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
+        leftLeg.model.box(0, 3, -2, 4, 12, 2, GOLD_ARMOR).inflate(0.5);
+        leftLeg.model.box(1, 6, -3.0, 3, 8, -2.5, RED_TRIM);
+
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 5, 2, GOLD_ARMOR).inflate(0.9);
+        rightBoot.model.box(-3.5, 0, -3.6, -0.5, 1.5, -2.9, GOLD);
+        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
+        leftBoot.model.box(0, 0, -2, 4, 5, 2, GOLD_ARMOR).inflate(0.9);
+        leftBoot.model.box(0.5, 0, -3.6, 3.5, 1.5, -2.9, GOLD);
+
+        return List.of(head, body, tassets, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
     // Gáe Bolg: lanza carmesí con púas. Agarre en y≈2.5, igual que las espadas; total de -12 a 30.5
     static Model gaeBolg() {
         Model m = new Model();
@@ -918,5 +1012,21 @@ public class ServantAssets {
         itemModel(root, "rider_leggings", bonesToModel(rider, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "rider_boots", bonesToModel(rider, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
         geoModel(root, "pegasus", pegasus());
+
+        // ---------- Gilgamesh ----------
+        String eaOverrides = "[\n"
+                + "    { \"predicate\": { \"fate_ubw:charge\": 0.01 }, \"model\": \"fate_ubw:item/ea_charging\" },\n"
+                + "    { \"predicate\": { \"fate_ubw:charge\": 1.0 }, \"model\": \"fate_ubw:item/ea_charged\" }\n"
+                + "  ]";
+        itemModel(root, "ea", ea(0), handheld(0.7), eaOverrides, 8, "{\"animation\":{\"frametime\":3}}");
+        itemModel(root, "ea_charging", ea(1), raised(0.7, -35, 5.0, 0.0, 0.75), null, 8, "{\"animation\":{\"frametime\":1}}");
+        itemModel(root, "ea_charged", ea(2), raised(0.7, -50, 6.5, -0.5, 0.8), null, 6, "{\"animation\":{\"frametime\":1}}");
+        itemModel(root, "gate_of_babylon", babylonKey(), handheld(0.9), null);
+        List<Bone> gilgamesh = gilgameshArmor();
+        geoModel(root, "gilgamesh_armor", gilgamesh);
+        itemModel(root, "gilgamesh_chestplate", bonesToModel(gilgamesh, 8, -4, 8, "armorBody", "tassets", "armorRightArm", "armorLeftArm"),
+                armorIcon(0.5), null);
+        itemModel(root, "gilgamesh_leggings", bonesToModel(gilgamesh, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
+        itemModel(root, "gilgamesh_boots", bonesToModel(gilgamesh, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
     }
 }

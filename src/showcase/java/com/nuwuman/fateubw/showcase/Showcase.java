@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class Showcase implements ClientModInitializer {
     private final List<String> sections = System.getenv("FATE_SHOWCASE") == null
-            ? List.of("saber", "archer", "lancer", "rider") : List.of(System.getenv("FATE_SHOWCASE").split(","));
+            ? List.of("saber", "archer", "lancer", "rider", "gilgamesh") : List.of(System.getenv("FATE_SHOWCASE").split(","));
     private int ticks;
     private int worldTicks;
     private boolean started;
@@ -101,6 +101,7 @@ public class Showcase implements ClientModInitializer {
             case "archer" -> archer(client, p, st);
             case "lancer" -> lancer(client, p, st);
             case "rider" -> rider(client, p, st);
+            case "gilgamesh" -> gilgamesh(client, p, st);
             default -> true;
         };
         if (done) {
@@ -408,6 +409,65 @@ public class Showcase implements ClientModInitializer {
             }
             case 290 -> holdSneak = false;
             case 300 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean gilgamesh(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:gilgamesh_chestplate", "armor.legs with fate_ubw:gilgamesh_leggings",
+                    "armor.feet with fate_ubw:gilgamesh_boots", "hotbar.0 with fate_ubw:gate_of_babylon",
+                    "hotbar.1 with fate_ubw:ea", "hotbar.2 with fate_ubw:gilgamesh_chestplate",
+                    "hotbar.3 with fate_ubw:gilgamesh_leggings", "hotbar.4 with fate_ubw:gilgamesh_boots"},
+                    new String[]{"~-2 ~ ~10", "~2 ~ ~12", "~ ~ ~16"});
+            case 40 -> shot(c, "gilgamesh_01_firstperson_key");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "gilgamesh_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "gilgamesh_03_back");
+
+            // Gate of Babylon
+            case 80 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 82 -> {
+                if (waitUntil(clientHas(c, com.nuwuman.fateubw.FateUBW.BABYLON_PORTAL), 40)) return false;
+            }
+            case 92 -> shot(c, "gilgamesh_04_gate_back");
+            case 94 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 102 -> shot(c, "gilgamesh_05_gate_front");
+            case 104 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                yaw = 30.0F;
+            }
+            case 112 -> shot(c, "gilgamesh_06_gate_barrage");
+            case 130 -> yaw = 0.0F;
+
+            // Ea: carga y Enuma Elish
+            case 150 -> {
+                p.getInventory().selectedSlot = 1;
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+            }
+            case 155 -> use(c, p);
+            case 175 -> shot(c, "gilgamesh_07_ea_charging_firstperson");
+            case 177 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 220 -> {
+                if (waitCharge(c, p, 62)) return false;
+                shot(c, "gilgamesh_08_ea_charged_front");
+            }
+            case 222 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 225 -> holdUse = false;
+            case 227 -> {
+                if (waitUntil(clientHas(c, com.nuwuman.fateubw.FateUBW.ENUMA_ELISH), 40)) return false;
+            }
+            case 228 -> yaw = 35.0F;
+            case 233 -> shot(c, "gilgamesh_09_enuma_elish");
+            case 240 -> shot(c, "gilgamesh_10_enuma_elish_late");
+            case 260 -> {
+                yaw = 0.0F;
                 return true;
             }
             default -> {

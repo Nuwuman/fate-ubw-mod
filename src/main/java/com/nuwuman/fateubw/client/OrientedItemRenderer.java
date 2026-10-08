@@ -9,6 +9,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -42,7 +43,12 @@ public class OrientedItemRenderer<T extends Entity> extends EntityRenderer<T> {
         // ...y el modelo, que mira hacia +Y, se tumba sobre +X
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
         if (spin.test(entity)) matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((entity.age + tickDelta) * 40.0F));
-        itemRenderer.renderItem(stack.apply(entity), ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV,
+        ItemStack item = stack.apply(entity);
+        // Las armas vanilla son sprites con la hoja en diagonal: +45° la ponen apuntando a +Y como los modelos del mod
+        if (Registries.ITEM.getId(item.getItem()).getNamespace().equals("minecraft")) {
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45.0F));
+        }
+        itemRenderer.renderItem(item, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV,
                 matrices, vertexConsumers, entity.getWorld(), entity.getId());
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);

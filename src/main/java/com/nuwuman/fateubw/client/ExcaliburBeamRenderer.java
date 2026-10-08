@@ -35,7 +35,7 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         if (len <= 0.0F || fade <= 0.0F) return;
 
         float grow = Math.min(1.0F, age / ExcaliburBeamEntity.GROW_TICKS);
-        float w = ExcaliburBeamEntity.RADIUS * grow * (1.0F + 0.08F * MathHelper.sin(age * 1.7F));
+        float w = entity.radius() * grow * (1.0F + 0.08F * MathHelper.sin(age * 1.7F));
 
         matrices.push();
         // Alinear +Y con la dirección de la mirada al disparar

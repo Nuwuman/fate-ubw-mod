@@ -54,7 +54,19 @@
   "item.fate_ubw.mystic_eyes": "Ojos Místicos",
   "item.fate_ubw.bellerophon_charge": "Embestida de Bellerophon",
 
+  "item.fate_ubw.gate_of_babylon": "Llave de Babilonia",
+  "item.fate_ubw.gate_of_babylon.tooltip": "Click derecho: Gate of Babylon, lluvia de armas del tesoro",
+  "item.fate_ubw.ea": "Ea",
+  "item.fate_ubw.ea.tooltip": "Mantén click derecho y suelta: Enuma Elish",
+  "item.fate_ubw.gilgamesh_chestplate": "Coraza del Rey de los Héroes",
+  "item.fate_ubw.gilgamesh_leggings": "Grebas del Rey de los Héroes",
+  "item.fate_ubw.gilgamesh_boots": "Escarpes del Rey de los Héroes",
+  "item.fate_ubw.gilgamesh_armor.tooltip.set": "Conjunto completo: Regla de Oro (Suerte II y Resistencia I)",
+
   "entity.fate_ubw.excalibur_beam": "Excalibur",
+  "entity.fate_ubw.enuma_elish": "Enuma Elish",
+  "entity.fate_ubw.babylon_portal": "Gate of Babylon",
+  "entity.fate_ubw.babylon_weapon": "Arma del tesoro",
   "entity.fate_ubw.chain_dagger": "Daga con cadena",
   "entity.fate_ubw.pegasus": "Pegaso",
   "entity.fate_ubw.thrown_falchion": "Sable lanzado",
@@ -63,7 +75,7 @@
   "entity.fate_ubw.gae_bolg_spear": "Gáe Bolg",
 
   "gamerule.fateAbilitiesBreakBlocks": "Fate: las habilidades rompen bloques",
-  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur abre un túnel, y Caladbolg II y Gáe Bolg explotan como TNT",
+  "gamerule.fateAbilitiesBreakBlocks.description": "Excalibur y Enuma Elish abren un túnel, y Caladbolg II y Gáe Bolg explotan como TNT",
 
   "ability.fate_ubw.rho_aias": "Rho Aias",
   "ability.fate_ubw.caladbolg": "Caladbolg II",
@@ -79,5 +91,7 @@
   "death.attack.gae_bolg": "%1$s tuvo el corazón atravesado",
   "death.attack.gae_bolg.player": "%1$s tuvo el corazón atravesado por la Gáe Bolg de %2$s",
   "death.attack.bellerophon": "%1$s fue arrollado por un cometa",
-  "death.attack.bellerophon.player": "%1$s fue arrollado por el Bellerophon de %2$s"
+  "death.attack.bellerophon.player": "%1$s fue arrollado por el Bellerophon de %2$s",
+  "death.attack.enuma_elish": "%1$s fue desgarrado por la espiral",
+  "death.attack.enuma_elish.player": "%1$s fue desgarrado por el Enuma Elish de %2$s"
 }
