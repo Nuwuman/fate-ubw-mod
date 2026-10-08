@@ -17,9 +17,25 @@ import org.joml.Matrix4f;
 public class UbwCoreRenderer extends EntityRenderer<UbwCoreEntity> {
     private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/beacon_beam.png");
     // x, y, z (respecto al centro), radio, velocidad de giro, inclinación
-    private static final float[][] GEARS = {
-            {-50, 60, 40, 18, 0.4F, 20}, {35, 75, 55, 26, -0.25F, -15}, {70, 50, -20, 14, 0.6F, 35},
-            {-30, 85, -60, 30, 0.15F, -25}, {10, 55, 80, 12, -0.7F, 10}, {-75, 45, -10, 16, 0.5F, 40}};
+    private static final float[][] GEARS = sky(22);
+
+    // Cúpula de engranajes con semilla fija: los grandes lejos y altos, los pequeños más cerca;
+    // los más grandes giran más despacio y la mitad gira al revés
+    private static float[][] sky(int count) {
+        java.util.Random random = new java.util.Random(1234);
+        float[][] gears = new float[count][];
+        for (int i = 0; i < count; i++) {
+            boolean big = i < count * 2 / 3;
+            double angle = (i + random.nextDouble() * 0.6) * Math.PI * 2 / count * (big ? 1.5 : 1.0);
+            double dist = big ? 70 + random.nextDouble() * 50 : 35 + random.nextDouble() * 25;
+            float radius = big ? 16 + random.nextFloat() * 22 : 5 + random.nextFloat() * 8;
+            float y = big ? 45 + random.nextFloat() * 60 : 25 + random.nextFloat() * 25;
+            float speed = (0.6F / (radius / 10.0F)) * (random.nextBoolean() ? 1 : -1);
+            float tilt = -40 + random.nextFloat() * 80;
+            gears[i] = new float[]{(float) (Math.cos(angle) * dist), y, (float) (Math.sin(angle) * dist), radius, speed, tilt};
+        }
+        return gears;
+    }
 
     public UbwCoreRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
