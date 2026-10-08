@@ -23,16 +23,67 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
 
-import java.util.List;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.constant.DataTickets;
+import software.bernie.geckolib.model.DefaultedItemGeoModel;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-/** Ea, la espada de la ruptura. Mantén para que sus cilindros giren y suelta para Enuma Elish. */
-public class EaItem extends SwordItem {
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+/**
+ * Ea, la espada de la ruptura. Mantén para que sus cilindros giren y suelta para Enuma Elish.
+ * La dibuja GeckoLib: los tres cilindros giran de verdad (más rápido al cargar) y sus líneas rojas brillan en la oscuridad.
+ */
+public class EaItem extends SwordItem implements GeoItem {
     private static final int COOLDOWN = 20 * 25;
     private static final DustParticleEffect RED = new DustParticleEffect(new Vector3f(0.9F, 0.1F, 0.1F), 1.4F);
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.ea.idle");
+    private static final RawAnimation CHARGE = RawAnimation.begin().thenLoop("animation.ea.charge");
+    /** ¿Alguien está cargando esta Ea? Lo rellena el cliente (aquí no se puede tocar código de cliente). */
+    public static Predicate<ItemStack> charging = stack -> false;
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public EaItem(Item.Settings settings) {
         super(ToolMaterials.NETHERITE, settings.attributeModifiers(
                 SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 7, -2.6F)));
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        consumer.accept(new GeoRenderProvider() {
+            private GeoItemRenderer<EaItem> renderer;
+
+            @Override
+            public net.minecraft.client.render.item.BuiltinModelItemRenderer getGeoItemRenderer() {
+                if (renderer == null) {
+                    renderer = new GeoItemRenderer<>(new DefaultedItemGeoModel<>(FateUBW.id("ea")));
+                    renderer.addRenderLayer(new AutoGlowingGeoLayer<>(renderer));
+                }
+                return renderer;
+            }
+        });
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "spin", 5, state -> {
+            ItemStack stack = state.getData(DataTickets.ITEMSTACK);
+            return state.setAndContinue(stack != null && charging.test(stack) ? CHARGE : IDLE);
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override

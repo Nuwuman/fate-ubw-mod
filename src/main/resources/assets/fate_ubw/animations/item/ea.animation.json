@@ -1,0 +1,25 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.ea.idle": {
+      "loop": true,
+      "animation_length": 6.0,
+      "bones": {
+        "cylinder1": { "rotation": { "0.0": [0, 0, 0], "6.0": [0, 360, 0] } },
+        "cylinder2": { "rotation": { "0.0": [0, 0, 0], "6.0": [0, -720, 0] } },
+        "cylinder3": { "rotation": { "0.0": [0, 0, 0], "6.0": [0, 1080, 0] } },
+        "tip": { "rotation": { "0.0": [0, 0, 0], "6.0": [0, -360, 0] } }
+      }
+    },
+    "animation.ea.charge": {
+      "loop": true,
+      "animation_length": 1.0,
+      "bones": {
+        "cylinder1": { "rotation": { "0.0": [0, 0, 0], "1.0": [0, 720, 0] } },
+        "cylinder2": { "rotation": { "0.0": [0, 0, 0], "1.0": [0, -1080, 0] } },
+        "cylinder3": { "rotation": { "0.0": [0, 0, 0], "1.0": [0, 1440, 0] } },
+        "tip": { "rotation": { "0.0": [0, 0, 0], "1.0": [0, -720, 0] } }
+      }
+    }
+  }
+}

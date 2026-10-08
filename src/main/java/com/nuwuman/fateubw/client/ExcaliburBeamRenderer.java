@@ -45,10 +45,69 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         Matrix4f m = matrices.peek().getPositionMatrix();
         VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getLightning());
 
-        prism(vc, m, len, w * 0.15F, w * 0.3F, 255, 255, 245, (int) (255 * fade));
-        prism(vc, m, len, w * 0.35F, w * 0.65F, 255, 215, 90, (int) (190 * fade));
-        prism(vc, m, len, w * 0.6F, w * 1.1F, 255, 170, 40, (int) (110 * fade));
+        // Tubos redondos con ondas que recorren el haz: núcleo blanco, luz dorada y halo naranja
+        tube(vc, m, len, w * 0.15F, w * 0.3F, 0.06F, age, 255, 255, 245, (int) (255 * fade));
+        tube(vc, m, len, w * 0.35F, w * 0.65F, 0.12F, age, 255, 215, 90, (int) (180 * fade));
+        tube(vc, m, len, w * 0.6F, w * 1.1F, 0.2F, age, 255, 170, 40, (int) (95 * fade));
+        // Anillos de luz que salen disparados a lo largo del haz
+        for (int k = 0; k < 4; k++) {
+            float at = ((age * 2.5F + k * len / 4) % len);
+            float ringW = w * (1.15F + 0.25F * (at / len));
+            ring(vc, m, at, ringW, ringW * 1.25F, 255, 230, 150, (int) (140 * fade * (1 - at / len)));
+        }
         matrices.pop();
+    }
+
+    private static final int SIDES = 12;
+
+    // Tubo de SIDES lados, de y=0 a y=len, que se ensancha de w0 a w1 y cuyo radio ondula (amp) con el tiempo
+    static void tube(VertexConsumer vc, Matrix4f m, float len, float w0, float w1, float amp, float age, int r, int g, int b, int a) {
+        int segments = Math.max(2, (int) (len / 2));
+        for (int s = 0; s < segments; s++) {
+            float y0 = len * s / segments, y1 = len * (s + 1) / segments;
+            float r0 = radius(y0, len, w0, w1, amp, age), r1 = radius(y1, len, w0, w1, amp, age);
+            int a0 = alongAlpha(a, y0, len), a1 = alongAlpha(a, y1, len);
+            for (int i = 0; i < SIDES; i++) {
+                float t0 = (float) (i * Math.PI * 2 / SIDES), t1 = (float) ((i + 1) * Math.PI * 2 / SIDES);
+                float c0 = MathHelper.cos(t0), s0 = MathHelper.sin(t0), c1 = MathHelper.cos(t1), s1 = MathHelper.sin(t1);
+                // Las dos caras: la capa del rayo descarta las de espaldas
+                vc.vertex(m, c0 * r0, y0, s0 * r0).color(r, g, b, a0);
+                vc.vertex(m, c1 * r0, y0, s1 * r0).color(r, g, b, a0);
+                vc.vertex(m, c1 * r1, y1, s1 * r1).color(r, g, b, a1);
+                vc.vertex(m, c0 * r1, y1, s0 * r1).color(r, g, b, a1);
+                vc.vertex(m, c0 * r1, y1, s0 * r1).color(r, g, b, a1);
+                vc.vertex(m, c1 * r1, y1, s1 * r1).color(r, g, b, a1);
+                vc.vertex(m, c1 * r0, y0, s1 * r0).color(r, g, b, a0);
+                vc.vertex(m, c0 * r0, y0, s0 * r0).color(r, g, b, a0);
+            }
+        }
+    }
+
+    private static float radius(float y, float len, float w0, float w1, float amp, float age) {
+        float base = MathHelper.lerp(y / len, w0, w1);
+        return base * (1.0F + amp * MathHelper.sin(y * 0.7F - age * 1.4F));
+    }
+
+    // Se desvanece hacia la punta
+    private static int alongAlpha(int a, float y, float len) {
+        return (int) (a * (1.0F - 0.5F * y / len));
+    }
+
+    // Anillo plano perpendicular al haz a la altura y
+    private static void ring(VertexConsumer vc, Matrix4f m, float y, float inner, float outer, int r, int g, int b, int a) {
+        if (a <= 0) return;
+        for (int i = 0; i < SIDES * 2; i++) {
+            float t0 = (float) (i * Math.PI / SIDES), t1 = (float) ((i + 1) * Math.PI / SIDES);
+            float c0 = MathHelper.cos(t0), s0 = MathHelper.sin(t0), c1 = MathHelper.cos(t1), s1 = MathHelper.sin(t1);
+            vc.vertex(m, c0 * inner, y, s0 * inner).color(r, g, b, a);
+            vc.vertex(m, c1 * inner, y, s1 * inner).color(r, g, b, a);
+            vc.vertex(m, c1 * outer, y, s1 * outer).color(r, g, b, 0);
+            vc.vertex(m, c0 * outer, y, s0 * outer).color(r, g, b, 0);
+            vc.vertex(m, c0 * outer, y, s0 * outer).color(r, g, b, 0);
+            vc.vertex(m, c1 * outer, y, s1 * outer).color(r, g, b, 0);
+            vc.vertex(m, c1 * inner, y, s1 * inner).color(r, g, b, a);
+            vc.vertex(m, c0 * inner, y, s0 * inner).color(r, g, b, a);
+        }
     }
 
     // Prisma cuadrado de y=0 a y=len que se ensancha de w0 a w1; caras con las dos orientaciones.

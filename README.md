@@ -21,7 +21,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 **Saber (Artoria)**
 - **Excalibur** (modelo 3D): mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora
-  armadura). Mientras cargas, la hoja se vuelve dorada y la alzas con las dos manos.
+  armadura): un torrente redondo con ondas y anillos de luz que deja una estela brillante (y el suelo ardiendo con
+  `fateAbilitiesBreakBlocks`). Mientras cargas, la hoja se vuelve dorada y la alzas con las dos manos.
   Agachado + click derecho: **Strike Air**, ráfaga de viento en cono. **Invisible Air**: el viento la oculta (solo se
   ve un remolino) hasta que cargas el Noble Phantasm o liberas Strike Air.
 - **Armadura** (coraza, faldar, escarpes) con modelo 3D de GeckoLib y falda animada.
@@ -81,7 +82,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 ![Rider](docs/rider.png)
 
 **Gilgamesh**
-- **Ea**: mantén click derecho y suelta para **Enuma Elish**, un vórtice en espiral de 64 bloques que arrastra hacia su eje
+- **Ea** (modelo de GeckoLib): sus tres cilindros giran de verdad, más deprisa al cargar, y sus líneas rojas brillan en
+  la oscuridad. Mantén click derecho y suelta para **Enuma Elish**, un vórtice en espiral de 64 bloques que arrastra hacia su eje
   lo que pasa cerca y desgarra lo que toca (ignora armadura).
 - **Armadura dorada** (coraza, grebas, escarpes) con escarcelas animadas. Conjunto completo: **Regla de Oro**
   (Suerte II y Resistencia I). Habilidades:
@@ -136,6 +138,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **Póster reforzado** (Shirou): pega como una espada de hierro; click derecho, Refuerzo: repara una cuarta parte de lo
   que llevas en la otra mano y te da Fuerza I.
 - **Zelzeriz** (Illya): tres pájaros de alambre de plata vuelan a tu alrededor 15 s y atacan a los monstruos cercanos.
+
+![Guerra del Santo Grial, servants enemigos y Masters](docs/grail_war.png)
 
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 

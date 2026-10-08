@@ -48,8 +48,11 @@ public class FateUBWClient implements ClientModInitializer {
         ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("air"),
                 (stack, world, entity, seed) -> entity instanceof LivingEntity user && !using(user, stack)
                         && !(user instanceof PlayerEntity p && p.getItemCooldownManager().isCoolingDown(FateUBW.STRIKE_AIR)) ? 1.0F : 0.0F);
-        ModelPredicateProviderRegistry.register(FateUBW.EA, FateUBW.id("charge"),
-                (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
+        // Ea (GeckoLib): sus cilindros giran deprisa mientras alguien la carga
+        com.nuwuman.fateubw.gilgamesh.EaItem.charging = stack -> {
+            net.minecraft.client.world.ClientWorld world = net.minecraft.client.MinecraftClient.getInstance().world;
+            return world != null && world.getPlayers().stream().anyMatch(p -> using(p, stack));
+        };
 
         // Arco: mismos predicados que el vanilla + si lleva Caladbolg montado
         ModelPredicateProviderRegistry.register(FateUBW.ARCHER_BOW, Identifier.ofVanilla("pull"),

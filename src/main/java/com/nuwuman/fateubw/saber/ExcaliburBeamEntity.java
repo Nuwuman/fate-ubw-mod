@@ -118,6 +118,7 @@ public class ExcaliburBeamEntity extends Entity {
         }
         if (FateUBW.breaksBlocks(world, start)) carve(world, start, dir, len);
         affectNearby(world, start, end);
+        if (damageType() == FateUBW.EXCALIBUR_DAMAGE) afterglow(world, start, dir, len);
 
         float radius = radius();
         DamageSource source = world.getDamageSources().create(damageType(), this, owner);
@@ -130,6 +131,24 @@ public class ExcaliburBeamEntity extends Entity {
             target.damage(source, damage());
             onHit(world, target, dir);
             world.spawnParticles(ParticleTypes.EXPLOSION, center.x, center.y, center.z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+    }
+
+    // Estela de luz a lo largo del haz y, con fateAbilitiesBreakBlocks, el suelo queda ardiendo por donde pasó
+    private void afterglow(ServerWorld world, Vec3d start, Vec3d dir, float len) {
+        for (int i = 0; i < 10; i++) {
+            Vec3d p = start.add(dir.multiply(random.nextFloat() * len));
+            world.spawnParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, radius() * 0.6, radius() * 0.6, radius() * 0.6, 0.03);
+        }
+        if (age != GROW_TICKS || !FateUBW.breaksBlocks(world, start)) return;
+        for (float d = 2.0F; d <= len; d += 2.0F) {
+            BlockPos pos = BlockPos.ofFloored(start.add(dir.multiply(d)));
+            for (int down = 0; down < 5; down++, pos = pos.down()) {
+                if (world.getBlockState(pos).isAir() && world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos.down(), net.minecraft.util.math.Direction.UP)) {
+                    if (random.nextFloat() < 0.6F) world.setBlockState(pos, net.minecraft.block.AbstractFireBlock.getState(world, pos));
+                    break;
+                }
+            }
         }
     }
 

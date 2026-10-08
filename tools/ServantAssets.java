@@ -219,6 +219,14 @@ public class ServantAssets {
             this.inflate = amount;
             return this;
         }
+
+        // Partes que brillan en la oscuridad (GeckoLib: textura _glowmask). 0 = no brilla
+        Paint glow;
+
+        Cube glow(Paint p) {
+            this.glow = p;
+            return this;
+        }
     }
 
     static class Model {
@@ -795,6 +803,28 @@ public class ServantAssets {
     }
 
     static void geoModel(Path root, String name, List<Bone> bones) throws IOException {
+        // Armaduras en item/armor/, entidades (Pegaso) en entity/: las rutas que espera GeckoLib
+        geoModel(root, name, bones, name.endsWith("_armor") ? "item/armor/" : "entity/");
+    }
+
+    // Misma textura que el atlas, pero solo con los píxeles de las pintas "glow" (el resto transparente)
+    static BufferedImage glowmask(List<Cube> cubes, BufferedImage base) {
+        BufferedImage img = new BufferedImage(base.getWidth(), base.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (Cube c : cubes) {
+            if (c.glow == null) continue;
+            for (Face f : c.faces.values()) {
+                for (int y = 0; y < f.h; y++) {
+                    for (int x = 0; x < f.w; x++) {
+                        int px = c.glow.at(x, y, f.w, f.h, f.seed);
+                        if (px != 0) img.setRGB(f.u + x, f.v + y, (px >>> 24) == 0 ? 0xff000000 | px : px);
+                    }
+                }
+            }
+        }
+        return img;
+    }
+
+    static void geoModel(Path root, String name, List<Bone> bones, String kind) throws IOException {
         List<Cube> all = new ArrayList<>();
         for (Bone bone : bones) all.addAll(bone.model.cubes);
         BufferedImage img = atlas(all);
@@ -814,6 +844,10 @@ public class ServantAssets {
                 b.append(j > 0 ? ",\n" : "\n").append("        { \"origin\": ").append(arr(c.from))
                         .append(", \"size\": ").append(arr(c.to[0] - c.from[0], c.to[1] - c.from[1], c.to[2] - c.from[2]));
                 if (c.inflate != 0) b.append(", \"inflate\": ").append(n(c.inflate));
+                if (c.axis != null) {
+                    double rx = c.axis.equals("x") ? c.angle : 0, ry = c.axis.equals("y") ? c.angle : 0, rz = c.axis.equals("z") ? c.angle : 0;
+                    b.append(", \"pivot\": ").append(arr(c.origin)).append(", \"rotation\": ").append(arr(rx, ry, rz));
+                }
                 b.append(", \"uv\": {");
                 int k = 0;
                 for (Face f : c.faces.values()) {
@@ -826,14 +860,43 @@ public class ServantAssets {
             b.append(bone.model.cubes.isEmpty() ? "] }" : "\n      ] }").append(i < bones.size() - 1 ? "," : "").append("\n");
         }
         b.append("    ]\n  }]\n}\n");
-        // Armaduras en item/armor/, entidades (Pegaso) en entity/: las rutas que espera GeckoLib
-        String kind = name.endsWith("_armor") ? "item/armor/" : "entity/";
         Path geo = root.resolve("geo/" + kind + name + ".geo.json");
         Files.createDirectories(geo.getParent());
         Files.writeString(geo, b);
         Path tex = root.resolve("textures/" + kind + name + ".png");
         Files.createDirectories(tex.getParent());
         ImageIO.write(img, "png", tex.toFile());
+        if (all.stream().anyMatch(c -> c.glow != null)) {
+            ImageIO.write(glowmask(all, img), "png", root.resolve("textures/" + kind + name + "_glowmask.png").toFile());
+        }
+    }
+
+    // Ea para GeckoLib: empuñadura fija y tres cilindros (y la punta) que giran cada uno a su ritmo.
+    // Coordenadas de GeckoLib = las del modelo JSON menos (8, 8, 8); las líneas rojas brillan en la oscuridad
+    static Paint eaGlow() {
+        return (x, y, w, h, s) -> Math.floorMod(y + x / 2, 4) == 0 ? 0xff3a2a : 0;
+    }
+
+    static List<Bone> eaBones() {
+        Bone handle = new Bone("handle", null, 0, 0, 0);
+        handle.model.box(-0.7, -9, -0.7, 0.7, -7.5, 0.7, GOLD);
+        handle.model.box(-0.5, -7.5, -0.5, 0.5, -3.5, 0.5, EA_GRIP);
+        handle.model.box(-1.8, -3.5, -1.8, 1.8, -2.5, 1.8, GOLD);
+        handle.model.box(-1.8, -3.5, -1.8, 1.8, -2.5, 1.8, GOLD).rot("y", 45, 0, -3, 0);
+        handle.model.box(-1.2, 3, -1.2, 1.2, 3.2, 1.2, GOLD);       // anillos entre cilindros
+        handle.model.box(-1.0, 8.5, -1.0, 1.0, 8.7, 1.0, GOLD);
+        Paint seg = eaSegment(0);
+        double[][] segments = {{1.3, -2.5, 3}, {1.1, 3.2, 8.5}, {0.9, 8.7, 13.5}, {0.5, 13.5, 16}};
+        String[] names = {"cylinder1", "cylinder2", "cylinder3", "tip"};
+        List<Bone> bones = new ArrayList<>(List.of(handle));
+        for (int i = 0; i < segments.length; i++) {
+            double h = segments[i][0];
+            Bone bone = new Bone(names[i], "handle", 0, segments[i][1], 0);
+            bone.model.box(-h, segments[i][1], -h, h, segments[i][2], h, seg).glow(eaGlow());
+            bone.model.box(-h, segments[i][1], -h, h, segments[i][2], h, seg).rot("y", 45, 0, segments[i][1], 0).glow(eaGlow());
+            bones.add(bone);
+        }
+        return bones;
     }
 
     // ---------- transformaciones de vista ----------
@@ -1419,13 +1482,10 @@ public class ServantAssets {
         geoModel(root, "pegasus", pegasus());
 
         // ---------- Gilgamesh ----------
-        String eaOverrides = "[\n"
-                + "    { \"predicate\": { \"fate_ubw:charge\": 0.01 }, \"model\": \"fate_ubw:item/ea_charging\" },\n"
-                + "    { \"predicate\": { \"fate_ubw:charge\": 1.0 }, \"model\": \"fate_ubw:item/ea_charged\" }\n"
-                + "  ]";
-        itemModel(root, "ea", ea(0), handheld(0.7), eaOverrides, 8, "{\"animation\":{\"frametime\":3}}");
-        itemModel(root, "ea_charging", ea(1), raised(0.7, -35, 5.0, 0.0, 0.75), null, 8, "{\"animation\":{\"frametime\":1}}");
-        itemModel(root, "ea_charged", ea(2), raised(0.7, -50, 6.5, -0.5, 0.8), null, 6, "{\"animation\":{\"frametime\":1}}");
+        // Ea la dibuja GeckoLib (cilindros que giran y líneas que brillan); el JSON solo da las posiciones en mano
+        geoModel(root, "ea", eaBones(), "item/");
+        Files.writeString(root.resolve("models/item/ea.json"),
+                "{\n  \"parent\": \"builtin/entity\",\n  \"textures\": { \"particle\": \"fate_ubw:item/ea\" },\n  \"display\": " + handheld(0.7) + "\n}\n");
         itemModel(root, "gate_of_babylon", babylonKey(), handheld(0.9), null);
         List<Bone> gilgamesh = gilgameshArmor();
         geoModel(root, "gilgamesh_armor", gilgamesh);

@@ -117,6 +117,7 @@ public class Showcase implements ClientModInitializer {
             case "masters" -> masters(client, p, st);
             case "npc" -> npc(client, p, st);
             case "newnps" -> newNps(client, p, st);
+            case "glow" -> glow(client, p, st);
             case "caster" -> caster(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
@@ -148,7 +149,13 @@ public class Showcase implements ClientModInitializer {
     private boolean waitCharge(MinecraftClient c, ClientPlayerEntity p, int ticks) {
         if (c.getServer() == null) return false;
         var serverPlayer = c.getServer().getPlayerManager().getPlayer(p.getUuid());
-        if (serverPlayer == null || serverPlayer.getItemUseTime() >= ticks) return false;
+        // Con límite: si el arma está en recarga, el servidor nunca empieza a cargar
+        if (serverPlayer == null || serverPlayer.getItemUseTime() >= ticks || waited >= 200) {
+            if (waited >= 200) log("la carga no llegó: " + serverPlayer.getActiveItem());
+            waited = 0;
+            return false;
+        }
+        waited++;
         st--;
         return true;
     }
@@ -964,6 +971,27 @@ public class Showcase implements ClientModInitializer {
             case 185 -> shot(c, "np_06_revealed_charging");
             case 187 -> holdUse = false;
             case 200 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // De noche: las líneas de Ea brillan en la oscuridad y sus cilindros giran
+    private boolean glow(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:ea"}, new String[]{});
+            case 2 -> p.networkHandler.sendChatCommand("time set midnight");
+            case 30 -> shot(c, "glow_01_ea_night_firstperson");
+            case 32 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 44 -> shot(c, "glow_02_ea_night_front");
+            case 46 -> use(c, p);
+            case 70 -> shot(c, "glow_03_ea_charging_night");
+            case 72 -> holdUse = false;
+            case 80 -> {
+                p.networkHandler.sendChatCommand("time set noon");
                 return true;
             }
             default -> {
