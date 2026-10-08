@@ -17,19 +17,24 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 
+import java.util.List;
+
 /**
- * Escena de prueba sin intervención: crea un mundo creativo, viste a Archer, usa cada arma y habilidad,
- * guarda capturas en run-showcase/screenshots y cierra el juego.
+ * Escena de prueba sin intervención: crea un mundo creativo y, servant por servant, se viste, usa cada arma
+ * y habilidad, guarda capturas en run-showcase/screenshots y cierra el juego.
+ * FATE_SHOWCASE=saber|archer|lancer prueba solo ese servant.
  */
 public class Showcase implements ClientModInitializer {
+    private final List<String> sections = System.getenv("FATE_SHOWCASE") == null
+            ? List.of("saber", "archer", "lancer") : List.of(System.getenv("FATE_SHOWCASE").split(","));
     private int ticks;
     private int worldTicks;
     private boolean started;
     private boolean holdUse;
     private boolean holdSneak;
     private float yaw;
-    // FATE_SHOWCASE=lancer → solo la parte de Lancer (más rápido para iterar)
-    private final boolean lancerOnly = "lancer".equals(System.getenv("FATE_SHOWCASE"));
+    private int section;
+    private int st = -1; // tick dentro de la sección actual
 
     @Override
     public void onInitializeClient() {
@@ -57,188 +62,234 @@ public class Showcase implements ClientModInitializer {
         ClientPlayerEntity p = client.player;
         p.setYaw(yaw);
         p.setPitch(0.0F);
-        if (!lancerOnly || worldTicks == 5) script(client, p, worldTicks);
-        int l = worldTicks - (lancerOnly ? 60 : 560) - lancerDelay;
-        // Antes de soltar, esperar a que el servidor (que a veces va retrasado) haya contado la carga completa
-        if ((l == 119 && !serverCharged(client, p, 22)) || (l == 212 && !serverCharged(client, p, 42))) {
-            lancerDelay++;
+
+        if (worldTicks == 5) {
+            for (String cmd : new String[]{
+                    "gamerule sendCommandFeedback false", "gamerule doDaylightCycle false", "gamerule doWeatherCycle false",
+                    "gamerule doMobSpawning false", "gamerule fateAbilitiesBreakBlocks true", "time set noon", "weather clear"}) {
+                p.networkHandler.sendChatCommand(cmd);
+            }
+        }
+        if (worldTicks < 20) return;
+
+        st++;
+        // Al final, una sola captura del inventario: en creativo abre el inventario creativo y, al cerrarlo,
+        // el cliente deja de recibir los cambios de armadura que hacen los comandos de la sección siguiente
+        if (section >= sections.size()) {
+            switch (st) {
+                case 0 -> {
+                    client.options.setPerspective(Perspective.FIRST_PERSON);
+                    client.setScreen(new InventoryScreen(p));
+                }
+                case 10 -> shot(client, "zz_inventory");
+                case 15 -> {
+                    client.setScreen(null);
+                    log("fin");
+                    client.scheduleStop();
+                }
+                default -> {
+                }
+            }
             return;
         }
-        lancer(client, p, l);
+        String name = sections.get(section);
+        boolean done = switch (name) {
+            case "saber" -> saber(client, p, st);
+            case "archer" -> archer(client, p, st);
+            case "lancer" -> lancer(client, p, st);
+            default -> true;
+        };
+        if (done) {
+            section++;
+            st = -20; // 1 s de margen: al cerrar el inventario, su sincronización puede pisar el equipo nuevo
+        }
     }
 
-    private int lancerDelay;
+    // Prepara la arena delante del jugador, quita los husks viejos, viste al servant y pone objetivos
+    private void setup(MinecraftClient c, ClientPlayerEntity p, String[] items, String[] husks) {
+        yaw = 0.0F;
+        holdUse = false;
+        holdSneak = false;
+        p.networkHandler.sendChatCommand("fill ~-6 ~-1 ~-3 ~6 ~-1 ~24 grass_block");
+        p.networkHandler.sendChatCommand("fill ~-6 ~ ~-3 ~6 ~6 ~24 air");
+        p.networkHandler.sendChatCommand("kill @e[type=husk]");
+        p.networkHandler.sendChatCommand("kill @e[type=item]");
+        p.networkHandler.sendChatCommand("clear @s");
+        for (String item : items) p.networkHandler.sendChatCommand("item replace entity @s " + item);
+        for (String pos : husks) p.networkHandler.sendChatCommand("summon husk " + pos + " {NoAI:1b,PersistenceRequired:1b}");
+        p.getInventory().selectedSlot = 0;
+        c.options.setPerspective(Perspective.FIRST_PERSON);
+    }
 
-    private static boolean serverCharged(MinecraftClient c, ClientPlayerEntity p, int ticks) {
-        if (c.getServer() == null) return true;
+    /** Antes de soltar una carga, esperar a que el servidor (que a veces va retrasado) la haya contado entera. */
+    private boolean waitCharge(MinecraftClient c, ClientPlayerEntity p, int ticks) {
+        if (c.getServer() == null) return false;
         var serverPlayer = c.getServer().getPlayerManager().getPlayer(p.getUuid());
-        return serverPlayer == null || serverPlayer.getItemUseTime() >= ticks;
+        if (serverPlayer == null || serverPlayer.getItemUseTime() >= ticks) return false;
+        st--;
+        return true;
     }
 
-    private void lancer(MinecraftClient c, ClientPlayerEntity p, int t) {
+    private boolean saber(MinecraftClient c, ClientPlayerEntity p, int t) {
         switch (t) {
-            case 0 -> {
-                yaw = 0.0F;
-                for (String cmd : new String[]{
-                        "fill ~-6 ~-1 ~-3 ~6 ~-1 ~24 grass_block", "fill ~-6 ~ ~-3 ~6 ~6 ~24 air", "kill @e[type=husk]",
-                        "item replace entity @s armor.chest with fate_ubw:lancer_chestplate",
-                        "item replace entity @s armor.legs with fate_ubw:lancer_leggings",
-                        "item replace entity @s armor.feet with fate_ubw:lancer_boots",
-                        "item replace entity @s hotbar.0 with fate_ubw:gae_bolg",
-                        "item replace entity @s hotbar.1 with fate_ubw:lancer_chestplate",
-                        "item replace entity @s hotbar.2 with fate_ubw:lancer_leggings",
-                        "item replace entity @s hotbar.3 with fate_ubw:lancer_boots",
-                        "item replace entity @s weapon.offhand with air",
-                        "summon husk ~1 ~ ~6 {NoAI:1b,PersistenceRequired:1b}",
-                        "summon husk ~ ~ ~20 {NoAI:1b,PersistenceRequired:1b}",
-                        "summon husk ~2 ~ ~21 {NoAI:1b,PersistenceRequired:1b}"}) {
-                    p.networkHandler.sendChatCommand(cmd);
-                }
-                p.getInventory().selectedSlot = 0;
-                c.options.setPerspective(Perspective.FIRST_PERSON);
-            }
-            case 40 -> shot(c, "21_lancer_firstperson");
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:saber_chestplate", "armor.legs with fate_ubw:saber_leggings",
+                    "armor.feet with fate_ubw:saber_boots", "hotbar.0 with fate_ubw:excalibur",
+                    "hotbar.1 with fate_ubw:saber_chestplate", "hotbar.2 with fate_ubw:saber_leggings",
+                    "hotbar.3 with fate_ubw:saber_boots"}, new String[]{"~-2 ~ ~8", "~2 ~ ~12", "~ ~ ~16"});
+            case 40 -> shot(c, "saber_01_firstperson");
             case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-            case 55 -> shot(c, "22_lancer_armor_front");
+            case 55 -> shot(c, "saber_02_front");
             case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 70 -> shot(c, "23_lancer_armor_back");
+            case 70 -> shot(c, "saber_03_back");
             case 72 -> yaw = 90.0F;
-            case 85 -> shot(c, "24_lancer_armor_side");
+            case 85 -> shot(c, "saber_04_side");
+            case 87 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
+            case 90 -> use(c, p);
+            case 120 -> shot(c, "saber_05_excalibur_charging_front");
+            case 160 -> {
+                if (waitCharge(c, p, 62)) return false;
+                shot(c, "saber_06_excalibur_charged_front");
+            }
+            case 162 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 165 -> shot(c, "saber_07_excalibur_charged_firstperson");
+            case 167 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 170 -> holdUse = false;
+            case 176 -> yaw = 35.0F; // el haz queda fijo; girar la cámara para verlo en diagonal
+            case 180 -> shot(c, "saber_08_excalibur_beam");
+            case 190 -> shot(c, "saber_09_excalibur_beam_late");
+            case 230 -> {
+                yaw = 0.0F;
+                holdSneak = true;
+            }
+            case 232 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 234 -> holdSneak = false;
+            case 236 -> shot(c, "saber_10_strike_air");
+            case 250 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean archer(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
+                    "armor.feet with fate_ubw:archer_boots", "hotbar.0 with fate_ubw:kanshou",
+                    "weapon.offhand with fate_ubw:bakuya", "hotbar.1 with fate_ubw:bakuya", "hotbar.2 with fate_ubw:archer_bow",
+                    "hotbar.3 with fate_ubw:archer_chestplate", "hotbar.4 with fate_ubw:archer_leggings",
+                    "hotbar.5 with fate_ubw:archer_boots", "hotbar.6 with fate_ubw:caladbolg", "hotbar.7 with fate_ubw:sword_arrow"},
+                    new String[]{"~-2 ~ ~8", "~2 ~ ~11", "~ ~ ~15"});
+            case 40 -> shot(c, "archer_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "archer_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "archer_03_back");
+
+            // Arco: tensado normal y luego Caladbolg
+            case 80 -> {
+                p.getInventory().selectedSlot = 2;
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
+            case 85 -> use(c, p);
+            case 110 -> shot(c, "archer_04_bow_pulled_front");
+            case 112 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 115 -> shot(c, "archer_05_bow_pulled_firstperson");
+            case 117 -> holdUse = false;
+            case 130 -> holdSneak = true;
+            case 135 -> use(c, p);
+            case 160 -> shot(c, "archer_06_caladbolg_nocked_firstperson");
+            case 162 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 165 -> {
+                if (waitCharge(c, p, 22)) return false;
+                holdUse = false;
+            }
+            case 167 -> yaw = 35.0F;
+            case 172 -> shot(c, "archer_07_caladbolg_flight");
+            case 180 -> shot(c, "archer_08_caladbolg_impact");
+            case 182 -> {
+                holdSneak = false;
+                yaw = 0.0F;
+            }
+
+            // Kanshō y Bakuya lanzados a la vez
+            case 200 -> p.getInventory().selectedSlot = 0;
+            case 205 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 210 -> shot(c, "archer_09_falchions_out");
+            case 216 -> shot(c, "archer_10_falchions_cross");
+
+            // Rho Aias
+            case 250 -> holdSneak = true;
+            case 252 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 255 -> holdSneak = false;
+            case 265 -> shot(c, "archer_11_rho_aias_back");
+            case 267 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 275 -> shot(c, "archer_12_rho_aias_front");
+            case 290 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean lancer(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:lancer_chestplate", "armor.legs with fate_ubw:lancer_leggings",
+                    "armor.feet with fate_ubw:lancer_boots", "hotbar.0 with fate_ubw:gae_bolg",
+                    "hotbar.1 with fate_ubw:lancer_chestplate", "hotbar.2 with fate_ubw:lancer_leggings",
+                    "hotbar.3 with fate_ubw:lancer_boots"}, new String[]{"~1 ~ ~6", "~ ~ ~20", "~2 ~ ~21"});
+            case 40 -> shot(c, "lancer_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "lancer_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "lancer_03_back");
+            case 72 -> yaw = 90.0F;
+            case 85 -> shot(c, "lancer_04_side");
             case 87 -> yaw = 0.0F;
 
             // Estocada: la lanza que atraviesa con la muerte
             case 95 -> use(c, p);
-            case 110 -> shot(c, "25_gae_bolg_charge_back");
+            case 110 -> shot(c, "lancer_05_charge_back");
             case 112 -> c.options.setPerspective(Perspective.FIRST_PERSON);
-            case 115 -> shot(c, "26_gae_bolg_charge_firstperson");
+            case 115 -> shot(c, "lancer_06_charge_firstperson");
             case 117 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 119 -> holdUse = false;
-            case 123 -> shot(c, "27_gae_bolg_pierce");
-            case 128 -> shot(c, "28_gae_bolg_pierce_late");
+            case 119 -> {
+                if (waitCharge(c, p, 22)) return false;
+                holdUse = false;
+            }
+            case 123 -> shot(c, "lancer_07_pierce");
+            case 128 -> shot(c, "lancer_08_pierce_late");
 
             // Lanzamiento: la lanza que vuela con la muerte
             case 160 -> holdSneak = true;
             case 162 -> use(c, p);
-            case 210 -> shot(c, "29_gae_bolg_soaring_charge");
-            case 212 -> holdUse = false;
+            case 210 -> shot(c, "lancer_09_soaring_charge");
+            case 212 -> {
+                if (waitCharge(c, p, 42)) return false;
+                holdUse = false;
+            }
             case 214 -> yaw = 35.0F; // la lanza queda a la izquierda de la cámara, no tapada por el jugador
             case 216 -> holdSneak = false;
-            case 220 -> shot(c, "30_gae_bolg_soaring_flight");
-            case 226 -> shot(c, "31_gae_bolg_soaring_flight_late");
-            case 250 -> shot(c, "32_gae_bolg_soaring_impact");
-
-            case 290 -> {
-                c.options.setPerspective(Perspective.FIRST_PERSON);
-                c.setScreen(new InventoryScreen(p));
-            }
-            case 300 -> shot(c, "33_lancer_inventory");
-            case 305 -> {
-                c.setScreen(null);
-                log("fin");
-                c.scheduleStop();
-            }
-            default -> {
-            }
-        }
-    }
-
-    private void script(MinecraftClient c, ClientPlayerEntity p, int t) {
-        switch (t) {
-            case 5 -> {
-                for (String cmd : new String[]{
-                        "gamerule sendCommandFeedback false", "gamerule doDaylightCycle false", "gamerule doWeatherCycle false",
-                        "gamerule doMobSpawning false", "gamerule fateAbilitiesBreakBlocks true", "time set noon", "weather clear",
-                        "fill ~-6 ~-1 ~-3 ~6 ~-1 ~18 grass_block", "fill ~-6 ~ ~-3 ~6 ~6 ~18 air",
-                        "item replace entity @s armor.chest with fate_ubw:archer_chestplate",
-                        "item replace entity @s armor.legs with fate_ubw:archer_leggings",
-                        "item replace entity @s armor.feet with fate_ubw:archer_boots",
-                        "item replace entity @s hotbar.0 with fate_ubw:kanshou",
-                        "item replace entity @s weapon.offhand with fate_ubw:bakuya",
-                        "item replace entity @s hotbar.1 with fate_ubw:bakuya",
-                        "item replace entity @s hotbar.2 with fate_ubw:archer_bow",
-                        "item replace entity @s hotbar.3 with fate_ubw:excalibur",
-                        "item replace entity @s hotbar.4 with fate_ubw:archer_chestplate",
-                        "item replace entity @s hotbar.5 with fate_ubw:archer_leggings",
-                        "item replace entity @s hotbar.6 with fate_ubw:archer_boots",
-                        "item replace entity @s hotbar.7 with fate_ubw:caladbolg",
-                        "item replace entity @s hotbar.8 with fate_ubw:sword_arrow",
-                        "summon husk ~-2 ~ ~8 {NoAI:1b,PersistenceRequired:1b}",
-                        "summon husk ~2 ~ ~11 {NoAI:1b,PersistenceRequired:1b}",
-                        "summon husk ~ ~ ~15 {NoAI:1b,PersistenceRequired:1b}"}) {
-                    p.networkHandler.sendChatCommand(cmd);
-                }
-                p.getInventory().selectedSlot = 0;
-                c.options.setPerspective(Perspective.FIRST_PERSON);
-            }
-            case 80 -> shot(c, "01_firstperson_kanshou_bakuya");
-            case 82 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-            case 95 -> shot(c, "02_armor_front");
-            case 97 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 110 -> shot(c, "03_armor_back");
-
-            // Arco: tensado normal y luego Caladbolg
-            case 120 -> {
-                p.getInventory().selectedSlot = 2;
-                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-            }
-            case 125 -> use(c, p);
-            case 150 -> shot(c, "04_bow_pulled_front");
-            case 152 -> c.options.setPerspective(Perspective.FIRST_PERSON);
-            case 155 -> shot(c, "05_bow_pulled_firstperson");
-            case 157 -> holdUse = false;
-            case 170 -> holdSneak = true;
-            case 175 -> use(c, p);
-            case 200 -> shot(c, "06_caladbolg_nocked_firstperson");
-            case 202 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-            case 205 -> shot(c, "07_caladbolg_nocked_front");
-            case 207 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 210 -> holdUse = false;
-            case 213 -> shot(c, "08_caladbolg_flight");
-            case 218 -> shot(c, "09_caladbolg_impact");
-            case 222 -> holdSneak = false;
-
-            // Kanshō y Bakuya lanzados a la vez
-            case 240 -> p.getInventory().selectedSlot = 0;
-            case 245 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 250 -> shot(c, "10_falchions_out");
-            case 256 -> shot(c, "11_falchions_cross");
-            case 266 -> shot(c, "12_falchions_return");
-
-            // Rho Aias
-            case 290 -> holdSneak = true;
-            case 292 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 295 -> holdSneak = false;
-            case 305 -> shot(c, "13_rho_aias_back");
-            case 307 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-            case 315 -> shot(c, "14_rho_aias_front");
-
-            // Excalibur: carga, carga completa y haz
-            case 420 -> p.getInventory().selectedSlot = 3;
-            case 425 -> use(c, p);
-            case 455 -> shot(c, "15_excalibur_charging_front");
-            case 490 -> shot(c, "16_excalibur_charged_front");
-            case 492 -> c.options.setPerspective(Perspective.FIRST_PERSON);
-            case 495 -> shot(c, "17_excalibur_charged_firstperson");
-            case 497 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 500 -> holdUse = false;
-            case 508 -> shot(c, "18_excalibur_beam_back");
-            case 509 -> yaw = 35.0F; // el haz queda fijo; girar la cámara para verlo en diagonal
-            case 513 -> shot(c, "19_excalibur_beam_diagonal");
-            case 514 -> c.options.setPerspective(Perspective.FIRST_PERSON);
-            case 517 -> shot(c, "19b_excalibur_beam_firstperson");
-            case 518 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
-            case 527 -> shot(c, "19c_excalibur_trench");
-
-            case 530 -> {
+            case 220 -> shot(c, "lancer_10_soaring_flight");
+            case 226 -> shot(c, "lancer_11_soaring_flight_late");
+            case 250 -> shot(c, "lancer_12_soaring_impact");
+            case 270 -> {
                 yaw = 0.0F;
-                c.options.setPerspective(Perspective.FIRST_PERSON);
-                c.setScreen(new InventoryScreen(p));
+                return true;
             }
-            case 540 -> shot(c, "20_inventory");
-            case 545 -> c.setScreen(null);
             default -> {
             }
         }
+        return false;
     }
 
     private void use(MinecraftClient c, ClientPlayerEntity p) {

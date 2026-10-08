@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["N N", "BGB", "BBB"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "G": { "item": "minecraft:gold_block" },
+    "B": { "item": "minecraft:blue_wool" }
+  },
+  "result": { "id": "fate_ubw:saber_chestplate", "count": 1 }
+}

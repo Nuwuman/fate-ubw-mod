@@ -88,6 +88,47 @@ public class ServantAssets {
         return (x, y, w, h, s) -> shade(Math.floorMod(x, 5) == 4 ? line : base, x, y, w, h, s, 0.05);
     }
 
+    static int lerp(int a, int b, double t) {
+        int r = (int) Math.round(((a >> 16) & 0xff) + (((b >> 16) & 0xff) - ((a >> 16) & 0xff)) * t);
+        int g = (int) Math.round(((a >> 8) & 0xff) + (((b >> 8) & 0xff) - ((a >> 8) & 0xff)) * t);
+        int bl = (int) Math.round((a & 0xff) + ((b & 0xff) - (a & 0xff)) * t);
+        return (r << 16) | (g << 8) | bl;
+    }
+
+    // Hoja de Excalibur. mode 0: acero con un destello que la recorre; 1: cargando, dorada;
+    // 2: cargada, luz dorada que pulsa. El destello baja por la cara según el frame
+    static Paint exBlade(int base, int mode) {
+        return (x, y, w, h, s) -> {
+            int c = mul(base, 1.12 - 0.25 * y / Math.max(1, h - 1));
+            double pulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * FRAME / FRAMES);
+            if (mode == 1) c = lerp(c, 0xffd86b, 0.4);
+            if (mode == 2) c = lerp(lerp(c, 0xffe48a, 0.7), 0xffffff, 0.35 * pulse);
+            // mode 0: el frame 0 es la pausa sin destello
+            double phase = mode == 0 ? (FRAME == 0 ? -1 : (FRAME - 1) / (double) Math.max(1, FRAMES - 2)) : FRAME / (double) FRAMES;
+            double along = h >= w ? (double) y / Math.max(1, h - 1) : (double) x / Math.max(1, w - 1);
+            if (phase >= 0 && Math.abs(along - (1 - phase)) < 0.12) c = lerp(c, 0xffffff, 0.6);
+            return shade(c, x, y, w, h, s, 0.03);
+        };
+    }
+
+    // Grabados dorados de la base de la hoja
+    static Paint engrave(int mode) {
+        return (x, y, w, h, s) -> {
+            int c = Math.floorMod(x + y, 3) == 0 ? 0xf7d774 : 0xc9952b;
+            if (mode == 2) c = lerp(c, 0xffffff, 0.3);
+            return shade(c, x, y, w, h, s, 0.04);
+        };
+    }
+
+    // Halo dorado translúcido alrededor de la hoja cargada (alfa que pulsa)
+    static Paint aura() {
+        return (x, y, w, h, s) -> {
+            double pulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * FRAME / FRAMES);
+            int alpha = (int) (60 + 50 * pulse);
+            return (alpha << 24) | 0xffcc33;
+        };
+    }
+
     // Asta con vetas a lo largo
     static Paint grain(int base, int dark) {
         return (x, y, w, h, s) -> shade(noise(x, y / 4, s) > 0.7 ? dark : base, x, y, w, h, s, 0.06);
@@ -108,6 +149,8 @@ public class ServantAssets {
             SPEAR_METAL = solid(0x3a0a0e), SPEAR_GRIP = wrap(0x5a0a10, 0x2a0508);
     static final Paint BLUE_SUIT = seams(0x22337a, 0x5d78b8), LANCER_SILVER = metal(0xb8bfcc), LANCER_DARK = solid(0x141a33),
             HAIR = cloth(0x2b4cc2);
+    static final Paint EX_GRIP = wrap(0x1d3f8f, 0x112a66), EX_BLUE = metal(0x2a56c6), EX_GEM = metal(0x7fd3ff);
+    static final Paint BLUE_DRESS = cloth(0x2a4cb0), SABER_SILVER = metal(0xc8ced9);
 
     // ---------- geometría ----------
     static class Face {
@@ -187,8 +230,17 @@ public class ServantAssets {
         }
     }
 
-    // Asigna a cada cara su región en la textura (empaquetado por estantes) y la pinta
+    // Frame que se está pintando, para materiales animados (destellos, pulsos)
+    static int FRAME = 0, FRAMES = 1;
+
     static BufferedImage atlas(List<Cube> cubes) {
+        return atlas(cubes, 1);
+    }
+
+    // Asigna a cada cara su región en la textura (empaquetado por estantes) y la pinta.
+    // Con frames > 1 devuelve una tira vertical de frames para una textura animada (.mcmeta).
+    // Un material puede devolver ARGB (alfa distinto de 0) para zonas translúcidas.
+    static BufferedImage atlas(List<Cube> cubes, int frames) {
         List<Face> faces = new ArrayList<>();
         int seed = 0;
         for (Cube c : cubes) {
@@ -205,14 +257,20 @@ public class ServantAssets {
         sorted.sort(Comparator.comparingInt((Face f) -> f.h).reversed());
         for (int size = 16; ; size *= 2) {
             if (pack(sorted, size)) {
-                BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                for (Face f : faces) {
-                    for (int y = 0; y < f.h; y++) {
-                        for (int x = 0; x < f.w; x++) {
-                            img.setRGB(f.u + x, f.v + y, 0xff000000 | f.paint.at(x, y, f.w, f.h, f.seed));
+                BufferedImage img = new BufferedImage(size, size * frames, BufferedImage.TYPE_INT_ARGB);
+                FRAMES = frames;
+                for (FRAME = 0; FRAME < frames; FRAME++) {
+                    for (Face f : faces) {
+                        for (int y = 0; y < f.h; y++) {
+                            for (int x = 0; x < f.w; x++) {
+                                int c = f.paint.at(x, y, f.w, f.h, f.seed);
+                                img.setRGB(f.u + x, FRAME * size + f.v + y, (c >>> 24) == 0 ? 0xff000000 | c : c);
+                            }
                         }
                     }
                 }
+                FRAME = 0;
+                FRAMES = 1;
                 return img;
             }
         }
@@ -255,8 +313,24 @@ public class ServantAssets {
         return b.append("]").toString();
     }
 
+    // "1,2,...,to-1" para la lista de frames de un .mcmeta
+    static String range(int from, int to) {
+        StringBuilder b = new StringBuilder();
+        for (int i = from; i < to; i++) {
+            if (i > from) b.append(',');
+            b.append(i);
+        }
+        return b.toString();
+    }
+
     static void itemModel(Path root, String name, Model model, String display, String overrides) throws IOException {
-        BufferedImage img = atlas(model.cubes);
+        itemModel(root, name, model, display, overrides, 1, null);
+    }
+
+    static void itemModel(Path root, String name, Model model, String display, String overrides,
+                          int frames, String mcmeta) throws IOException {
+        BufferedImage img = atlas(model.cubes, frames);
+        if (mcmeta != null) Files.writeString(root.resolve("textures/item/" + name + ".png.mcmeta"), mcmeta + "\n");
         double k = 16.0 / img.getWidth();
         StringBuilder b = new StringBuilder();
         b.append("{\n  \"gui_light\": \"front\",\n");
@@ -486,6 +560,93 @@ public class ServantAssets {
                 rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // Excalibur: pomo dorado con gema, guarda azul y oro con puntas curvadas, hoja plateada con grabados.
+    // Agarre en y≈2.5 como las demás espadas; total de -1 a 24. mode como en exBlade; el 2 añade el halo
+    static Model excalibur(int mode) {
+        Model m = new Model();
+        m.box(7.2, -1, 7.2, 8.8, 0.5, 8.8, GOLD);                // pomo
+        m.box(7.6, -0.6, 7.0, 8.4, 0.2, 9.0, EX_GEM);             // gema
+        m.box(7.5, 0.5, 7.5, 8.5, 4.5, 8.5, EX_GRIP);             // empuñadura
+        m.box(6.5, 4.5, 7.2, 9.5, 5.7, 8.8, GOLD);                // centro de la guarda
+        m.box(7.0, 4.7, 7.05, 9.0, 5.5, 8.95, EX_BLUE);           // incrustación azul
+        m.box(3.5, 4.6, 7.4, 6.5, 5.5, 8.6, GOLD);                // brazos de la guarda
+        m.box(9.5, 4.6, 7.4, 12.5, 5.5, 8.6, GOLD);
+        m.box(2.6, 4.7, 7.5, 3.8, 5.5, 8.5, GOLD).rot("z", -22.5, 3.8, 5.1, 8);   // puntas curvadas hacia arriba
+        m.box(12.2, 4.7, 7.5, 13.4, 5.5, 8.5, GOLD).rot("z", 22.5, 12.2, 5.1, 8);
+
+        Paint steel = exBlade(0xdde5f3, mode), fuller = exBlade(0xb4c4e4, mode);
+        m.box(6.9, 5.7, 7.6, 9.1, 9, 8.4, steel);                 // base ancha de la hoja
+        m.box(7.6, 6, 7.5, 8.4, 11, 8.5, engrave(mode));          // grabados
+        m.box(7.0, 9, 7.65, 9.0, 19, 8.35, steel);                // hoja
+        m.box(7.75, 11, 7.6, 8.25, 19, 8.4, fuller);              // acanaladura
+        m.box(7.3, 19, 7.7, 8.7, 21.5, 8.3, steel);               // punta
+        m.box(7.65, 21.5, 7.75, 8.35, 23, 8.25, steel);
+        m.box(7.85, 23, 7.8, 8.15, 24, 8.2, steel);
+        if (mode == 2) m.box(6.4, 5.7, 7.1, 9.6, 24.5, 8.9, aura());
+        return m;
+    }
+
+    // Igual que handheld, pero en primera persona la espada se alza (zRot ya incluye los -45° del modelo vertical)
+    static String raised(double guiScale, double zRot, double ty, double tz, double scale) {
+        String s = arr(scale, scale, scale);
+        return "{\n"
+                + "    \"thirdperson_righthand\": { \"rotation\": [0, -90, 10], \"translation\": [0, 4, 0.5], \"scale\": [0.85, 0.85, 0.85] },\n"
+                + "    \"thirdperson_lefthand\": { \"rotation\": [0, 90, -10], \"translation\": [0, 4, 0.5], \"scale\": [0.85, 0.85, 0.85] },\n"
+                + "    \"firstperson_righthand\": { \"rotation\": " + arr(0, -90, zRot) + ", \"translation\": " + arr(1.13, ty, tz) + ", \"scale\": " + s + " },\n"
+                + "    \"firstperson_lefthand\": { \"rotation\": " + arr(0, 90, -zRot) + ", \"translation\": " + arr(1.13, ty, tz) + ", \"scale\": " + s + " },\n"
+                + "    \"gui\": { \"rotation\": [0, 0, -45], \"translation\": [-1, -1, 0], \"scale\": " + arr(guiScale, guiScale, guiScale) + " },\n"
+                + "    \"ground\": { \"rotation\": [0, 0, -45], \"translation\": [0, 2, 0], \"scale\": [0.5, 0.5, 0.5] },\n"
+                + "    \"fixed\": { \"rotation\": [0, 180, -45], \"scale\": [0.8, 0.8, 0.8] }\n"
+                + "  }";
+    }
+
+    // Saber: vestido azul con falda (animada), coraza y hombreras de plata, guanteletes y escarpes
+    static List<Bone> saberArmor() {
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, BLUE_DRESS).inflate(1.0);
+        body.model.box(-4, 17, -2, 4, 23, 2, SABER_SILVER).inflate(1.2);
+        body.model.box(-4, 22.5, -2, 4, 23.5, 2, GOLD).inflate(1.3);
+        body.model.box(-4, 11.5, -2, 4, 13, 2, GOLD).inflate(1.3);
+
+        Bone skirtFront = new Bone("skirtFront", "armorBody", 0, 12, -3.3);
+        skirtFront.model.box(-4.8, 3, -3.9, 4.8, 12, -3.3, BLUE_DRESS);
+        skirtFront.model.box(-4.4, 8, -4.3, -0.4, 12, -3.9, SABER_SILVER);   // escarcelas
+        skirtFront.model.box(0.4, 8, -4.3, 4.4, 12, -3.9, SABER_SILVER);
+        Bone skirtBack = new Bone("skirtBack", "armorBody", 0, 12, 3.3);
+        skirtBack.model.box(-4.8, 3, 3.3, 4.8, 12, 3.9, BLUE_DRESS);
+        Bone skirtLeft = new Bone("skirtLeft", "armorBody", 4.6, 12, 0);
+        skirtLeft.model.box(4.6, 3, -3.3, 5.2, 12, 3.3, BLUE_DRESS);
+        Bone skirtRight = new Bone("skirtRight", "armorBody", -4.6, 12, 0);
+        skirtRight.model.box(-5.2, 3, -3.3, -4.6, 12, 3.3, BLUE_DRESS);
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 15, -2, -4, 24, 2, BLUE_DRESS).inflate(0.9);
+        rightArm.model.box(-8, 12, -2, -4, 16, 2, SABER_SILVER).inflate(1.05);
+        rightArm.model.box(-8.5, 21, -2.5, -3.5, 24.5, 2.5, SABER_SILVER).inflate(0.4);
+        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
+        leftArm.model.box(4, 15, -2, 8, 24, 2, BLUE_DRESS).inflate(0.9);
+        leftArm.model.box(4, 12, -2, 8, 16, 2, SABER_SILVER).inflate(1.05);
+        leftArm.model.box(3.5, 21, -2.5, 8.5, 24.5, 2.5, SABER_SILVER).inflate(0.4);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 7, -2, 0, 12, 2, BLUE_DRESS).inflate(0.5);
+        rightLeg.model.box(-4, 3, -2, 0, 7, 2, SABER_SILVER).inflate(0.55);
+        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
+        leftLeg.model.box(0, 7, -2, 4, 12, 2, BLUE_DRESS).inflate(0.5);
+        leftLeg.model.box(0, 3, -2, 4, 7, 2, SABER_SILVER).inflate(0.55);
+
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 4, 2, SABER_SILVER).inflate(0.9);
+        rightBoot.model.box(-4, 0, -3.4, 0, 1.5, -2.9, GOLD);
+        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
+        leftBoot.model.box(0, 0, -2, 4, 4, 2, SABER_SILVER).inflate(0.9);
+        leftBoot.model.box(0, 0, -3.4, 4, 1.5, -2.9, GOLD);
+
+        return List.of(head, body, skirtFront, skirtBack, skirtLeft, skirtRight,
+                rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
     // Gáe Bolg: lanza carmesí con púas. Agarre en y≈2.5, igual que las espadas; total de -12 a 30.5
     static Model gaeBolg() {
         Model m = new Model();
@@ -557,6 +718,24 @@ public class ServantAssets {
         Path root = Path.of(args.length > 0 ? args[0] : ".");
         Files.createDirectories(root.resolve("models/item"));
         Files.createDirectories(root.resolve("textures/item"));
+
+        // ---------- Saber ----------
+        String exOverrides = "[\n"
+                + "    { \"predicate\": { \"fate_ubw:charge\": 0.01 }, \"model\": \"fate_ubw:item/excalibur_charging\" },\n"
+                + "    { \"predicate\": { \"fate_ubw:charge\": 1.0 }, \"model\": \"fate_ubw:item/excalibur_charged\" }\n"
+                + "  ]";
+        itemModel(root, "excalibur", excalibur(0), handheld(0.7), exOverrides,
+                16, "{\"animation\":{\"frames\":[{\"index\":0,\"time\":60}," + range(1, 16) + "]}}");
+        itemModel(root, "excalibur_charging", excalibur(1), raised(0.7, -35, 5.0, 0.0, 0.75), null,
+                12, "{\"animation\":{\"frametime\":1}}");
+        itemModel(root, "excalibur_charged", excalibur(2), raised(0.7, -50, 6.5, -0.5, 0.8), null,
+                8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
+        List<Bone> saber = saberArmor();
+        geoModel(root, "saber_armor", saber);
+        itemModel(root, "saber_chestplate", bonesToModel(saber, 8, -4, 8, "armorBody", "skirtFront", "skirtBack", "skirtLeft",
+                "skirtRight", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
+        itemModel(root, "saber_leggings", bonesToModel(saber, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
+        itemModel(root, "saber_boots", bonesToModel(saber, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         itemModel(root, "kanshou", falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL), handheld(0.9), null);
         itemModel(root, "bakuya", falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL), handheld(0.9), null);

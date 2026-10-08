@@ -12,6 +12,7 @@ import com.nuwuman.fateubw.lancer.LancerArmorItem;
 import com.nuwuman.fateubw.saber.ExcaliburBeamEntity;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import com.nuwuman.fateubw.saber.ExcaliburItem;
+import com.nuwuman.fateubw.saber.SaberArmorItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
@@ -53,7 +54,12 @@ public class FateUBW implements ModInitializer {
     }
 
     // ---------- Saber ----------
+    public static final RegistryEntry<ArmorMaterial> SABER_MATERIAL = armorMaterial("saber");
+
     public static final Item EXCALIBUR = item("excalibur", new ExcaliburItem(new Item.Settings().rarity(Rarity.EPIC).fireproof()));
+    public static final Item SABER_CHESTPLATE = item("saber_chestplate", new SaberArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item SABER_LEGGINGS = item("saber_leggings", new SaberArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item SABER_BOOTS = item("saber_boots", new SaberArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
     // ---------- Archer ----------
     public static final RegistryEntry<ArmorMaterial> ARCHER_MATERIAL = armorMaterial("archer");
@@ -105,6 +111,9 @@ public class FateUBW implements ModInitializer {
             .displayName(Text.translatable("itemGroup.fate_ubw"))
             .entries((context, entries) -> {
                 entries.add(EXCALIBUR);
+                entries.add(SABER_CHESTPLATE);
+                entries.add(SABER_LEGGINGS);
+                entries.add(SABER_BOOTS);
                 entries.add(KANSHOU);
                 entries.add(BAKUYA);
                 entries.add(ARCHER_BOW);
@@ -156,6 +165,7 @@ public class FateUBW implements ModInitializer {
     public void onInitialize() {
         // Los registros se hacen al cargar la clase (campos estáticos). Aquí solo los eventos.
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(LancerArmorItem::allowDamage);
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(SaberArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
     }
 }

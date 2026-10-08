@@ -4,6 +4,11 @@
   "item.fate_ubw.excalibur": "Excalibur",
   "item.fate_ubw.excalibur.tooltip.charge": "Hold right-click: charge the Noble Phantasm",
   "item.fate_ubw.excalibur.tooltip.strike_air": "Sneak + right-click: Strike Air",
+  "item.fate_ubw.saber_chestplate": "Saber's Breastplate",
+  "item.fate_ubw.saber_leggings": "Saber's Faulds",
+  "item.fate_ubw.saber_boots": "Saber's Sabatons",
+  "item.fate_ubw.saber_armor.tooltip.avalon": "Full set: Avalon (Regeneration I)",
+  "item.fate_ubw.saber_armor.tooltip.magic": "Magic Resistance: immune to magic damage and Wither",
 
   "item.fate_ubw.kanshou": "Kanshō",
   "item.fate_ubw.bakuya": "Bakuya",

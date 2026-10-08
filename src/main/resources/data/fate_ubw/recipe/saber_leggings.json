@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["NGN", "B B", "I I"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "G": { "item": "minecraft:gold_ingot" },
+    "B": { "item": "minecraft:blue_wool" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": { "id": "fate_ubw:saber_leggings", "count": 1 }
+}

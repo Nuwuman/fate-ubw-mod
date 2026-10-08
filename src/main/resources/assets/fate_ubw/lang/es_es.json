@@ -4,6 +4,11 @@
   "item.fate_ubw.excalibur": "Excalibur",
   "item.fate_ubw.excalibur.tooltip.charge": "Mantén click derecho: carga el Noble Phantasm",
   "item.fate_ubw.excalibur.tooltip.strike_air": "Agachado + click derecho: Strike Air",
+  "item.fate_ubw.saber_chestplate": "Coraza de Saber",
+  "item.fate_ubw.saber_leggings": "Faldar de Saber",
+  "item.fate_ubw.saber_boots": "Escarpes de Saber",
+  "item.fate_ubw.saber_armor.tooltip.avalon": "Conjunto completo: Avalon (Regeneración I)",
+  "item.fate_ubw.saber_armor.tooltip.magic": "Resistencia Mágica: inmune al daño mágico y al Wither",
 
   "item.fate_ubw.kanshou": "Kanshō",
   "item.fate_ubw.bakuya": "Bakuya",

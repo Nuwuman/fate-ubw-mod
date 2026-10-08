@@ -1,0 +1,18 @@
+{
+  "gui_light": "front",
+  "textures": { "0": "fate_ubw:item/saber_leggings", "particle": "fate_ubw:item/saber_leggings" },
+  "elements": [
+    { "from": [3.5, 8.5, 5.5], "to": [8.5, 14.5, 10.5], "faces": { "north": { "uv": [0, 0, 2, 2.5], "texture": "#0" }, "south": { "uv": [2, 0, 4, 2.5], "texture": "#0" }, "east": { "uv": [4, 0, 6, 2.5], "texture": "#0" }, "west": { "uv": [6, 0, 8, 2.5], "texture": "#0" }, "up": { "uv": [0, 2.5, 2, 4.5], "texture": "#0" }, "down": { "uv": [2, 2.5, 4, 4.5], "texture": "#0" } } },
+    { "from": [3.45, 4.45, 5.45], "to": [8.55, 9.55, 10.55], "faces": { "north": { "uv": [4, 2.5, 6, 4.5], "texture": "#0" }, "south": { "uv": [6, 2.5, 8, 4.5], "texture": "#0" }, "east": { "uv": [8, 2.5, 10, 4.5], "texture": "#0" }, "west": { "uv": [10, 2.5, 12, 4.5], "texture": "#0" }, "up": { "uv": [12, 2.5, 14, 4.5], "texture": "#0" }, "down": { "uv": [14, 2.5, 16, 4.5], "texture": "#0" } } },
+    { "from": [7.5, 8.5, 5.5], "to": [12.5, 14.5, 10.5], "faces": { "north": { "uv": [8, 0, 10, 2.5], "texture": "#0" }, "south": { "uv": [10, 0, 12, 2.5], "texture": "#0" }, "east": { "uv": [12, 0, 14, 2.5], "texture": "#0" }, "west": { "uv": [14, 0, 16, 2.5], "texture": "#0" }, "up": { "uv": [0, 4.5, 2, 6.5], "texture": "#0" }, "down": { "uv": [2, 4.5, 4, 6.5], "texture": "#0" } } },
+    { "from": [7.45, 4.45, 5.45], "to": [12.55, 9.55, 10.55], "faces": { "north": { "uv": [4, 4.5, 6, 6.5], "texture": "#0" }, "south": { "uv": [6, 4.5, 8, 6.5], "texture": "#0" }, "east": { "uv": [8, 4.5, 10, 6.5], "texture": "#0" }, "west": { "uv": [10, 4.5, 12, 6.5], "texture": "#0" }, "up": { "uv": [12, 4.5, 14, 6.5], "texture": "#0" }, "down": { "uv": [14, 4.5, 16, 6.5], "texture": "#0" } } }
+  ],
+  "display": {
+    "gui": { "rotation": [30, 225, 0], "scale": [0.6, 0.6, 0.6] },
+    "ground": { "translation": [0, 3, 0], "scale": [0.25, 0.25, 0.25] },
+    "fixed": { "scale": [0.5, 0.5, 0.5] },
+    "thirdperson_righthand": { "rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.375, 0.375, 0.375] },
+    "firstperson_righthand": { "rotation": [0, 45, 0], "scale": [0.4, 0.4, 0.4] },
+    "firstperson_lefthand": { "rotation": [0, 225, 0], "scale": [0.4, 0.4, 0.4] }
+  }
+}

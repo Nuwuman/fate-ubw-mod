@@ -6,9 +6,14 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
 
 ## Contenido
 
-**Saber**
-- **Excalibur**: mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora armadura).
+**Saber (Artoria)**
+- **Excalibur** (modelo 3D): mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora
+  armadura). Mientras cargas, la hoja se vuelve dorada y la alzas con las dos manos.
   Agachado + click derecho: **Strike Air**, ráfaga de viento en cono.
+- **Armadura** (coraza, faldar, escarpes) con modelo 3D de GeckoLib y falda animada.
+  Conjunto completo: **Avalon** (Regeneración I) y **Resistencia Mágica** (inmune al daño mágico y al Wither).
+
+![Saber](docs/saber.png)
 
 **Archer (EMIYA)**
 - **Kanshō y Bakuya**: click derecho los lanza y vuelven a la mano. Con uno en cada mano salen los dos y se cruzan.
@@ -61,12 +66,11 @@ El jar sale en `build/libs/`.
 
 ## Herramientas de desarrollo
 
-- `java tools/TextureGen.java src/main/resources/assets/fate_ubw/textures/item`: regenera las texturas animadas de Excalibur.
 - `java tools/ServantAssets.java src/main/resources/assets/fate_ubw`: regenera los modelos 3D de los servants
-  (ítems JSON, geo de GeckoLib) y sus texturas.
+  (ítems JSON, geo de GeckoLib) y sus texturas, incluidas las animadas de Excalibur.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
-  Con la variable de entorno `FATE_SHOWCASE=lancer` solo prueba a Lancer.
+  Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`) solo prueba a ese servant.
 
 ---
 
