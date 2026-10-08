@@ -110,6 +110,7 @@ public class MonohoshizaoItem extends SwordItem {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 1.5F, 1.0F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 1.5F, 0.8F);
         player.sendMessage(Text.literal("Tsubame Gaeshi").formatted(Formatting.AQUA, Formatting.BOLD), true);
+        com.nuwuman.fateubw.Voices.say(world, player, "tsubame_gaeshi");
     }
 
     @Override

@@ -75,6 +75,7 @@ public class ArcherBowItem extends BowItem {
 
         if (caladbolg) {
             player.getItemCooldownManager().set(FateUBW.CALADBOLG, CALADBOLG_COOLDOWN);
+            com.nuwuman.fateubw.Voices.say(world, player, "caladbolg");
             world.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.4F);
             world.playSound(null, player.getX(), player.getY(), player.getZ(),

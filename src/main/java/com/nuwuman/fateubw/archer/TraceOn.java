@@ -137,6 +137,7 @@ public final class TraceOn {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 1.0F, 1.4F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.5F, 0.8F);
         player.sendMessage(Text.literal("Trace On").formatted(Formatting.AQUA, Formatting.BOLD), true);
+        com.nuwuman.fateubw.Voices.say(world, player, "trace_on");
         return true;
     }
 
@@ -174,7 +175,7 @@ public final class TraceOn {
                 return false;
             }
             if (item.getWorld() instanceof ServerWorld world) {
-                boolean griefing = FateUBW.breaksBlocks(world);
+                boolean griefing = FateUBW.breaksBlocks(world, item.getPos());
                 world.createExplosion(item, item.getX(), item.getY(), item.getZ(), griefing ? 3.5F : 3.0F,
                         griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
                 world.spawnParticles(ParticleTypes.FLASH, item.getX(), item.getY(), item.getZ(), 1, 0.0, 0.0, 0.0, 0.0);

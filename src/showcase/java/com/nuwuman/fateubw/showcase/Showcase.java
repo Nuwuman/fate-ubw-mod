@@ -60,6 +60,12 @@ public class Showcase implements ClientModInitializer {
             return;
         }
         worldTicks++;
+        if (worldTicks == 1) {
+            // Para comprobar que las líneas de voz llegan al cliente y se reproducen
+            client.getSoundManager().registerListener((sound, soundSet, range) -> {
+                if (sound.getId().getPath().startsWith("voice.")) log("voz: " + sound.getId().getPath());
+            });
+        }
         client.options.useKey.setPressed(holdUse);
         client.options.sneakKey.setPressed(holdSneak);
         client.options.forwardKey.setPressed(holdForward);

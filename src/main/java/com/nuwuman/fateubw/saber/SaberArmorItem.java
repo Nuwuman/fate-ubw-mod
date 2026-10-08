@@ -79,6 +79,7 @@ public class SaberArmorItem extends ServantArmorItem {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 1.5F, 1.4F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE, SoundCategory.PLAYERS, 2.0F, 0.8F);
         player.sendMessage(Text.literal("Avalon").formatted(Formatting.GOLD, Formatting.BOLD), true);
+        com.nuwuman.fateubw.Voices.say(world, player, "avalon");
         return true;
     }
 

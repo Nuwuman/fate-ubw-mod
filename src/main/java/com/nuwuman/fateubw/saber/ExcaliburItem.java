@@ -1,6 +1,7 @@
 package com.nuwuman.fateubw.saber;
 
 import com.nuwuman.fateubw.FateUBW;
+import com.nuwuman.fateubw.Voices;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -119,6 +120,7 @@ public class ExcaliburItem extends SwordItem {
         if (!(world instanceof ServerWorld server)) return;
 
         ExcaliburBeamEntity.fire(server, player);
+        Voices.say(world, player, "excalibur");
         player.swingHand(player.getActiveHand(), true);
         world.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.8F);

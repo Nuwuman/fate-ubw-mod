@@ -212,8 +212,13 @@ public class FateUBW implements ModInitializer {
     public static final GameRules.Key<GameRules.BooleanRule> BREAK_BLOCKS = GameRuleRegistry.register(
             "fateAbilitiesBreakBlocks", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
 
-    public static boolean breaksBlocks(World world) {
-        return world.getGameRules().getBoolean(BREAK_BLOCKS);
+    // /gamerule fateVoiceLines false → los Noble Phantasm dejan de decir su nombre
+    public static final GameRules.Key<GameRules.BooleanRule> VOICE_LINES = GameRuleRegistry.register(
+            "fateVoiceLines", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+
+    /** Con la gamerule activada, salvo dentro de un Reality Marble (su suelo tapa el mundo guardado debajo). */
+    public static boolean breaksBlocks(World world, net.minecraft.util.math.Vec3d pos) {
+        return world.getGameRules().getBoolean(BREAK_BLOCKS) && !UnlimitedBladeWorks.protects(world, net.minecraft.util.math.BlockPos.ofFloored(pos));
     }
 
     public static final ItemGroup GROUP = Registry.register(Registries.ITEM_GROUP, id("main"), FabricItemGroup.builder()
@@ -303,6 +308,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(BerserkerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
+        Voices.register();
         UnlimitedBladeWorks.register();
         TraceOn.register();
         Abilities.register();

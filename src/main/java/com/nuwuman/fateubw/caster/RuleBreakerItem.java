@@ -83,6 +83,7 @@ public class RuleBreakerItem extends SwordItem {
         world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.PLAYERS, 1.5F, 0.7F);
         world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.PLAYERS, 1.5F, 1.2F);
         user.sendMessage(Text.literal("Rule Breaker").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD), true);
+        com.nuwuman.fateubw.Voices.say(world, user, "rule_breaker");
     }
 
     @Override

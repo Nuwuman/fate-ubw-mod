@@ -85,6 +85,7 @@ public class EaItem extends SwordItem {
         if (!(world instanceof ServerWorld server)) return;
 
         EnumaElishEntity.fire(server, player);
+        com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
         player.swingHand(player.getActiveHand(), true);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.2F, 1.4F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.6F);

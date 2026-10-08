@@ -107,6 +107,7 @@ public class GaeBolgItem extends SwordItem {
         }
         if (!(world instanceof ServerWorld server)) return;
         player.swingHand(player.getActiveHand(), true);
+        com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
         if (soaring) {
             soaringSpear(server, player, stack);
         } else {

@@ -105,6 +105,12 @@ una no bloquea a las demás.
 
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
+## Líneas de voz
+
+Excalibur, Avalon, Gáe Bolg, Enuma Elish, Gate of Babylon, Unlimited Blade Works (y su aria), Trace On, Caladbolg,
+Rho Aias, Bellerophon, Rule Breaker, Tsubame Gaeshi y Nine Lives dicen su nombre al usarse. Se apagan con
+`/gamerule fateVoiceLines false`.
+
 ## Gamerule
 
 ```

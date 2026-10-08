@@ -100,7 +100,7 @@ public class SwordArrowEntity extends PersistentProjectileEntity {
     // Broken Phantasm: la espada explota. Solo rompe bloques con la gamerule fateAbilitiesBreakBlocks
     private void brokenPhantasm() {
         if (getWorld() instanceof ServerWorld world) {
-            boolean griefing = FateUBW.breaksBlocks(world);
+            boolean griefing = FateUBW.breaksBlocks(world, getPos());
             world.createExplosion(this, getX(), getY(), getZ(), griefing ? 5.0F : 4.0F,
                     griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
             world.spawnParticles(ParticleTypes.FLASH, getX(), getY(), getZ(), 1, 0.0, 0.0, 0.0, 0.0);

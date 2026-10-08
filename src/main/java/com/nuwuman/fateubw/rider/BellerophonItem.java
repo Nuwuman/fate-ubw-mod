@@ -47,6 +47,7 @@ public class BellerophonItem extends Item {
     public static boolean ability(ServerPlayerEntity user) {
         if (user.getVehicle() instanceof PegasusEntity pegasus) {
             pegasus.startCharge();
+            com.nuwuman.fateubw.Voices.say(user.getWorld(), user, "bellerophon");
             return true;
         }
         ServerWorld server = user.getServerWorld();

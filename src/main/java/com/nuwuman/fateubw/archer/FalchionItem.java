@@ -45,6 +45,7 @@ public class FalchionItem extends SwordItem {
                 return TypedActionResult.fail(stack);
             }
             if (world instanceof ServerWorld server) RhoAiasEntity.deploy(server, user);
+            com.nuwuman.fateubw.Voices.say(world, user, "rho_aias");
             user.getItemCooldownManager().set(FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN);
             return TypedActionResult.success(stack, world.isClient());
         }

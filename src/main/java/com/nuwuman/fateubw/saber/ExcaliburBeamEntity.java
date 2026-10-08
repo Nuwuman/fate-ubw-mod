@@ -115,7 +115,7 @@ public class ExcaliburBeamEntity extends Entity {
             world.spawnParticles(ParticleTypes.FLASH, end.x, end.y, end.z, 1, 0.0, 0.0, 0.0, 0.0);
             world.spawnParticles(ParticleTypes.END_ROD, end.x, end.y, end.z, 15, 1.0, 1.0, 1.0, 0.15);
         }
-        if (FateUBW.breaksBlocks(world)) carve(world, start, dir, len);
+        if (FateUBW.breaksBlocks(world, start)) carve(world, start, dir, len);
         affectNearby(world, start, end);
 
         float radius = radius();

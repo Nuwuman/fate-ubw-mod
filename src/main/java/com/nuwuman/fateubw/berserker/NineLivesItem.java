@@ -101,6 +101,7 @@ public class NineLivesItem extends SwordItem {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_RAVAGER_ATTACK, SoundCategory.PLAYERS, 2.0F, 0.7F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 1.0F, 1.2F);
         player.sendMessage(Text.literal("Nine Lives").formatted(Formatting.DARK_RED, Formatting.BOLD), true);
+        com.nuwuman.fateubw.Voices.say(world, player, "nine_lives");
     }
 
     @Override

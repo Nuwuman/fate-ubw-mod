@@ -231,7 +231,7 @@ public final class UnlimitedBladeWorks {
         });
     }
 
-    private static boolean protects(World world, BlockPos pos) {
+    public static boolean protects(World world, BlockPos pos) {
         for (Marble m : MARBLES.values()) {
             if (m.world == world.getRegistryKey() && pos.getY() >= m.center.getY() - FLOOR_DEPTH
                     && dist2(m.center, pos) < RADIUS * RADIUS) return true;
@@ -261,6 +261,7 @@ public final class UnlimitedBladeWorks {
         if (!CHANTS.containsKey(player.getUuid())) {
             CHANTS.put(player.getUuid(), 0);
             player.sendMessage(Text.translatable("message.fate_ubw.ubw_chant").formatted(Formatting.RED, Formatting.ITALIC), true);
+            com.nuwuman.fateubw.Voices.say(player.getWorld(), player, "ubw_chant");
         }
         return false;
     }
@@ -409,6 +410,7 @@ public final class UnlimitedBladeWorks {
         world.playSound(null, base.x, base.y, base.z, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 2.0F, 0.5F);
         caster.sendMessage(Text.translatable("message.fate_ubw.ubw_open").formatted(Formatting.RED), true);
         caster.getItemCooldownManager().set(FateUBW.UBW_COOLDOWN, MARBLE_COOLDOWN);
+        com.nuwuman.fateubw.Voices.say(world, caster, "unlimited_blade_works");
         return true;
     }
 

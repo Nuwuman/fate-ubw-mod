@@ -117,6 +117,7 @@
   "death.attack.enuma_elish.player": "%1$s was torn apart by %2$s's Enuma Elish",
 
   "key.category.fate_ubw": "Fate: Unlimited Blade Works",
+  "subtitles.fate_ubw.voice": "A servant calls out a Noble Phantasm",
   "key.fate_ubw.ability_use": "Use ability",
   "key.fate_ubw.ability_next": "Next ability",
   "hud.fate_ubw.keys": "[%s] use · [%s] switch",

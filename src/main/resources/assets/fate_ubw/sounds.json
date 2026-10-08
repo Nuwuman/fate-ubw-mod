@@ -1,0 +1,16 @@
+{
+  "voice.avalon": { "sounds": [{ "name": "fate_ubw:voice/avalon" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.bellerophon": { "sounds": [{ "name": "fate_ubw:voice/bellerophon" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.caladbolg": { "sounds": [{ "name": "fate_ubw:voice/caladbolg" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.enuma_elish": { "sounds": [{ "name": "fate_ubw:voice/enuma_elish" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.excalibur": { "sounds": [{ "name": "fate_ubw:voice/excalibur" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.gae_bolg": { "sounds": [{ "name": "fate_ubw:voice/gae_bolg" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.gate_of_babylon": { "sounds": [{ "name": "fate_ubw:voice/gate_of_babylon" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.nine_lives": { "sounds": [{ "name": "fate_ubw:voice/nine_lives" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.rho_aias": { "sounds": [{ "name": "fate_ubw:voice/rho_aias" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.rule_breaker": { "sounds": [{ "name": "fate_ubw:voice/rule_breaker" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.trace_on": { "sounds": [{ "name": "fate_ubw:voice/trace_on" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.tsubame_gaeshi": { "sounds": [{ "name": "fate_ubw:voice/tsubame_gaeshi" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.ubw_chant": { "sounds": [{ "name": "fate_ubw:voice/ubw_chant" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.unlimited_blade_works": { "sounds": [{ "name": "fate_ubw:voice/unlimited_blade_works" }], "subtitle": "subtitles.fate_ubw.voice" }
+}

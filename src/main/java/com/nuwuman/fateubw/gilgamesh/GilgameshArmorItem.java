@@ -52,6 +52,7 @@ public class GilgameshArmorItem extends ServantArmorItem {
 
     public static boolean gateOfBabylon(ServerPlayerEntity player) {
         BabylonPortalEntity.openGate(player.getServerWorld(), player);
+        com.nuwuman.fateubw.Voices.say(player.getWorld(), player, "gate_of_babylon");
         return true;
     }
 

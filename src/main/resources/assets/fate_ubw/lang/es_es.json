@@ -117,6 +117,7 @@
   "death.attack.enuma_elish.player": "%1$s fue desgarrado por el Enuma Elish de %2$s",
 
   "key.category.fate_ubw": "Fate: Unlimited Blade Works",
+  "subtitles.fate_ubw.voice": "Un servant invoca su Noble Phantasm",
   "key.fate_ubw.ability_use": "Usar habilidad",
   "key.fate_ubw.ability_next": "Cambiar de habilidad",
   "hud.fate_ubw.keys": "[%s] usar · [%s] cambiar",
