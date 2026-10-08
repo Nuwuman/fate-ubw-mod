@@ -350,6 +350,7 @@ public class FateUBW implements ModInitializer {
         com.nuwuman.fateubw.rider.RiderArmorItem.register();
         com.nuwuman.fateubw.npc.ServantNpcs.register();
         GrailWar.register();
+        HolyGrailItem.register();
         UnlimitedBladeWorks.register();
         TraceOn.register();
         Abilities.register();

@@ -131,7 +131,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **`/grailwar start`** (operadores): a cada jugador conectado le toca un servant distinto, con su equipo, el maná lleno
   y tres Sellos de Comando. Quien muere queda de espectador; el último en pie gana el **Santo Grial**.
   `/grailwar status` dice quién sigue y `/grailwar stop` la termina.
-- **Santo Grial**: click derecho pide tu deseo: vida y maná al máximo, los tres Sellos de Comando y un Noble Phantasm.
+- **Santo Grial**: click derecho abre "¿Qué deseas?" con los ocho servants. Eliges uno y el Grial te concede su poder:
+  su equipo completo (puesto), además de vida y maná al máximo y los tres Sellos de Comando. Se gasta al pedir el deseo.
 
 **Objetos de los Masters**
 - **Joya de Tohsaka** (Rin): se lanza y libera su maná en una explosión.

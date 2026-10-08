@@ -857,9 +857,25 @@ public class Showcase implements ClientModInitializer {
                 p.networkHandler.sendChatCommand("item replace entity @s weapon.mainhand with fate_ubw:holy_grail");
             }
             case 105 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
-            case 110 -> shot(c, "grail_03_wish");
-            case 115 -> p.networkHandler.sendChatCommand("grailwar start");
-            case 125 -> {
+            case 110 -> shot(c, "grail_03_wish_screen");
+            // Pulsa el botón de Gilgamesh como lo haría el jugador
+            case 112 -> {
+                if (c.currentScreen == null) {
+                    log("no se abrió la pantalla del deseo");
+                } else {
+                    c.currentScreen.children().stream()
+                            .filter(w -> w instanceof net.minecraft.client.gui.widget.ButtonWidget b && b.getMessage().getString().equals("Gilgamesh"))
+                            .findFirst().ifPresent(w -> ((net.minecraft.client.gui.widget.ButtonWidget) w).onPress());
+                }
+            }
+            case 120 -> {
+                log("tras el deseo: pecho " + p.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST).getItem()
+                        + ", Grial en la mano: " + p.getMainHandStack().getItem());
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
+            case 130 -> shot(c, "grail_04_wish_granted");
+            case 132 -> p.networkHandler.sendChatCommand("grailwar start");
+            case 140 -> {
                 return true;
             }
             default -> {
