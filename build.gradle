@@ -56,6 +56,7 @@ dependencies {
 
 processResources {
     inputs.property "version", project.version
+    exclude "**/*.bbmodel" // proyectos de Blockbench, no van en el jar
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
