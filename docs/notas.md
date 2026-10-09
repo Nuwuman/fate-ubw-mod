@@ -11,8 +11,34 @@
 
 ## Ideas que quedan para más adelante
 
+Ordenadas por lo que aportan frente a lo que cuestan.
+
+**Rápidas**
+- **Rider con 3 piezas**: que sus habilidades funcionen sin la venda, como la capucha de Caster o la tiara de Ishtar.
+- **Más animaciones de cuerpo**: Hrunting y Caladbolg (tensar el arco con todo el cuerpo), Gate of Babylon (brazo
+  extendido abriendo los portales), Nine Lives (la ráfaga de golpes), Bellerophon (montar y embestir), Avalon.
+- **Maanna en GeckoLib**: que brille en la oscuridad y que la gema y las alas se animen al cargar An Gal Ta Kigal Shè,
+  como Excalibur.
+- **Voz de Ishtar** para sus habilidades además del Noble Phantasm.
+
+**Medianas**
+- **Más servants enemigos**: Rider (a lomos de Pegaso), Caster (flotando y lanzando magia), Archer (a distancia,
+  con Kanshō y Bakuya de cerca) e Ishtar (desde el aire). Reutilizan sus armaduras y ataques.
 - **Servants aliados**: invocar un servant que luche a tu lado en vez de llevar su equipo.
-- **Servants enemigos guardando estructuras** (ahora aparecen sueltos de noche).
+- **Servants enemigos guardando estructuras** (ahora aparecen sueltos de noche): el templo Ryuudou, la casa de Emiya,
+  la iglesia de Kotomine, con botín.
+- **Guerra del Santo Grial más completa**: marcador con quién queda, zona que se cierra como un battle royale o límite
+  de tiempo.
+
+**Grandes**
+- **Nuevos servants**: Rin y Sakura con kit propio, o clases extra como Ruler y Avenger (Jeanne, Jeanne Alter).
+- **Jefe final, la Sombra / Angra Mainyu**: sale del Grial corrompido al terminar la Guerra.
+
+**Ajustes pendientes de decidir**
+- Ishtar: otros colores (la ropa blanca de su tercera ascensión), otras habilidades u otro catalizador (ahora diamante).
+- Gáe Bolg con Better Combat: ahora es "lanza" (combo de estocadas); "tridente" sería una sola estocada.
+- Proporción de armas vanilla y del mod clavadas en Unlimited Blade Works (ahora mitad y mitad); se podrían añadir
+  hachas o la maza.
 
 ## Problemas conocidos
 
