@@ -119,7 +119,7 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         boolean soaring = player.isSneaking();
         if (charge < (soaring ? SOARING_CHARGE : PIERCE_CHARGE)) return;
-        com.nuwuman.fateubw.PlayerAnims.play(player, soaring ? "gae_bolg_throw" : "gae_bolg_pierce");
+        com.nuwuman.fateubw.PlayerAnims.play(player, soaring ? "gae_bolg_hold" : "gae_bolg_pierce");
         if (soaring && !player.getItemCooldownManager().isCoolingDown(FateUBW.GAE_BOLG_SOARING)) com.nuwuman.fateubw.PlayerAnims.cinematic(player);
 
         if (!(world instanceof ServerWorld server)) return;
@@ -128,11 +128,19 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         int cooldown = soaring ? SOARING_COOLDOWN : PIERCE_COOLDOWN;
         if (!com.nuwuman.fateubw.Rules.ready(player, key, cooldown, soaring ? "gae_bolg_soaring" : "gae_bolg_pierce")) return;
         com.nuwuman.fateubw.Rules.commit(player, key, cooldown);
-        player.swingHand(player.getActiveHand(), true);
-        com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
         if (soaring) {
-            soaringSpear(server, player, stack);
+            // La lanza en alto un segundo mientras la cámara se coloca; luego la arroja
+            net.minecraft.util.Hand hand = player.getActiveHand();
+            com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
+                if (!player.isAlive() || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
+                com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "gae_bolg_throw");
+                player.swingHand(hand, true);
+                com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
+                soaringSpear(server, player, stack);
+            });
         } else {
+            player.swingHand(player.getActiveHand(), true);
+            com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
             pierce(server, player, stack);
         }
     }

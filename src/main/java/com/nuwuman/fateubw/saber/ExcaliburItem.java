@@ -200,22 +200,27 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
         if (charge < FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
 
         Rules.commit(player, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
-        com.nuwuman.fateubw.PlayerAnims.play(player, "excalibur_swing");
+        // La espada se queda en alto un segundo mientras la cámara se coloca, y entonces cae el golpe
+        com.nuwuman.fateubw.PlayerAnims.play(player, "excalibur_hold");
         com.nuwuman.fateubw.PlayerAnims.cinematic(player);
-        if (!(world instanceof ServerWorld server)) return;
+        if (!(world instanceof ServerWorld server) || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
+        Hand hand = player.getActiveHand();
+        FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
+            if (!player.isAlive()) return;
+            com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "excalibur_swing");
+            ExcaliburBeamEntity.fire(server, player);
+            Voices.say(world, player, "excalibur");
+            player.swingHand(hand, true);
+            world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.8F);
+            world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.PLAYERS, 2.0F, 0.6F);
 
-        ExcaliburBeamEntity.fire(server, player);
-        Voices.say(world, player, "excalibur");
-        player.swingHand(player.getActiveHand(), true);
-        world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.8F);
-        world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.PLAYERS, 2.0F, 0.6F);
-
-        // Retroceso por la potencia del golpe
-        Vec3d dir = player.getRotationVec(1.0F);
-        player.addVelocity(-dir.x * 0.5, 0.1, -dir.z * 0.5);
-        player.velocityModified = true;
+            // Retroceso por la potencia del golpe
+            Vec3d dir = player.getRotationVec(1.0F);
+            player.addVelocity(-dir.x * 0.5, 0.1, -dir.z * 0.5);
+            player.velocityModified = true;
+        });
     }
 
     // Agachado + click derecho: ráfaga de viento en cono

@@ -76,7 +76,7 @@ public class MaannaItem extends BowItem {
         float pull = getPullProgress(used);
         if (pull < 0.1F) return;
         if (npReady(player) && used >= NP_CHARGE) {
-            com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish");
+            com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish_hold");
             com.nuwuman.fateubw.PlayerAnims.cinematic(player);
         }
         if (!(world instanceof ServerWorld server)) return;
@@ -85,10 +85,17 @@ public class MaannaItem extends BowItem {
         if (player.isSneaking() && used >= NP_CHARGE
                 && com.nuwuman.fateubw.Rules.ready(player, FateUBW.AN_GAL_TA_KIGAL_SHE_NP, NP_COOLDOWN, "an_gal_ta_kigal_she")) {
             com.nuwuman.fateubw.Rules.commit(player, FateUBW.AN_GAL_TA_KIGAL_SHE_NP, NP_COOLDOWN);
-            AnGalTaKigalSheEntity.fire(server, player);
-            com.nuwuman.fateubw.Voices.say(world, player, "an_gal_ta_kigal_she");
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.6F);
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2.0F, 1.2F);
+            stack.damage(1, player, LivingEntity.getSlotForHand(player.getActiveHand()));
+            // Maanna en alto un segundo mientras la cámara se coloca; luego sale Venus
+            com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
+                if (!player.isAlive() || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
+                com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "enuma_elish");
+                AnGalTaKigalSheEntity.fire(server, player);
+                com.nuwuman.fateubw.Voices.say(world, player, "an_gal_ta_kigal_she");
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.6F);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2.0F, 1.2F);
+            });
+            return;
         } else if (pull >= 1.0F) {
             // Tensado del todo: una joya que estalla
             RinJewelEntity jewel = new RinJewelEntity(server, player);

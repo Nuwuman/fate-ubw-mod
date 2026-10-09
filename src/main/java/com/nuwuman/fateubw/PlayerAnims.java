@@ -47,6 +47,18 @@ public final class PlayerAnims {
      * Llamar en los dos lados. El propio jugador la ve al instante desde su cliente; el servidor solo avisa a los demás.
      * animation: nombre del archivo en assets/fate_ubw/player_animations.
      */
+    /** Ticks entre soltar la carga de un Noble Phantasm y que salga: la postura se mantiene y la cámara se coloca. */
+    public static final int WINDUP = 20;
+
+    /** Solo en el servidor: la animación para todos los que lo ven, también para quien la hace. */
+    public static void playAll(ServerPlayerEntity player, String animation) {
+        PlayPayload payload = new PlayPayload(player.getId(), animation);
+        ServerPlayNetworking.send(player, payload);
+        for (ServerPlayerEntity other : PlayerLookup.tracking(player)) {
+            if (other != player) ServerPlayNetworking.send(other, payload);
+        }
+    }
+
     public static void play(PlayerEntity player, String animation) {
         if (player.getWorld().isClient()) {
             clientPlay.accept(player, animation);

@@ -136,19 +136,25 @@ public class EaItem extends SwordItem implements GeoItem {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         if (charge < ExcaliburItem.FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
         com.nuwuman.fateubw.Rules.commit(player, FateUBW.ENUMA_ELISH_NP, COOLDOWN);
-        com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish");
+        // Ea en alto un segundo mientras la cámara se coloca; luego la baja y sale Enuma Elish
+        com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish_hold");
         com.nuwuman.fateubw.PlayerAnims.cinematic(player);
-        if (!(world instanceof ServerWorld server)) return;
-
-        EnumaElishEntity.fire(server, player, com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack,
-                com.nuwuman.fateubw.enchant.FateEnchantments.WORLD_SEVERANCE) > 0);
-        com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
-        player.swingHand(player.getActiveHand(), true);
-        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.2F, 1.4F);
-        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.6F);
-        Vec3d dir = player.getRotationVec(1.0F);
-        player.addVelocity(-dir.x * 0.6, 0.1, -dir.z * 0.6);
-        player.velocityModified = true;
+        if (!(world instanceof ServerWorld server) || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
+        boolean severance = com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack,
+                com.nuwuman.fateubw.enchant.FateEnchantments.WORLD_SEVERANCE) > 0;
+        net.minecraft.util.Hand hand = player.getActiveHand();
+        com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
+            if (!player.isAlive()) return;
+            com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "enuma_elish");
+            EnumaElishEntity.fire(server, player, severance);
+            com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
+            player.swingHand(hand, true);
+            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.2F, 1.4F);
+            world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.6F);
+            Vec3d dir = player.getRotationVec(1.0F);
+            player.addVelocity(-dir.x * 0.6, 0.1, -dir.z * 0.6);
+            player.velocityModified = true;
+        });
     }
 
     @Override

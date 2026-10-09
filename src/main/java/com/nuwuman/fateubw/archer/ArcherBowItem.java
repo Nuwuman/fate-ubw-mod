@@ -60,28 +60,39 @@ public class ArcherBowItem extends BowItem {
         if (pull < 0.1F) return;
 
         boolean wantsCaladbolg = player.isSneaking() && pull >= 1.0F;
-        if (wantsCaladbolg && caladbolgReady(player)) com.nuwuman.fateubw.PlayerAnims.cinematic(player);
+        if (wantsCaladbolg && caladbolgReady(player)) {
+            com.nuwuman.fateubw.PlayerAnims.play(player, "caladbolg_hold");
+            com.nuwuman.fateubw.PlayerAnims.cinematic(player);
+        }
         if (!(world instanceof ServerWorld server)) return;
         // Sin recarga o sin maná sale una espada normal (ready avisa de lo que falte)
         boolean caladbolg = wantsCaladbolg && com.nuwuman.fateubw.Rules.ready(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN, "caladbolg");
+        if (caladbolg) {
+            // El arco se queda tenso un segundo mientras la cámara se coloca; luego sale Caladbolg II
+            com.nuwuman.fateubw.Rules.commit(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN);
+            stack.damage(1, player, LivingEntity.getSlotForHand(player.getActiveHand()));
+            com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
+                if (!player.isAlive()) return;
+                SwordArrowEntity arrow = new SwordArrowEntity(server, player, stack, true);
+                arrow.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 4.5F, 0.0F);
+                arrow.setCritical(true);
+                server.spawnEntity(arrow);
+                com.nuwuman.fateubw.Voices.say(world, player, "caladbolg");
+                world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.4F);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.8F, 1.6F);
+            });
+            return;
+        }
 
-        SwordArrowEntity arrow = new SwordArrowEntity(server, player, stack, caladbolg);
-        arrow.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, caladbolg ? 4.5F : pull * 3.0F, caladbolg ? 0.0F : 1.0F);
+        SwordArrowEntity arrow = new SwordArrowEntity(server, player, stack, false);
+        arrow.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, pull * 3.0F, 1.0F);
         if (pull >= 1.0F) arrow.setCritical(true);
         server.spawnEntity(arrow);
         stack.damage(1, player, LivingEntity.getSlotForHand(player.getActiveHand()));
-
-        if (caladbolg) {
-            com.nuwuman.fateubw.Rules.commit(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN);
-            com.nuwuman.fateubw.Voices.say(world, player, "caladbolg");
-            world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.4F);
-            world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.8F, 1.6F);
-        } else {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + pull * 0.5F);
-        }
+        world.playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + pull * 0.5F);
     }
 
     @Override
