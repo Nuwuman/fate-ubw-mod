@@ -146,6 +146,7 @@ public class Showcase implements ClientModInitializer {
             case "enchants" -> enchants(client, p, st);
             case "clash" -> clash(client, p, st);
             case "npfx" -> npFx(client, p, st);
+            case "maanna" -> maanna(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
@@ -918,6 +919,50 @@ public class Showcase implements ClientModInitializer {
             case 310 -> {
                 p.networkHandler.sendChatCommand("gamerule fateAbilitiesBreakBlocks false");
                 pitch = 0.0F;
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // La Maanna flotante de Ishtar: en reposo, tensada con la mano vacía, un disparo y el Noble Phantasm
+    private boolean maanna(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"armor.head with fate_ubw:ishtar_tiara", "armor.chest with fate_ubw:ishtar_chestplate",
+                    "armor.legs with fate_ubw:ishtar_leggings", "armor.feet with fate_ubw:ishtar_boots"}, new String[]{"~-2 ~ ~10", "~2 ~ ~12"});
+            case 40 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 50 -> shot(c, "maanna_01_back");
+            case 52 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 62 -> shot(c, "maanna_02_front");
+            case 64 -> yaw = 90.0F;
+            case 74 -> shot(c, "maanna_03_side");
+            case 76 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+            }
+            case 86 -> shot(c, "maanna_04_firstperson");
+            case 88 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                yaw = 30.0F;
+                holdUse = true;
+            }
+            case 112 -> shot(c, "maanna_05_drawn_back");
+            case 114 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 122 -> shot(c, "maanna_06_drawn_firstperson");
+            case 124 -> holdUse = false;
+            case 130 -> shot(c, "maanna_07_shot");
+            case 150 -> {
+                yaw = 0.0F;
+                holdSneak = true;
+                holdUse = true;
+            }
+            case 225 -> holdUse = false;
+            case 228 -> holdSneak = false;
+            case 232 -> shot(c, "maanna_08_np_windup");
+            case 244 -> shot(c, "maanna_09_np");
+            case 290 -> {
                 return true;
             }
             default -> {

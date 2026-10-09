@@ -222,6 +222,9 @@ public class FateUBW implements ModInitializer {
     public static final Item JEWEL_BURST = item("jewel_burst", new Item(new Item.Settings()));
     public static final Item MANIFESTATION_OF_BEAUTY = item("manifestation_of_beauty", new Item(new Item.Settings()));
     public static final Item SKY_BOAT = item("sky_boat", new Item(new Item.Settings()));
+    // Piezas de la Maanna flotante (solo para dibujarla)
+    public static final Item MAANNA_HULL = item("maanna_hull", new Item(new Item.Settings()));
+    public static final Item MAANNA_PROW = item("maanna_prow", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);
@@ -367,6 +370,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(BerserkerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(IshtarArmorItem::allowDamage);
         IshtarArmorItem.register();
+        com.nuwuman.fateubw.ishtar.FloatingMaanna.register();
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         Rules.register();

@@ -51,7 +51,7 @@ public class IshtarArmorItem extends ServantArmorItem {
         super(FateUBW.ISHTAR_MATERIAL, type, settings, "ishtar_armor");
     }
 
-    private static boolean fullSet(LivingEntity entity) {
+    static boolean fullSet(LivingEntity entity) {
         return entity instanceof PlayerEntity player
                 && wearsSet(player, FateUBW.ISHTAR_CHESTPLATE, FateUBW.ISHTAR_LEGGINGS, FateUBW.ISHTAR_BOOTS);
     }

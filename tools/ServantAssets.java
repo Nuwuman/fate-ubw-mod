@@ -1707,6 +1707,28 @@ public class ServantAssets {
     static final Paint MAANNA_GOLD = metal(0xe3b545), MAANNA_WHITE = metal(0xf2ead2), MAANNA_GEM = metal(0x3a7bd8),
             MAANNA_STRING = solid(0xfff1b8), VENUS = metal(0xffd36a);
 
+    // Maanna flotante: el mod la monta en código con muchos tramos a lo largo de un arco. Un tramo es una barra azul
+    // con ribetes y volutas doradas, a lo largo de Z, que ocupa el bloque entero de largo
+    static Model maannaHull() {
+        int blue = 0x1d3a8f, gold = 0xe0b245;
+        Paint side = marked(fabric(blue), gold, (x, y, w, h) -> y == 0 || y == h - 1
+                || Math.abs(Math.floorMod(x, 10) - 5 - (y - h / 2.0) * 0.8) < 0.6);
+        Paint edge = edged(plate(blue), gold, 1);
+        Model m = new Model();
+        m.box(6.5, 4, 0, 9.5, 12, 16, edge).face("east", side).face("west", side);
+        m.box(6.2, 11.6, 0, 9.8, 12.4, 16, plate(gold));        // filo dorado por fuera del arco
+        return m;
+    }
+
+    // Remate de las puntas: adorno dorado con una cinta roja
+    static Model maannaProw() {
+        Model m = new Model();
+        m.box(6.5, 3, 4, 9.5, 13, 12, plate(0xe0b245));
+        m.box(7, 13, 6, 9, 15, 10, plate(0xf2d27a));
+        m.box(6.2, 6, 5, 9.8, 7.5, 11, plate(0xc0182a));
+        return m;
+    }
+
     static Model maanna(double pull) {
         Model m = new Model();
         m.box(7, 8.6, 7.25, 9, 12, 8.75, MAANNA_WHITE);                        // empuñadura
@@ -1961,6 +1983,8 @@ public class ServantAssets {
                 + "    { \"predicate\": { \"pulling\": 1, \"pull\": 0.9 }, \"model\": \"fate_ubw:item/maanna_pulling_2\" }\n"
                 + "  ]";
         itemModel(root, "maanna", maanna(0), BOW_DISPLAY, maannaOverrides);
+        itemModel(root, "maanna_hull", maannaHull(), handheld(1.0), null);
+        itemModel(root, "maanna_prow", maannaProw(), handheld(1.0), null);
         for (int i = 0; i < 3; i++) {
             itemModel(root, "maanna_pulling_" + i, maanna(pulls[i]).add(gemArrow(8.5 - pulls[i])), BOW_DISPLAY, null);
         }

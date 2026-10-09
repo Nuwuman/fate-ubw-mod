@@ -19,6 +19,7 @@ public class FateUBWClient implements ClientModInitializer {
     public void onInitializeClient() {
         PlayerAnimsClient.register();
         NpCamera.register();
+        FloatingMaannaClient.register();
         // Las espadas clavadas vanilla son dibujos planos con píxeles transparentes
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(FateUBW.UBW_SWORD,
                 net.minecraft.client.render.RenderLayer.getCutout());

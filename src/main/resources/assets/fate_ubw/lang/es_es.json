@@ -287,5 +287,7 @@
   "enchantment.fate_ubw.world_severance": "World Severance",
   "enchantment.fate_ubw.contract_breaker": "Contract Breaker",
   "enchantment.fate_ubw.heartbeat": "Heartbeat",
-  "enchantment.fate_ubw.god_hand": "God Hand"
+  "enchantment.fate_ubw.god_hand": "God Hand",
+  "item.fate_ubw.maanna_hull": "Maanna (casco)",
+  "item.fate_ubw.maanna_prow": "Maanna (proa)"
 }

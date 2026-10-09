@@ -125,7 +125,10 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **Ropa** como en su primera ascensión: top blanco con ribetes dorados y collar de oro con gema negra, braguita negra
   con cinturón dorado, guante negro largo en el brazo izquierdo y brazalete en el derecho, media negra con liga en forma
   de corona y espinillera en la pierna derecha y tobillera en la izquierda (lo que va al aire deja ver tu skin). La
-  **tiara** (opcional) es su corona dorada con picos. Conjunto completo: Velocidad I y sin daño por caída. Habilidades: **Ráfaga de Joyas** (cinco
+  **tiara** (opcional) es su corona dorada con picos. Con el conjunto puesto, **Maanna flota a tu lado**: una barca en
+  media luna azul y dorada que se mece a tu derecha. Con la mano principal vacía, mantén click derecho para tensarla:
+  se pone delante de ti apuntando adonde miras y dispara igual que el arco en la mano (flechas de luz, joyas y, agachado,
+  An Gal Ta Kigal Shè). Conjunto completo: Velocidad I y sin daño por caída. Habilidades: **Ráfaga de Joyas** (cinco
   joyas en abanico que estallan), **Manifestación de la Belleza** (los que tienes cerca quedan débiles y lentos y dejan
   de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s; se puede usar dos veces seguidas, con 4 s para el segundo salto, antes de la recarga).
 
@@ -265,7 +268,7 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `carve`, `glow`, `armors`, `grailwar`, o varios separados por
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `carve`, `maanna`, `glow`, `armors`, `grailwar`, o varios separados por
   comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
   anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 

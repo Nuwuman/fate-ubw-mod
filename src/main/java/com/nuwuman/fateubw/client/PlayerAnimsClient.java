@@ -56,6 +56,8 @@ public final class PlayerAnimsClient {
     }
 
     private static String pose(AbstractClientPlayerEntity player) {
+        // Tensando la Maanna flotante con la mano vacía
+        if (player.getAttached(com.nuwuman.fateubw.ishtar.FloatingMaanna.DRAW) != null) return "bow_draw";
         if (!player.isUsingItem()) return null;
         ItemStack stack = player.getActiveItem();
         if (stack.isOf(FateUBW.EXCALIBUR)) return "excalibur_charge";
