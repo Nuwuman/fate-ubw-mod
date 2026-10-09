@@ -123,9 +123,9 @@ public final class FloatingMaannaClient {
         float bodyYaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
         float headYaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevHeadYaw, player.headYaw);
         float yaw = MathHelper.lerpAngleDegrees(k, bodyYaw, headYaw);
-        // En primera persona, tensada queda a la izquierda para no tapar el centro de la pantalla
+        // Tensada se queda a su derecha, adelantada; en primera persona algo más fuera para no tapar el centro de la pantalla
         boolean ownFirstPerson = player == client.player && client.options.getPerspective() == Perspective.FIRST_PERSON;
-        float drawnX = ownFirstPerson ? 1.35F : 0.3F, drawnZ = ownFirstPerson ? 1.0F : 0.8F;
+        float drawnX = ownFirstPerson ? -1.35F : -1.1F, drawnZ = ownFirstPerson ? 1.0F : 0.5F;
 
         Vec3d pos = player.getLerpedPos(tickDelta);
         matrices.push();
@@ -135,8 +135,8 @@ public final class FloatingMaannaClient {
         matrices.translate(MathHelper.lerp(k, -1.4F, drawnX), MathHelper.lerp(k, 1.2F + 0.12F * MathHelper.sin(t * 0.08F), 1.45F),
                 MathHelper.lerp(k, 0.1F, drawnZ));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(player.getPitch(tickDelta) * k));
-        // Tensada se gira un poco para que desde atrás se vea la cara de la barca y no solo el canto
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(22.0F * k));
+        // Tensada apunta un poco hacia dentro, para que la flecha vaya hacia la mira
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(6.0F * k));
         // En reposo se inclina hacia fuera y se mece
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((1 - k) * (-10.0F + 3.0F * MathHelper.sin(t * 0.05F))));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((1 - k) * 4.0F * MathHelper.sin(t * 0.06F)));
