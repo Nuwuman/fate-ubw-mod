@@ -145,7 +145,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   y tres Sellos de Comando. Quien muere queda de espectador; el último en pie gana el **Santo Grial**.
   `/grailwar status` dice quién sigue y `/grailwar stop` la termina. Desconectarse cuenta como rendirse, pero la
   guerra se guarda con el mundo: si el servidor se reinicia o se cae, sigue donde estaba.
-- **Santo Grial**: click derecho abre "¿Qué deseas?" con los ocho servants. Eliges uno y el Grial te concede su poder:
+- **Santo Grial**: click derecho abre "¿Qué deseas?" con los nueve servants. Eliges uno y el Grial te concede su poder:
   su equipo completo (puesto), además de vida y maná al máximo y los tres Sellos de Comando. Se gasta al pedir el deseo.
 
 **Objetos de los Masters**
@@ -229,7 +229,9 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `armors`, o varios separados por comas) solo prueba esas secciones.
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `glow`, `armors`, `grailwar`, o varios separados por
+  comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
+  anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 
 ---
 

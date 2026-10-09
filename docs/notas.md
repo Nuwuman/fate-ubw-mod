@@ -31,3 +31,7 @@
 - Que el Marble restaure los bloques si el servidor se cae (el cierre normal sí está probado).
 - Que las proyecciones de Trace On desaparezcan a los 60 s y que los cofres las rechacen.
 - Que Lancer y Assassin aparezcan solos de noche (solo probados con huevo y /summon).
+- Better Combat: los `weapon_attributes` de las armas no están probados en el entorno de pruebas (habría que descargar
+  Better Combat y Cloth Config); comprobar en juego que cada arma usa sus animaciones de golpe.
+- La Guerra del Santo Grial guardada con dos o más jugadores (solo probada empezando con uno).
+- Fresh Animations: Player Extension con las armaduras de GeckoLib (podrían desalinearse al correr o saltar).

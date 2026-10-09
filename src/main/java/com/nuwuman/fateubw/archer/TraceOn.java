@@ -176,8 +176,10 @@ public final class TraceOn {
             }
             if (item.getWorld() instanceof ServerWorld world) {
                 boolean griefing = FateUBW.breaksBlocks(world, item.getPos());
-                world.createExplosion(item, item.getX(), item.getY(), item.getZ(), griefing ? 3.5F : 3.0F,
-                        griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
+                // A nombre de quien la lanzó: respeta el PvP, fatePlayerDamagePercent y le cuenta las bajas
+                world.createExplosion(item, world.getDamageSources().explosion(item, item.getOwner()), null,
+                        item.getX(), item.getY(), item.getZ(), griefing ? 3.5F : 3.0F,
+                        false, griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
                 world.spawnParticles(ParticleTypes.FLASH, item.getX(), item.getY(), item.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
             }
             item.discard();
