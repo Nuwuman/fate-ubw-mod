@@ -176,6 +176,11 @@ tercera persona veis cómo se mueve todo el cuerpo:
 
 Las animaciones están en `src/main/resources/assets/fate_ubw/player_animations/` y se pueden editar con Blockbench.
 
+Con [Better Combat](https://modrinth.com/mod/better-combat) instalado (opcional), los golpes normales de las armas
+usan sus animaciones: Excalibur y Ea como espada, Gáe Bolg como lanza, Kanshō y Bakuya como alfanjes, la Monohoshizao
+como katana, Rule Breaker y la daga de Rider como dagas y el hacha-espada de Berserker como hacha a dos manos
+(`data/fate_ubw/weapon_attributes/`).
+
 ## Líneas de voz
 
 Excalibur, Avalon, Gáe Bolg, Enuma Elish, Gate of Babylon, Unlimited Blade Works (y su aria), Trace On, Caladbolg,
