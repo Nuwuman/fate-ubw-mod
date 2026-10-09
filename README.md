@@ -44,7 +44,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
     Las proyecciones se desvanecen al minuto y no se pueden meter en cofres ni usar para craftear. Si tiras una (Q),
     sale volando y estalla al chocar: **Broken Phantasm**.
   - **Unlimited Blade Works** (Reality Marble): recitas el aria 3 s y el mundo a tu alrededor se convierte en Unlimited
-    Blade Works: una cúpula de 30 bloques de radio con un páramo rojizo, espadas clavadas y un cielo de atardecer con
+    Blade Works: una cúpula de 30 bloques de radio con un páramo rojizo, espadas clavadas (las del mod y las vanilla, de madera a netherita, y tridentes) y un cielo de atardecer con
     engranajes gigantes que tapa el mundo de fuera, así que parece no tener fin. Quien esté dentro queda atrapado contigo.
     Dentro eres más fuerte (Fuerza II, Resistencia, Velocidad, Regeneración), sobre los demás llueven espadas sin parar
     y la habilidad lanza ráfagas de 16 espadas; agachado lo deshace. No se pueden romper ni poner bloques dentro.

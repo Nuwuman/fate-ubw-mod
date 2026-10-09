@@ -479,6 +479,27 @@ public class ServantAssets {
         ImageIO.write(img, "png", root.resolve("textures/" + folder + "/" + name + ".png").toFile());
     }
 
+    // Arma vanilla clavada. El dibujo va de la empuñadura (abajo a la izquierda) a la punta (arriba a la derecha):
+    // girado 180° y luego 45°, la punta apunta al suelo; el centro a 8.3 deja unos 3 píxeles enterrados
+    static void vanillaGrave(Path root, String item) throws IOException {
+        String tex = "minecraft:item/" + item;
+        // Cada cara muestra el dibujo sin reflejar y el giro se ve al revés desde cada lado: las caras sur y este llevan
+        // el dibujo tal cual y las norte y oeste reflejado, así la espada queda vertical se mire por donde se mire
+        String face = "{ \"uv\": [0, 0, 16, 16], \"rotation\": 180, \"texture\": \"#0\" }";
+        String back = "{ \"uv\": [16, 0, 0, 16], \"rotation\": 180, \"texture\": \"#0\" }";
+        String json = "{\n  \"ambientocclusion\": false,\n"
+                + "  \"textures\": { \"0\": \"" + tex + "\", \"particle\": \"" + tex + "\" },\n"
+                + "  \"elements\": [\n"
+                + "    { \"from\": [0, 0.3, 8], \"to\": [16, 16.3, 8], \"shade\": false,"
+                + " \"rotation\": { \"angle\": 45, \"axis\": \"z\", \"origin\": [8, 8.3, 8] },"
+                + " \"faces\": { \"north\": " + back + ", \"south\": " + face + " } },\n"
+                + "    { \"from\": [8, 0.3, 0], \"to\": [8, 16.3, 16], \"shade\": false,"
+                + " \"rotation\": { \"angle\": 45, \"axis\": \"x\", \"origin\": [8, 8.3, 8] },"
+                + " \"faces\": { \"east\": " + face + ", \"west\": " + back + " } }\n"
+                + "  ]\n}\n";
+        Files.writeString(root.resolve("models/block/ubw_sword_" + item + ".json"), json);
+    }
+
     // Da la vuelta a un arma (punta abajo) y la hunde 'bury' unidades en el suelo: una espada clavada
     static Model buried(Model m, double top, double bury) {
         Model out = new Model();
@@ -1856,6 +1877,14 @@ public class ServantAssets {
             for (int rot = 0; rot < 360; rot += 90) {
                 if (v++ > 0) variants.append(",\n");
                 variants.append("      { \"model\": \"fate_ubw:block/ubw_sword_").append(grave.getKey()).append("\", \"y\": ").append(rot).append(" }");
+            }
+        }
+        // Y armas vanilla: su dibujo plano en dos planos cruzados, girado para que la diagonal quede vertical, punta abajo
+        for (String weapon : new String[]{"wooden_sword", "stone_sword", "iron_sword", "golden_sword", "diamond_sword",
+                "netherite_sword", "trident"}) {
+            vanillaGrave(root, weapon);
+            for (int rot = 0; rot < 360; rot += 90) {
+                variants.append(",\n      { \"model\": \"fate_ubw:block/ubw_sword_").append(weapon).append("\", \"y\": ").append(rot).append(" }");
             }
         }
         variants.append("\n    ]\n  }\n}\n");

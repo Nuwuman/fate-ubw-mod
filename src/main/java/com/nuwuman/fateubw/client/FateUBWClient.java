@@ -18,6 +18,9 @@ public class FateUBWClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         PlayerAnimsClient.register();
+        // Las espadas clavadas vanilla son dibujos planos con píxeles transparentes
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(FateUBW.UBW_SWORD,
+                net.minecraft.client.render.RenderLayer.getCutout());
         AbilityHud.register();
         com.nuwuman.fateubw.grail.HolyGrailItem.openWishScreen =
                 () -> net.minecraft.client.MinecraftClient.getInstance().setScreen(new GrailWishScreen());
