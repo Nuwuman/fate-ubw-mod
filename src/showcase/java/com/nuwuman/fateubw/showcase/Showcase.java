@@ -136,6 +136,7 @@ public class Showcase implements ClientModInitializer {
             case "armors" -> armors(client, p, st);
             case "caster" -> caster(client, p, st);
             case "ishtar" -> ishtar(client, p, st);
+            case "falchions" -> falchions(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
             default -> true;
@@ -721,6 +722,26 @@ public class Showcase implements ClientModInitializer {
                 shot(c, "caster_07_spatial_transfer");
             }
             case 130 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Kanshō y Bakuya de cerca: en las manos y en la barra
+    private boolean falchions(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:kanshou", "weapon.offhand with fate_ubw:bakuya",
+                    "hotbar.1 with fate_ubw:bakuya"}, new String[]{});
+            case 30 -> shot(c, "falchions_01_firstperson");
+            case 32 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 45 -> shot(c, "falchions_02_front");
+            case 47 -> yaw = 60.0F;
+            case 57 -> shot(c, "falchions_03_angle");
+            case 60 -> {
+                yaw = 0.0F;
                 return true;
             }
             default -> {

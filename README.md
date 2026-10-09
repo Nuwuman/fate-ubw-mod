@@ -33,7 +33,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 ![Saber](docs/saber.png)
 
 **Archer (EMIYA)**
-- **Kanshō y Bakuya**: click derecho los lanza y vuelven a la mano. Con uno en cada mano salen los dos y se cruzan.
+- **Kanshō y Bakuya**: sables chinos anchos con caparazón de tortuga, negro y rojo uno y blanco el otro, con un punto del color de la pareja en la guarda (yin y yang). Click derecho los lanza y vuelven a la mano. Con uno en cada mano salen los dos y se cruzan.
   Agachado + click derecho: **Rho Aias**, escudo de siete pétalos que destruye proyectiles.
 - **Arco de Archer**: dispara espadas proyectadas sin gastar flechas. Agachado y tensado a tope: **Caladbolg II**,
   que explota al impactar (Broken Phantasm).

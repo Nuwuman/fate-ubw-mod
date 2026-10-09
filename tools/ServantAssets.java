@@ -87,11 +87,12 @@ public class ServantAssets {
         return (x, y, w, h, s) -> shade(mul(c, 1.18 - 0.36 * y / Math.max(1, h - 1)), x, y, w, h, s, 0.04);
     }
 
-    // Patrón de rombos (caparazón de tortuga de Kanshō y Bakuya)
-    static Paint lattice(int base, int line) {
+    // Caparazón de tortuga: celdas hexagonales (filas desplazadas, como un panal) de Kanshō y Bakuya
+    static Paint hexes(int base, int line) {
         return (x, y, w, h, s) -> {
-            boolean l = Math.floorMod(x + y, 4) == 0 || Math.floorMod(x - y, 4) == 0;
-            return shade(l ? line : base, x, y, w, h, s, 0.05);
+            int row = Math.floorMod(y, 6) / 3, cy = Math.floorMod(y, 3), cx = Math.floorMod(x + row * 2, 4);
+            boolean l = cy == 0 || cx == 0;
+            return shade(l ? line : mul(base, 1.0 + 0.08 * (row == 0 ? 1 : -1)), x, y, w, h, s, 0.04);
         };
     }
 
@@ -170,10 +171,10 @@ public class ServantAssets {
     }
 
     // ---------- paletas ----------
-    static final Paint KAN_BLADE = lattice(0x1c1c24, 0x7a1a1a), KAN_EDGE = metal(0x8f95a3),
-            KAN_GRIP = wrap(0x5a1414, 0x2e0909), KAN_METAL = metal(0x8c6d1f);
-    static final Paint BAK_BLADE = lattice(0xe6e7ec, 0x8597ad), BAK_EDGE = metal(0xf3f5f9),
-            BAK_GRIP = wrap(0xd5d6dc, 0x8e8f99), BAK_METAL = metal(0xb5bac4);
+    static final Paint KAN_BLADE = hexes(0x17171d, 0x9e1d1d), KAN_EDGE = metal(0x9aa0ad),
+            KAN_GRIP = wrap(0x5a1414, 0x2e0909), KAN_METAL = metal(0x8c6d1f), KAN_PIP = solid(0xeeeef2);
+    static final Paint BAK_BLADE = hexes(0xe9eaef, 0x5f6f86), BAK_EDGE = metal(0xf5f7fb),
+            BAK_GRIP = wrap(0xd5d6dc, 0x8e8f99), BAK_METAL = metal(0xb5bac4), BAK_PIP = solid(0x17171d);
     static final Paint BOW_BODY = solid(0x17171d), BOW_TRIM = metal(0x6c707b), BOW_GRIP = wrap(0x2b2b33, 0x15151a),
             STRING = solid(0xdedede);
     static final Paint ARROW_SHAFT = solid(0x26262e), ARROW_FIN = solid(0x101015), STEEL = metal(0xc6cbd5);
@@ -1044,18 +1045,24 @@ public class ServantAssets {
     }
 
     // ---------- piezas ----------
-    // Kanshō / Bakuya: sables chinos de un solo filo. Empuñadura centrada en y≈2.6
-    static Model falchion(Paint blade, Paint edge, Paint grip, Paint metal) {
+    // Kanshō / Bakuya: sables chinos de un solo filo, hoja ancha con caparazón de tortuga (hexágonos) que se curva
+    // hacia la punta, recortada en diagonal, con el gancho del lomo junto a la guarda. Guarda redonda con un punto del
+    // color de la pareja (yin y yang). Empuñadura centrada en y≈2.6
+    static Model falchion(Paint blade, Paint edge, Paint grip, Paint metal, Paint pip) {
         Model m = new Model();
-        m.box(7.25, -0.5, 7.25, 8.75, 0.75, 8.75, metal);      // pomo
-        m.box(7.5, 0.75, 7.5, 8.5, 4.5, 8.5, grip);             // empuñadura
-        m.box(6.75, 4.5, 7.0, 9.75, 5.5, 9.0, metal);           // guarda
-        m.box(7.0, 5.5, 7.6, 9.25, 13.5, 8.4, blade);           // hoja
-        m.box(9.25, 5.5, 7.75, 9.75, 13.5, 8.25, edge);         // filo
-        m.box(7.25, 13.5, 7.6, 9.75, 17.5, 8.4, blade);         // hoja ensanchada
-        m.box(9.75, 13.5, 7.75, 10.25, 17.5, 8.25, edge);
-        m.box(8.0, 17.5, 7.65, 10.25, 19.0, 8.35, blade);       // punta
-        m.box(9.0, 19.0, 7.7, 10.25, 20.0, 8.3, edge);
+        m.box(7.2, -0.6, 7.2, 8.8, 0.7, 8.8, metal);            // pomo
+        m.box(7.5, 0.7, 7.5, 8.5, 4.4, 8.5, grip);              // empuñadura
+        m.box(6.3, 4.3, 7.25, 9.7, 6.1, 8.75, metal);           // guarda redonda
+        m.box(7.6, 4.8, 7.1, 8.4, 5.6, 8.9, pip);               // punto de la pareja
+        m.box(6.9, 6.1, 7.6, 9.3, 10.6, 8.4, blade);            // hoja
+        m.box(9.3, 6.1, 7.75, 9.8, 10.6, 8.25, edge);           // filo
+        m.box(6.6, 6.1, 7.55, 7.0, 13.6, 8.45, metal);          // lomo
+        m.box(5.9, 6.4, 7.65, 6.7, 7.8, 8.35, metal);           // gancho del lomo
+        m.box(6.9, 10.6, 7.6, 10.0, 14.2, 8.4, blade);          // la hoja se ensancha
+        m.box(10.0, 10.6, 7.75, 10.5, 14.2, 8.25, edge);
+        m.box(7.4, 13.6, 7.62, 10.4, 17.2, 8.38, blade).rot("z", 22.5, 7.4, 13.6, 8);   // se curva hacia la punta
+        m.box(10.4, 13.6, 7.77, 10.9, 17.2, 8.23, edge).rot("z", 22.5, 7.4, 13.6, 8);
+        m.box(6.6, 16.0, 7.65, 9.2, 18.4, 8.35, blade).rot("z", -45, 6.6, 16.0, 8);     // punta recortada
         return m;
     }
 
@@ -1850,8 +1857,8 @@ public class ServantAssets {
         itemModel(root, "saber_leggings", bonesToModel(saber, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "saber_boots", bonesToModel(saber, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
-        itemModel(root, "kanshou", falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL), handheld(0.9), null);
-        itemModel(root, "bakuya", falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL), handheld(0.9), null);
+        itemModel(root, "kanshou", falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL, KAN_PIP), handheld(0.9), null);
+        itemModel(root, "bakuya", falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL, BAK_PIP), handheld(0.9), null);
         itemModel(root, "sword_arrow", swordArrow(-0.5), handheld(0.9), null);
         itemModel(root, "caladbolg", caladbolg(-0.5), handheld(0.7), null);
 
@@ -1977,8 +1984,8 @@ public class ServantAssets {
         itemModel(root, "berserker_boots", bonesToModel(berserker, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
         // Espadas clavadas: cada modelo del mod, boca abajo y enterrado; el blockstate elige uno y un giro al azar
         Map<String, Model> graves = new LinkedHashMap<>();
-        graves.put("kanshou", buried(falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL), 20, 5));
-        graves.put("bakuya", buried(falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL), 20, 5));
+        graves.put("kanshou", buried(falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL, KAN_PIP), 20, 5));
+        graves.put("bakuya", buried(falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL, BAK_PIP), 20, 5));
         graves.put("arrow", buried(swordArrow(-0.5), 16, 4));
         graves.put("caladbolg", buried(caladbolg(-0.5), 24.3, 6));
         graves.put("excalibur", buried(excalibur(0), 24.5, 6));
