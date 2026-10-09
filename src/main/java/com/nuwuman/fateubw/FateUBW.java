@@ -366,6 +366,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(AssassinArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(BerserkerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(IshtarArmorItem::allowDamage);
+        IshtarArmorItem.register();
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         Rules.register();

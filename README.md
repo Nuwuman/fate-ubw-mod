@@ -124,7 +124,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   de corona y espinillera en la pierna derecha y tobillera en la izquierda (lo que va al aire deja ver tu skin). La
   **tiara** (opcional) es su corona dorada con picos. Conjunto completo: Velocidad I y sin daño por caída. Habilidades: **Ráfaga de Joyas** (cinco
   joyas en abanico que estallan), **Manifestación de la Belleza** (los que tienes cerca quedan débiles y lentos y dejan
-  de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s).
+  de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s; se puede usar dos veces seguidas, con 4 s para el segundo salto, antes de la recarga).
 
 ![Caster, Assassin y Berserker](docs/new_servants.png)
 

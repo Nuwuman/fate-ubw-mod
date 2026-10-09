@@ -792,7 +792,15 @@ public class Showcase implements ClientModInitializer {
                 pitch = -20.0F;
                 ability(2);
             }
-            case 282 -> shot(c, "ishtar_11_sky_boat");
+            case 280 -> {
+                shot(c, "ishtar_11_sky_boat");
+                log("barca, recarga tras el primer salto: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.SKY_BOAT));
+            }
+            case 284 -> ability(2);
+            case 292 -> {
+                shot(c, "ishtar_12_sky_boat_second");
+                log("barca, recarga tras el segundo salto: " + p.getItemCooldownManager().isCoolingDown(com.nuwuman.fateubw.FateUBW.SKY_BOAT));
+            }
             case 300 -> {
                 pitch = 0.0F;
                 return true;

@@ -3,6 +3,7 @@ package com.nuwuman.fateubw.ishtar;
 import com.nuwuman.fateubw.FateUBW;
 import com.nuwuman.fateubw.ServantArmorItem;
 import com.nuwuman.fateubw.master.RinJewelEntity;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -28,7 +29,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Ishtar, la diosa de Venus (en el cuerpo de Rin Tohsaka). Conjunto completo: Velocidad I y, como vuela con Maanna,
@@ -102,9 +106,28 @@ public class IshtarArmorItem extends ServantArmorItem {
         return true;
     }
 
-    /** Barca del Cielo: Maanna la lanza hacia donde mira y la deja planear. */
+    /** Quien ya ha dado el primer salto de la Barca del Cielo, y cuándo (tick del servidor). */
+    private static final Map<UUID, Integer> FIRST_JUMP = new HashMap<>();
+    private static final int SECOND_JUMP_WINDOW = 20 * 4;
+
+    // Si no da el segundo salto a tiempo, la recarga empieza igualmente
+    public static void register() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> FIRST_JUMP.entrySet().removeIf(e -> {
+            if (server.getTicks() - e.getValue() < SECOND_JUMP_WINDOW) return false;
+            ServerPlayerEntity player = server.getPlayerManager().getPlayer(e.getKey());
+            if (player != null) {
+                com.nuwuman.fateubw.Rules.cooldown(player, FateUBW.SKY_BOAT, SKY_BOAT_COOLDOWN);
+                com.nuwuman.fateubw.ability.Mana.spend(player, FateUBW.SKY_BOAT);
+            }
+            return true;
+        }));
+    }
+
+    /** Barca del Cielo: Maanna la lanza hacia donde mira y la deja planear. Dos saltos seguidos antes de la recarga. */
     public static boolean skyBoat(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
+        boolean second = FIRST_JUMP.remove(player.getUuid()) != null;
+        if (!second) FIRST_JUMP.put(player.getUuid(), world.getServer().getTicks());
         Vec3d dir = player.getRotationVec(1.0F);
         player.setVelocity(dir.x * 1.8, Math.max(0.6, dir.y * 1.8 + 0.4), dir.z * 1.8);
         player.velocityModified = true;
@@ -112,8 +135,9 @@ public class IshtarArmorItem extends ServantArmorItem {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 20 * 5, 0, true, false));
         world.spawnParticles(GOLD, player.getX(), player.getY() + 0.2, player.getZ(), 30, 0.6, 0.2, 0.6, 0.0);
         world.spawnParticles(ParticleTypes.END_ROD, player.getX(), player.getY() + 0.2, player.getZ(), 12, 0.5, 0.1, 0.5, 0.05);
-        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BREEZE_JUMP, SoundCategory.PLAYERS, 1.2F, 1.1F);
-        return true;
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BREEZE_JUMP, SoundCategory.PLAYERS, 1.2F, second ? 1.3F : 1.1F);
+        // Solo el segundo salto empieza la recarga (y gasta el maná)
+        return second;
     }
 
     @Override
