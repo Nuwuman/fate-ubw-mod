@@ -1,0 +1,81 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "enuma_elish_charge": {
+      "animation_length": 3.0,
+      "loop": "hold_on_last_frame",
+      "bones": {
+        "rightArm": {
+          "rotation": {
+            "0.0": [
+              -90,
+              0,
+              0
+            ],
+            "3.0": [
+              -170,
+              0,
+              5
+            ]
+          }
+        },
+        "leftArm": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              10,
+              0,
+              -25
+            ]
+          }
+        },
+        "torso": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "3.0": [
+              -8,
+              0,
+              0
+            ]
+          }
+        },
+        "rightLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              0,
+              0,
+              6
+            ]
+          }
+        },
+        "leftLeg": {
+          "rotation": {
+            "0.0": [
+              0,
+              0,
+              0
+            ],
+            "1.0": [
+              0,
+              0,
+              -6
+            ]
+          }
+        }
+      }
+    }
+  }
+}

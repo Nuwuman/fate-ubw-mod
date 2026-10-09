@@ -136,7 +136,7 @@ public class EaItem extends SwordItem implements GeoItem {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
         if (charge < ExcaliburItem.FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
         com.nuwuman.fateubw.Rules.commit(player, FateUBW.ENUMA_ELISH_NP, COOLDOWN);
-        com.nuwuman.fateubw.PlayerAnims.play(player, "excalibur_swing");
+        com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish");
         if (!(world instanceof ServerWorld server)) return;
 
         EnumaElishEntity.fire(server, player);

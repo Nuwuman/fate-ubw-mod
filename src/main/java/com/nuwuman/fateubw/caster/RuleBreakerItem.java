@@ -71,6 +71,7 @@ public class RuleBreakerItem extends SwordItem implements GeoItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.RULE_BREAKER_NP, COOLDOWN, "rule_breaker")) return TypedActionResult.fail(stack);
+        com.nuwuman.fateubw.PlayerAnims.play(user, "rule_breaker");
         if (!(world instanceof ServerWorld server)) return TypedActionResult.success(stack, true);
         LivingEntity target = GaeBolgItem.findTarget(server, user, REACH, 0.8);
         if (target == null || !com.nuwuman.fateubw.Rules.canAffect(user, target)) {

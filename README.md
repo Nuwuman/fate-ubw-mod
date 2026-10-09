@@ -152,8 +152,13 @@ Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene 
 Con [Player Animator](https://modrinth.com/mod/playeranimator) (va incluido en el jar), los demás jugadores y tú en
 tercera persona veis cómo se mueve todo el cuerpo:
 
-- **Excalibur y Ea**: alzas la espada a dos manos mientras cargas, con las piernas abiertas, y al soltar descargas el
+- **Excalibur**: alzas la espada a dos manos mientras cargas, con las piernas abiertas, y al soltar descargas el
   golpe de arriba abajo.
+- **Ea**: la levantas con una mano hacia el cielo, la otra abierta a un lado, y al soltar Enuma Elish la bajas
+  apuntando al frente.
+- **Gáe Bolg**: estocada a fondo al atravesar; al lanzarla (agachado), la echas atrás por encima de la cabeza y la arrojas.
+- **Rule Breaker**: puñalada de arriba abajo.
+- **Rho Aias**: la mano abierta al frente sosteniendo el escudo.
 - **Monohoshizao**: guardia baja con el cuerpo girado mientras concentras, y los tres cortes de Tsubame Gaeshi.
 - **Kanshō y Bakuya**: el brazo que lanza (o los dos, si lanzas la pareja) con giro del torso.
 

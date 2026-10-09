@@ -41,6 +41,7 @@ public class FalchionItem extends SwordItem {
         // Agachado: Rho Aias
         if (user.isSneaking()) {
             if (!com.nuwuman.fateubw.Rules.ready(user, FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN, "rho_aias")) return TypedActionResult.fail(stack);
+            com.nuwuman.fateubw.PlayerAnims.play(user, "rho_aias");
             if (world instanceof ServerWorld server) RhoAiasEntity.deploy(server, user);
             com.nuwuman.fateubw.Voices.say(world, user, "rho_aias");
             com.nuwuman.fateubw.Rules.commit(user, FateUBW.RHO_AIAS, RHO_AIAS_COOLDOWN);

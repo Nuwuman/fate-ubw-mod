@@ -58,7 +58,8 @@ public final class PlayerAnimsClient {
     private static String pose(AbstractClientPlayerEntity player) {
         if (!player.isUsingItem()) return null;
         ItemStack stack = player.getActiveItem();
-        if (stack.isOf(FateUBW.EXCALIBUR) || stack.isOf(FateUBW.EA)) return "excalibur_charge";
+        if (stack.isOf(FateUBW.EXCALIBUR)) return "excalibur_charge";
+        if (stack.isOf(FateUBW.EA)) return "enuma_elish_charge";
         if (stack.isOf(FateUBW.MONOHOSHIZAO)) return "tsubame_stance";
         return null;
     }
