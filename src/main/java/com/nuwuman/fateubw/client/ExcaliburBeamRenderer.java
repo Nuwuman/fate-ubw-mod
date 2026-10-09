@@ -35,7 +35,9 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         if (len <= 0.0F || fade <= 0.0F) return;
 
         float grow = Math.min(1.0F, age / ExcaliburBeamEntity.GROW_TICKS);
-        float w = entity.radius() * grow * (1.0F + 0.08F * MathHelper.sin(age * 1.7F));
+        // Al apagarse se estrecha además de desvanecerse
+        float w = entity.radius() * grow * (1.0F + 0.08F * MathHelper.sin(age * 1.7F)) * (0.35F + 0.65F * fade);
+        NpCamera.impact(entity, 0xFFF4C8, 1.0F);
 
         matrices.push();
         // Alinear +Y con la dirección de la mirada al disparar
@@ -55,6 +57,17 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
             float ringW = w * (1.15F + 0.25F * (at / len));
             ring(vc, m, at, ringW, ringW * 1.25F, 255, 230, 150, (int) (140 * fade * (1 - at / len)));
         }
+        // Estelas doradas que corren hacia la punta
+        BeamFx.streaks(vc, m, len, w, age, 18, entity.getId(), 255, 245, 200, (int) (190 * fade));
+        // Estallido de rayos de luz en la espada y una onda que se abre al disparar
+        float pulse = 1.0F + 0.15F * MathHelper.sin(age * 2.3F);
+        BeamFx.rays(vc, m, 0.4F, w * 0.35F, w * 3.2F * pulse, 14, age * 0.05F, 255, 240, 170, (int) (210 * fade));
+        if (age < 12) {
+            float wave = 1.5F + age * 1.8F;
+            ring(vc, m, 0.5F, wave * 0.7F, wave, 255, 250, 210, (int) (230 * (1.0F - age / 12.0F)));
+        }
+        // Destello en la punta
+        BeamFx.rays(vc, m, len, w * 0.3F, w * 2.0F * pulse, 10, -age * 0.07F, 255, 225, 140, (int) (170 * fade));
         matrices.pop();
     }
 

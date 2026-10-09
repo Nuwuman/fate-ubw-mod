@@ -3,8 +3,13 @@ package com.nuwuman.fateubw.client;
 import com.nuwuman.fateubw.PlayerAnims;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Al lanzar un Noble Phantasm, la cámara pasa a tercera persona detrás del jugador, a la derecha y desde arriba, para
@@ -96,8 +101,55 @@ public final class NpCamera {
         return FOV_PUNCH * (t < 3 ? t / 3 : MathHelper.clamp(1.0F - (t - 3) / 15, 0.0F, 1.0F));
     }
 
+    // ---------- Impacto de un Noble Phantasm cercano: destello de pantalla y sacudida, para quien esté cerca ----------
+    private static final Set<Integer> IMPACTED = new HashSet<>();
+    private static final float IMPACT_RANGE = 80.0F;
+    private static long impactStart = -1;
+    private static float impactPower;
+    private static int flashColor;
+
+    /** Lo llama el renderer de un haz en sus primeros ticks; cada haz cuenta una vez. Más fuerte cuanto más cerca. */
+    public static void impact(Entity source, int rgb, float power) {
+        if (source.age > 2 || IMPACTED.contains(source.getId())) return;
+        if (IMPACTED.size() > 64) IMPACTED.clear();
+        IMPACTED.add(source.getId());
+        double distance = MinecraftClient.getInstance().gameRenderer.getCamera().getPos().distanceTo(source.getPos());
+        float strength = MathHelper.clamp(1.0F - (float) distance / IMPACT_RANGE, 0.0F, 1.0F) * power;
+        if (strength < 0.05F) return;
+        impactStart = ticks;
+        impactPower = Math.min(1.2F, strength);
+        flashColor = rgb;
+    }
+
+    private static float sinceImpact() {
+        return ticks - impactStart + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+    }
+
+    private static float impactShake(float frequency) {
+        if (impactStart < 0) return 0.0F;
+        float t = sinceImpact(), decay = MathHelper.clamp(1.0F - t / 16.0F, 0.0F, 1.0F);
+        return impactPower * decay * decay * MathHelper.sin(t * frequency);
+    }
+
+    public static float impactYaw() {
+        return 2.2F * impactShake(3.1F);
+    }
+
+    public static float impactPitch() {
+        return 1.6F * impactShake(4.3F);
+    }
+
+    /** Destello del color del haz que se apaga en poco más de medio segundo. */
+    public static void drawFlash(DrawContext context) {
+        if (impactStart < 0) return;
+        float alpha = impactPower * 0.45F * MathHelper.clamp(1.0F - sinceImpact() / 12.0F, 0.0F, 1.0F);
+        if (alpha <= 0.0F) return;
+        context.fill(0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight(),
+                ((int) (alpha * 255) << 24) | flashColor);
+    }
+
     /** Bandas negras de cine arriba y abajo, que entran y salen con el plano. */
-    public static void drawBars(net.minecraft.client.gui.DrawContext context) {
+    public static void drawBars(DrawContext context) {
         float k = ease();
         if (k <= 0.0F) return;
         int w = context.getScaledWindowWidth(), h = context.getScaledWindowHeight(), bar = Math.round(h * BARS * k);

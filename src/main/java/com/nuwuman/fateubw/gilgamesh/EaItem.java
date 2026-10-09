@@ -143,10 +143,17 @@ public class EaItem extends SwordItem implements GeoItem {
         boolean severance = com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack,
                 com.nuwuman.fateubw.enchant.FateEnchantments.WORLD_SEVERANCE) > 0;
         net.minecraft.util.Hand hand = player.getActiveHand();
+        for (int i = 0; i < com.nuwuman.fateubw.PlayerAnims.WINDUP; i++) {
+            float progress = i / (float) com.nuwuman.fateubw.PlayerAnims.WINDUP;
+            com.nuwuman.fateubw.enchant.FateEnchantments.later(i, () -> {
+                if (player.isAlive()) com.nuwuman.fateubw.NpFx.redWhirlwind(server, player, progress);
+            });
+        }
         com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
             if (!player.isAlive()) return;
             com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "enuma_elish");
             EnumaElishEntity.fire(server, player, severance);
+            com.nuwuman.fateubw.NpFx.launchBlast(server, player, false);
             com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
             player.swingHand(hand, true);
             world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.2F, 1.4F);

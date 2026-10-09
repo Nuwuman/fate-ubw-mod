@@ -205,10 +205,17 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
         com.nuwuman.fateubw.PlayerAnims.cinematic(player);
         if (!(world instanceof ServerWorld server) || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
         Hand hand = player.getActiveHand();
+        for (int i = 0; i < com.nuwuman.fateubw.PlayerAnims.WINDUP; i++) {
+            float progress = i / (float) com.nuwuman.fateubw.PlayerAnims.WINDUP;
+            FateEnchantments.later(i, () -> {
+                if (player.isAlive()) com.nuwuman.fateubw.NpFx.lightPillar(server, player, progress);
+            });
+        }
         FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
             if (!player.isAlive()) return;
             com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "excalibur_swing");
             ExcaliburBeamEntity.fire(server, player);
+            com.nuwuman.fateubw.NpFx.launchBlast(server, player, true);
             Voices.say(world, player, "excalibur");
             player.swingHand(hand, true);
             world.playSound(null, player.getX(), player.getY(), player.getZ(),

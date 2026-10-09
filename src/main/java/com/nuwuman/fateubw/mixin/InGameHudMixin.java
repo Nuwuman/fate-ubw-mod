@@ -16,6 +16,7 @@ public abstract class InGameHudMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void fateubw$cinemaBars(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         com.nuwuman.fateubw.client.NpCamera.drawBars(context);
+        com.nuwuman.fateubw.client.NpCamera.drawFlash(context);
     }
 
     @Inject(method = "render", at = @At("TAIL"))

@@ -28,10 +28,13 @@ public abstract class CameraMixin {
     // Girar la vista a la izquierda y bajarla antes de retroceder deja la cámara detrás, a la derecha y en alto
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;setRotation(FF)V", ordinal = 0, shift = At.Shift.AFTER))
     private void fateubw$npOrbit(CallbackInfo ci) {
+        float yaw = NpCamera.impactYaw(), pitch = NpCamera.impactPitch();
         if (thirdPerson && NpCamera.active()) {
-            setRotation(getYaw() - NpCamera.orbit() + NpCamera.shakeYaw(),
-                    MathHelper.clamp(getPitch() + NpCamera.tilt() + NpCamera.shakePitch(), -90.0F, 90.0F));
+            yaw += -NpCamera.orbit() + NpCamera.shakeYaw();
+            pitch += NpCamera.tilt() + NpCamera.shakePitch();
         }
+        // La sacudida de un Noble Phantasm cercano se nota también en primera persona
+        if (yaw != 0.0F || pitch != 0.0F) setRotation(getYaw() + yaw, MathHelper.clamp(getPitch() + pitch, -90.0F, 90.0F));
     }
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;clipToSpace(F)F"))

@@ -41,6 +41,14 @@ public class EnumaElishEntity extends ExcaliburBeamEntity {
         builder.add(SEVERANCE, false);
     }
 
+    // Las explosiones que recorren el vórtice: humo, fuego y polvo rojo
+    @Override
+    protected void burst(ServerWorld world, Vec3d at, double spread) {
+        world.spawnParticles(net.minecraft.particle.ParticleTypes.EXPLOSION, at.x, at.y, at.z, 2, spread, spread, spread, 0.0);
+        world.spawnParticles(net.minecraft.particle.ParticleTypes.LARGE_SMOKE, at.x, at.y, at.z, 6, spread, spread, spread, 0.08);
+        world.spawnParticles(net.minecraft.particle.ParticleTypes.CRIMSON_SPORE, at.x, at.y, at.z, 15, spread, spread, spread, 0.2);
+    }
+
     // Uno de cada tres bloques sale despedido como bloque que cae; el resto se rompe
     @Override
     protected void breakCarved(ServerWorld world, BlockPos pos, BlockState state) {

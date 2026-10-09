@@ -139,6 +139,7 @@ public class Showcase implements ClientModInitializer {
             case "falchions" -> falchions(client, p, st);
             case "enchants" -> enchants(client, p, st);
             case "clash" -> clash(client, p, st);
+            case "npfx" -> npFx(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
             default -> true;
@@ -886,6 +887,43 @@ public class Showcase implements ClientModInitializer {
     }
 
     private boolean enemySent;
+    private int frozenAt = -1;
+
+    // Excalibur y Enuma Elish de principio a fin: preparación, disparo y haz, con capturas cada 3 ticks
+    private boolean npFx(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{"hotbar.0 with fate_ubw:excalibur", "hotbar.1 with fate_ubw:ea"}, new String[]{});
+                p.networkHandler.sendChatCommand("fill ~-8 ~ ~-3 ~8 ~10 ~40 air");
+                p.networkHandler.sendChatCommand("fill ~-8 ~-1 ~-3 ~8 ~-1 ~40 grass_block");
+            }
+            case 20, 160 -> use(c, p);
+            case 85, 225 -> {
+                if (waitCharge(c, p, 62)) return false;
+                holdUse = false;
+            }
+            case 150 -> p.getInventory().selectedSlot = 1;
+            case 320 -> {
+                return true;
+            }
+            default -> {
+                // Con el haz ya entero se congela el tiempo para fotografiarlo quieto
+                // Las entidades del cliente: leer las del servidor desde este hilo puede chocar con su tick
+                boolean beam = !c.world.getEntitiesByClass(com.nuwuman.fateubw.saber.ExcaliburBeamEntity.class,
+                        p.getBoundingBox().expand(80), e -> e.age >= 10).isEmpty();
+                if (frozenAt < 0 && beam) {
+                    p.networkHandler.sendChatCommand("tick freeze");
+                    frozenAt = t;
+                }
+                if (frozenAt >= 0 && t == frozenAt + 10) shot(c, "npfx_" + (t < 200 ? "ex" : "ea") + "_frozen");
+                if (frozenAt >= 0 && t == frozenAt + 14) {
+                    p.networkHandler.sendChatCommand("tick unfreeze");
+                }
+                if (frozenAt >= 0 && t > frozenAt + 14 && !beam) frozenAt = -1;
+            }
+        }
+        return false;
+    }
 
     // Kanshō y Bakuya de cerca: en las manos y en la barra
     private boolean falchions(MinecraftClient c, ClientPlayerEntity p, int t) {

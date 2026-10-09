@@ -48,6 +48,7 @@ public class ExcaliburBeamEntity extends Entity {
     // Choque de Noble Phantasms: el largo al que se frena (sincronizado con el cliente; -1 = sin choque)
     private static final TrackedData<Float> CLASH = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final int CLASH_TICKS = 14;
+    private static final int ERUPTION_TICKS = 10;
     @Nullable
     private ExcaliburBeamEntity rival;
     private Vec3d clashPoint = Vec3d.ZERO;
@@ -117,6 +118,12 @@ public class ExcaliburBeamEntity extends Entity {
             if (age <= DAMAGE_TICKS + bonusDamageTicks) sweep(world);
             if (age > LIFETIME + bonusDamageTicks) discard();
         }
+    }
+
+    /** Estallido a lo largo del haz: luz dorada en Excalibur; los demás lo cambian (Enuma Elish, explosiones). */
+    protected void burst(ServerWorld world, Vec3d at, double spread) {
+        world.spawnParticles(ParticleTypes.FLASH, at.x, at.y, at.z, 1, 0.0, 0.0, 0.0, 0.0);
+        world.spawnParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 12, spread, spread, spread, 0.25);
     }
 
     // Busca el haz de otro jugador que se cruce con este
@@ -212,6 +219,16 @@ public class ExcaliburBeamEntity extends Entity {
         if (age <= GROW_TICKS) {
             world.spawnParticles(ParticleTypes.FLASH, end.x, end.y, end.z, 1, 0.0, 0.0, 0.0, 0.0);
             world.spawnParticles(ParticleTypes.END_ROD, end.x, end.y, end.z, 15, 1.0, 1.0, 1.0, 0.15);
+            burst(world, end, 1.0);
+        } else if (age <= GROW_TICKS + ERUPTION_TICKS && rival == null) {
+            // Ya entero, una cadena de explosiones corre de la base a la punta
+            double at = len * (age - GROW_TICKS) / (double) ERUPTION_TICKS;
+            Vec3d p = start.add(dir.multiply(at));
+            burst(world, p, radius() * 0.5);
+            if ((age - GROW_TICKS) % 3 == 0) {
+                world.playSound(null, p.x, p.y, p.z, net.minecraft.sound.SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
+                        net.minecraft.sound.SoundCategory.PLAYERS, 1.2F, 0.8F + world.random.nextFloat() * 0.3F);
+            }
         }
         if (FateUBW.breaksBlocks(world, start)) carve(world, start, dir, len);
         affectNearby(world, start, end);

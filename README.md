@@ -21,8 +21,9 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 **Saber (Artoria)**
 - **Excalibur** (modelo de GeckoLib): mantén click derecho 3 s y suelta para lanzar el haz de luz (48 bloques, ignora
-  armadura): un torrente redondo con ondas y anillos de luz que deja una estela brillante (y el suelo ardiendo con
-  `fateAbilitiesBreakBlocks`). Mientras cargas, la hoja se vuelve dorada, brilla en la oscuridad con un halo que
+  armadura). Al soltar, una columna de luz sube de la espada al cielo; luego sale un torrente redondo con ondas, anillos y
+  estelas de luz, rayos que estallan en la espada y en la punta, una onda que barre el suelo y una cadena de destellos que
+  recorre el haz (y el suelo ardiendo con `fateAbilitiesBreakBlocks`). Mientras cargas, la hoja se vuelve dorada, brilla en la oscuridad con un halo que
   late, y la alzas con las dos manos. Agachado + click derecho: **Strike Air**, ráfaga de viento en cono.
   **Invisible Air**: un remolino de viento la oculta; al cargar el Noble Phantasm o liberar Strike Air el viento se
   abre y se deshace, y al terminar vuelve a envolverla. En el inventario se ve siempre la espada.
@@ -85,7 +86,9 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 **Gilgamesh**
 - **Ea** (modelo de GeckoLib): sus tres cilindros giran de verdad, más deprisa al cargar, y sus líneas rojas brillan en
   la oscuridad. Mantén click derecho y suelta para **Enuma Elish**, un vórtice en espiral de 64 bloques que arrastra hacia su eje
-  lo que pasa cerca y desgarra lo que toca (ignora armadura).
+  lo que pasa cerca y desgarra lo que toca (ignora armadura). Al soltar, un torbellino rojo arranca trozos del suelo; luego
+  el vórtice sale con seis cintas en espiral, rayos rojos que restallan, ondas que lo recorren y explosiones de la base a
+  la punta. Quien esté cerca de cualquiera de los dos ve un destello de su color y nota la sacudida.
 - **Armadura dorada** (coraza, grebas, escarpes) con escarcelas animadas. Conjunto completo: **Regla de Oro**
   (Suerte II y Resistencia I). Habilidades:
   - **Gate of Babylon**: ocho portales dorados detrás de ti que disparan una lluvia de armas del tesoro hacia lo que miras.
@@ -261,7 +264,7 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `glow`, `armors`, `grailwar`, o varios separados por
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `glow`, `armors`, `grailwar`, o varios separados por
   comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
   anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 
