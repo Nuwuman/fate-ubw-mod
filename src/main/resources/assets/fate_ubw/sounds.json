@@ -1,4 +1,5 @@
 {
+  "voice.an_gal_ta_kigal_she": { "sounds": [{ "name": "fate_ubw:voice/an_gal_ta_kigal_she" }], "subtitle": "subtitles.fate_ubw.voice" },
   "voice.avalon": { "sounds": [{ "name": "fate_ubw:voice/avalon" }], "subtitle": "subtitles.fate_ubw.voice" },
   "voice.bellerophon": { "sounds": [{ "name": "fate_ubw:voice/bellerophon" }], "subtitle": "subtitles.fate_ubw.voice" },
   "voice.caladbolg": { "sounds": [{ "name": "fate_ubw:voice/caladbolg" }], "subtitle": "subtitles.fate_ubw.voice" },

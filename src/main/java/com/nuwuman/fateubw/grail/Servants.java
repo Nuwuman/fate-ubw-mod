@@ -10,7 +10,7 @@ import net.minecraft.util.math.random.Random;
 
 import java.util.List;
 
-/** Los ocho servants: su equipo completo y el catalizador que los atrae en la invocación. */
+/** Los servants: su equipo completo y el catalizador que los atrae en la invocación. */
 public final class Servants {
     public record Servant(String id, Item catalyst, List<Item> armor, List<Item> weapons) {
         public void equip(PlayerEntity player) {
@@ -50,7 +50,10 @@ public final class Servants {
                             List.of(FateUBW.ASSASSIN_CHESTPLATE, FateUBW.ASSASSIN_LEGGINGS, FateUBW.ASSASSIN_BOOTS), List.of(FateUBW.MONOHOSHIZAO)),
                     new Servant("berserker", Items.LEATHER,
                             List.of(FateUBW.BERSERKER_CHESTPLATE, FateUBW.BERSERKER_LEGGINGS, FateUBW.BERSERKER_BOOTS),
-                            List.of(FateUBW.BERSERKER_AXE_SWORD)));
+                            List.of(FateUBW.BERSERKER_AXE_SWORD)),
+                    new Servant("ishtar", Items.DIAMOND,
+                            List.of(FateUBW.ISHTAR_TIARA, FateUBW.ISHTAR_CHESTPLATE, FateUBW.ISHTAR_LEGGINGS, FateUBW.ISHTAR_BOOTS),
+                            List.of(FateUBW.MAANNA)));
         }
         return all;
     }

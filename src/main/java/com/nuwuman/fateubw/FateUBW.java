@@ -38,6 +38,9 @@ import com.nuwuman.fateubw.gilgamesh.EaItem;
 import com.nuwuman.fateubw.gilgamesh.EnumaElishEntity;
 import com.nuwuman.fateubw.gilgamesh.GateOfBabylonItem;
 import com.nuwuman.fateubw.gilgamesh.GilgameshArmorItem;
+import com.nuwuman.fateubw.ishtar.AnGalTaKigalSheEntity;
+import com.nuwuman.fateubw.ishtar.IshtarArmorItem;
+import com.nuwuman.fateubw.ishtar.MaannaItem;
 import com.nuwuman.fateubw.lancer.GaeBolgItem;
 import com.nuwuman.fateubw.lancer.GaeBolgSpearEntity;
 import com.nuwuman.fateubw.lancer.LancerArmorItem;
@@ -177,6 +180,15 @@ public class FateUBW implements ModInitializer {
     public static final Item BERSERKER_LEGGINGS = item("berserker_leggings", new BerserkerArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item BERSERKER_BOOTS = item("berserker_boots", new BerserkerArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Ishtar ----------
+    public static final RegistryEntry<ArmorMaterial> ISHTAR_MATERIAL = armorMaterial("ishtar");
+
+    public static final Item MAANNA = item("maanna", new MaannaItem(new Item.Settings().maxDamage(1200).rarity(Rarity.EPIC)));
+    public static final Item ISHTAR_TIARA = item("ishtar_tiara", new IshtarArmorItem(ArmorItem.Type.HELMET, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item ISHTAR_CHESTPLATE = item("ishtar_chestplate", new IshtarArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item ISHTAR_LEGGINGS = item("ishtar_leggings", new IshtarArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item ISHTAR_BOOTS = item("ishtar_boots", new IshtarArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
     // Sin pestaña: modelos que usan los proyectiles y claves de cooldown de las habilidades
     // (cada habilidad tiene la suya, así una no bloquea a las demás del mismo arma o conjunto)
     public static final Item CALADBOLG = item("caladbolg", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
@@ -206,6 +218,10 @@ public class FateUBW implements ModInitializer {
     // Hrunting: modelo del proyectil y clave de su recarga
     public static final Item HRUNTING = item("hrunting", new com.nuwuman.fateubw.archer.HruntingItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item BLOOD_FORT_ANDROMEDA = item("blood_fort_andromeda", new Item(new Item.Settings()));
+    public static final Item AN_GAL_TA_KIGAL_SHE_NP = item("an_gal_ta_kigal_she_np", new Item(new Item.Settings()));
+    public static final Item JEWEL_BURST = item("jewel_burst", new Item(new Item.Settings()));
+    public static final Item MANIFESTATION_OF_BEAUTY = item("manifestation_of_beauty", new Item(new Item.Settings()));
+    public static final Item SKY_BOAT = item("sky_boat", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);
@@ -221,6 +237,7 @@ public class FateUBW implements ModInitializer {
     public static final EntityType<HruntingEntity> HRUNTING_ENTITY = entity("hrunting", HruntingEntity::new, 1);
     public static final EntityType<RinJewelEntity> RIN_JEWEL_ENTITY = entity("rin_jewel", RinJewelEntity::new, 10);
     public static final EntityType<ZelzerizEntity> ZELZERIZ_ENTITY = entity("zelzeriz", ZelzerizEntity::new, 1);
+    public static final EntityType<AnGalTaKigalSheEntity> AN_GAL_TA_KIGAL_SHE = entity("an_gal_ta_kigal_she", AnGalTaKigalSheEntity::new, 20);
     public static final EntityType<PegasusEntity> PEGASUS = Registry.register(Registries.ENTITY_TYPE, id("pegasus"),
             EntityType.Builder.create(PegasusEntity::new, SpawnGroup.MISC)
                     .dimensions(1.4F, 1.6F)
@@ -234,6 +251,7 @@ public class FateUBW implements ModInitializer {
     public static final RegistryKey<DamageType> GAE_BOLG_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("gae_bolg"));
     public static final RegistryKey<DamageType> BELLEROPHON_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bellerophon"));
     public static final RegistryKey<DamageType> ENUMA_ELISH_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("enuma_elish"));
+    public static final RegistryKey<DamageType> AN_GAL_TA_KIGAL_SHE_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("an_gal_ta_kigal_she"));
 
     // /gamerule fateAbilitiesBreakBlocks true → Excalibur abre un túnel y Caladbolg explota como TNT
     public static final GameRules.Key<GameRules.BooleanRule> BREAK_BLOCKS = GameRuleRegistry.register(
@@ -288,6 +306,11 @@ public class FateUBW implements ModInitializer {
                 entries.add(BERSERKER_CHESTPLATE);
                 entries.add(BERSERKER_LEGGINGS);
                 entries.add(BERSERKER_BOOTS);
+                entries.add(MAANNA);
+                entries.add(ISHTAR_TIARA);
+                entries.add(ISHTAR_CHESTPLATE);
+                entries.add(ISHTAR_LEGGINGS);
+                entries.add(ISHTAR_BOOTS);
                 entries.add(SUMMONING_CIRCLE);
                 entries.add(HOLY_GRAIL);
                 entries.add(RIN_JEWEL);
@@ -342,6 +365,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(CasterArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(AssassinArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(BerserkerArmorItem::allowDamage);
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(IshtarArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         Rules.register();

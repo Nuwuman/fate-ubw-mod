@@ -1631,6 +1631,89 @@ public class ServantAssets {
         return List.of(head, body, capeBack, capeLeft, capeRight, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // Ishtar: corpiño negro con ribetes dorados y gema roja, mangas sueltas negras con brazaletes de oro, falda negra con
+    // bajo dorado, botas negras con tobilleras de oro. La tiara (opcional) pone las dos coletas negras, que se mecen
+    static final int ISH_BLACK = 0x1d1b24, ISH_GOLD = 0xdcae3e, ISH_RED = 0xc0182a, ISH_HAIR = 0x15131c;
+
+    static List<Bone> ishtarArmor() {
+        Paint black = fabric(ISH_BLACK), gold = plate(ISH_GOLD), hair = fabric(ISH_HAIR), gem = plate(ISH_RED);
+        Paint trimmed = marked(black, ISH_GOLD, (x, y, w, h) -> y < 1 || y >= h - 1);
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+        head.model.box(-4.4, 30.4, -4.6, 4.4, 31.2, 4.6, gold);                // tiara
+        head.model.box(-0.9, 30.6, -5.0, 0.9, 32.4, -4.5, gem);                // gema de la frente
+        head.model.box(-1.6, 31.2, -4.8, 1.6, 31.8, -4.5, gold);
+        head.model.box(-4.9, 26.0, -0.6, -4.3, 27.6, 0.6, gold);               // pendientes
+        head.model.box(4.3, 26.0, -0.6, 4.9, 27.6, 0.6, gold);
+        Bone tailRight = new Bone("tailRight", "armorHead", -5, 30.5, 1);
+        tailRight.model.box(-5.9, 29.6, 0.2, -4.3, 31.6, 1.8, gold);           // lazo dorado de la coleta
+        tailRight.model.box(-7.0, 17.0, 0.0, -4.8, 30.0, 2.2, hair);
+        tailRight.model.box(-6.6, 12.0, 0.3, -5.0, 17.0, 1.9, hair);
+        Bone tailLeft = tailRight.mirror("tailLeft", "armorHead");
+
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 12, -2, 4, 24, 2, trimmed).inflate(0.45).face("north", marked(trimmed, ISH_GOLD,
+                (x, y, w, h) -> Math.abs(x - (w - 1) / 2.0) + Math.abs(y - h * 0.35) < 2.5 && Math.abs(x - (w - 1) / 2.0) + Math.abs(y - h * 0.35) > 1.2));
+        body.model.box(-1.0, 19.6, -2.9, 1.0, 21.6, -2.5, gem);                // gema del pecho
+        body.model.box(-4.6, 11.4, -2.7, 4.6, 12.6, 2.7, gold);                // cinturón
+
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8.7, 12.0, -2.7, -3.3, 15.0, 2.7, edged(black, ISH_GOLD, 1));   // manga suelta acampanada
+        rightArm.model.box(-8.5, 15.0, -2.5, -3.5, 19.0, 2.5, black);
+        rightArm.model.box(-8, 19, -2, -4, 24, 2, black).inflate(0.45);        // tapa el brazo de la skin hasta el hombro
+        rightArm.model.box(-8.6, 20.2, -2.6, -3.4, 21.0, 2.6, gold);           // brazalete
+        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4.4, 6.0, -2.5, 0, 12, 2.5, marked(black, ISH_GOLD, (x, y, w, h) -> y >= h - 2));  // falda
+        rightLeg.model.box(-4, 0.4, -2, 0, 6, 2, black).inflate(0.3);          // medias
+        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 1.8, 2, plate(ISH_BLACK)).inflate(0.4);
+        rightBoot.model.box(-4.5, 2.2, -2.5, 0.5, 2.9, 2.5, gold);             // tobillera
+        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+
+        return List.of(head, tailRight, tailLeft, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // Maanna, la Barca del Cielo como arco: dorada, con alas que se abren hacia las puntas y una gema azul en el centro.
+    // Horizontal y con la flecha hacia +Y, como el arco de EMIYA
+    static final Paint MAANNA_GOLD = metal(0xe3b545), MAANNA_WHITE = metal(0xf2ead2), MAANNA_GEM = metal(0x3a7bd8),
+            MAANNA_STRING = solid(0xfff1b8), VENUS = metal(0xffd36a);
+
+    static Model maanna(double pull) {
+        Model m = new Model();
+        m.box(7, 8.6, 7.25, 9, 12, 8.75, MAANNA_WHITE);                        // empuñadura
+        m.box(6.6, 11.6, 7.1, 9.4, 12.6, 8.9, MAANNA_GOLD);
+        m.box(7.3, 12.6, 7.3, 8.7, 13.8, 8.7, MAANNA_GEM);                      // gema
+        m.box(9, 9.4, 7.4, 16, 10.8, 8.6, MAANNA_GOLD).rot("z", -22.5, 9, 10.1, 8);
+        m.box(9.5, 10.8, 7.7, 15.5, 11.4, 8.3, MAANNA_WHITE).rot("z", -22.5, 9, 10.1, 8);
+        m.box(15, 6.6, 7.5, 19.5, 8.0, 8.5, MAANNA_GOLD).rot("z", 22.5, 15.5, 7.3, 8);
+        m.box(0, 9.4, 7.4, 7, 10.8, 8.6, MAANNA_GOLD).rot("z", 22.5, 7, 10.1, 8);
+        m.box(0.5, 10.8, 7.7, 6.5, 11.4, 8.3, MAANNA_WHITE).rot("z", 22.5, 7, 10.1, 8);
+        m.box(-3.5, 6.6, 7.5, 1, 8.0, 8.5, MAANNA_GOLD).rot("z", -22.5, 0.5, 7.3, 8);
+        if (pull <= 0) {
+            m.box(-2.5, 8.45, 7.95, 18.5, 8.55, 8.05, MAANNA_STRING);
+        } else {
+            double dx = pull / Math.tan(Math.toRadians(22.5)), len = pull / Math.sin(Math.toRadians(22.5)), ny = 8.5 - pull;
+            if (8 - dx > -2.5) {
+                m.box(-2.5, 8.45, 7.95, 8 - dx, 8.55, 8.05, MAANNA_STRING);
+                m.box(8 + dx, 8.45, 7.95, 18.5, 8.55, 8.05, MAANNA_STRING);
+            }
+            m.box(8 - len, ny - 0.05, 7.95, 8, ny + 0.05, 8.05, MAANNA_STRING).rot("z", -22.5, 8, ny, 8);
+            m.box(8, ny - 0.05, 7.95, 8 + len, ny + 0.05, 8.05, MAANNA_STRING).rot("z", 22.5, 8, ny, 8);
+        }
+        return m;
+    }
+
+    // Flecha de luz de Ishtar: varilla dorada con una estrella roja en la punta, de base en y=b
+    static Model gemArrow(double b) {
+        Model m = new Model();
+        m.box(7.8, b, 7.8, 8.2, b + 13, 8.2, VENUS);
+        m.box(7.3, b + 13, 7.3, 8.7, b + 14.4, 8.7, metal(ISH_RED));
+        m.box(7.6, b + 14.4, 7.6, 8.4, b + 15.4, 8.4, VENUS);
+        return m;
+    }
+
     // Sasaki Kojirō: kimono azul, haori morado con forro claro (abierto, faldones animados), obi, coleta larga,
     // hakama con pliegues y tabi con zori
     static final int ASN_HAORI = 0x5a3d8a, ASN_LINING = 0xb9a6d9, ASN_KIMONO = 0x2d2f6b, ASN_HAKAMA = 0x1f2350;
@@ -1843,6 +1926,24 @@ public class ServantAssets {
                 "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "caster_leggings", bonesToModel(caster, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "caster_boots", bonesToModel(caster, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+
+        // ---------- Ishtar ----------
+        String maannaOverrides = "[\n"
+                + "    { \"predicate\": { \"pulling\": 1 }, \"model\": \"fate_ubw:item/maanna_pulling_0\" },\n"
+                + "    { \"predicate\": { \"pulling\": 1, \"pull\": 0.65 }, \"model\": \"fate_ubw:item/maanna_pulling_1\" },\n"
+                + "    { \"predicate\": { \"pulling\": 1, \"pull\": 0.9 }, \"model\": \"fate_ubw:item/maanna_pulling_2\" }\n"
+                + "  ]";
+        itemModel(root, "maanna", maanna(0), BOW_DISPLAY, maannaOverrides);
+        for (int i = 0; i < 3; i++) {
+            itemModel(root, "maanna_pulling_" + i, maanna(pulls[i]).add(gemArrow(8.5 - pulls[i])), BOW_DISPLAY, null);
+        }
+        List<Bone> ishtar = ishtarArmor();
+        armorModel(root, "ishtar_armor", ishtar);
+        itemModel(root, "ishtar_tiara", bonesToModel(ishtar, 8, -20, 8, "armorHead"), armorIcon(0.6), null);
+        itemModel(root, "ishtar_chestplate", bonesToModel(ishtar, 8, -4, 8, "armorBody", "armorRightArm", "armorLeftArm"),
+                armorIcon(0.5), null);
+        itemModel(root, "ishtar_leggings", bonesToModel(ishtar, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
+        itemModel(root, "ishtar_boots", bonesToModel(ishtar, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Assassin ----------
         itemModel(root, "monohoshizao", monohoshizao(), handheld(0.55, 0.6), null);

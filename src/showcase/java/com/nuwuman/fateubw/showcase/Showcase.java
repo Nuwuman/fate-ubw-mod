@@ -135,6 +135,7 @@ public class Showcase implements ClientModInitializer {
             case "glow" -> glow(client, p, st);
             case "armors" -> armors(client, p, st);
             case "caster" -> caster(client, p, st);
+            case "ishtar" -> ishtar(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
             default -> true;
@@ -720,6 +721,59 @@ public class Showcase implements ClientModInitializer {
                 shot(c, "caster_07_spatial_transfer");
             }
             case 130 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private boolean ishtar(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.head with fate_ubw:ishtar_tiara", "armor.chest with fate_ubw:ishtar_chestplate",
+                    "armor.legs with fate_ubw:ishtar_leggings", "armor.feet with fate_ubw:ishtar_boots", "hotbar.0 with fate_ubw:maanna",
+                    "hotbar.1 with fate_ubw:ishtar_tiara", "hotbar.2 with fate_ubw:ishtar_chestplate",
+                    "hotbar.3 with fate_ubw:ishtar_leggings", "hotbar.4 with fate_ubw:ishtar_boots"},
+                    new String[]{"~-2 ~ ~10", "~2 ~ ~12", "~ ~ ~16"});
+            case 40 -> shot(c, "ishtar_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "ishtar_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "ishtar_03_back");
+            case 72 -> yaw = 90.0F;
+            case 82 -> shot(c, "ishtar_04_side");
+            case 84 -> yaw = 0.0F;
+            case 90 -> ability(0);
+            case 96 -> shot(c, "ishtar_05_jewel_burst");
+            case 110 -> ability(1);
+            case 113 -> shot(c, "ishtar_06_beauty");
+            case 125 -> use(c, p);
+            case 150 -> {
+                if (waitCharge(c, p, 22)) return false;
+                holdUse = false;
+            }
+            case 154 -> shot(c, "ishtar_07_jewel_shot");
+            case 170 -> holdSneak = true;
+            case 172 -> use(c, p);
+            case 200 -> shot(c, "ishtar_08_np_charging");
+            case 240 -> {
+                if (waitCharge(c, p, 62)) return false;
+                holdUse = false;
+            }
+            case 243 -> yaw = 35.0F;
+            case 246 -> holdSneak = false;
+            case 250 -> shot(c, "ishtar_09_an_gal_ta_kigal_she");
+            case 258 -> shot(c, "ishtar_10_an_gal_ta_kigal_she_late");
+            case 275 -> {
+                yaw = 0.0F;
+                pitch = -20.0F;
+                ability(2);
+            }
+            case 282 -> shot(c, "ishtar_11_sky_boat");
+            case 300 -> {
+                pitch = 0.0F;
                 return true;
             }
             default -> {

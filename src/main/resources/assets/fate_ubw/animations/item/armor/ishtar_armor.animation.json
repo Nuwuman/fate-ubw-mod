@@ -1,0 +1,49 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.ishtar_armor.idle": {
+      "loop": true,
+      "animation_length": 2.4,
+      "bones": {
+        "tailRight": {
+          "rotation": {
+            "0.0": [
+              4,
+              0,
+              4
+            ],
+            "1.2": [
+              8,
+              0,
+              8
+            ],
+            "2.4": [
+              4,
+              0,
+              4
+            ]
+          }
+        },
+        "tailLeft": {
+          "rotation": {
+            "0.0": [
+              4,
+              0,
+              -4
+            ],
+            "1.2": [
+              8,
+              0,
+              -8
+            ],
+            "2.4": [
+              4,
+              0,
+              -4
+            ]
+          }
+        }
+      }
+    }
+  }
+}

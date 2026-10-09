@@ -36,6 +36,7 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(FateUBW.CHAIN_DAGGER, ChainDaggerRenderer::new);
         EntityRendererRegistry.register(FateUBW.PEGASUS, PegasusRenderer::new);
         EntityRendererRegistry.register(FateUBW.ENUMA_ELISH, EnumaElishRenderer::new);
+        EntityRendererRegistry.register(FateUBW.AN_GAL_TA_KIGAL_SHE, AnGalTaKigalSheRenderer::new);
         EntityRendererRegistry.register(FateUBW.UBW_CORE, UbwCoreRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_PORTAL, BabylonPortalRenderer::new);
         ItemStack hrunting = new ItemStack(FateUBW.HRUNTING);
@@ -71,6 +72,10 @@ public class FateUBWClient implements ClientModInitializer {
         ModelPredicateProviderRegistry.register(FateUBW.ARCHER_BOW, Identifier.ofVanilla("pull"),
                 (stack, world, entity, seed) -> using(entity, stack) ? entity.getItemUseTime() / 20.0F : 0.0F);
         ModelPredicateProviderRegistry.register(FateUBW.ARCHER_BOW, Identifier.ofVanilla("pulling"),
+                (stack, world, entity, seed) -> using(entity, stack) ? 1.0F : 0.0F);
+        ModelPredicateProviderRegistry.register(FateUBW.MAANNA, Identifier.ofVanilla("pull"),
+                (stack, world, entity, seed) -> using(entity, stack) ? entity.getItemUseTime() / 20.0F : 0.0F);
+        ModelPredicateProviderRegistry.register(FateUBW.MAANNA, Identifier.ofVanilla("pulling"),
                 (stack, world, entity, seed) -> using(entity, stack) ? 1.0F : 0.0F);
         ModelPredicateProviderRegistry.register(FateUBW.ARCHER_BOW, FateUBW.id("caladbolg"),
                 (stack, world, entity, seed) -> using(entity, stack) && entity.isSneaking()

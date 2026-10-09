@@ -94,7 +94,7 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
     }
 
     // Anillo plano perpendicular al haz a la altura y
-    private static void ring(VertexConsumer vc, Matrix4f m, float y, float inner, float outer, int r, int g, int b, int a) {
+    static void ring(VertexConsumer vc, Matrix4f m, float y, float inner, float outer, int r, int g, int b, int a) {
         if (a <= 0) return;
         for (int i = 0; i < SIDES * 2; i++) {
             float t0 = (float) (i * Math.PI / SIDES), t1 = (float) ((i + 1) * Math.PI / SIDES);

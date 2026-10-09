@@ -13,7 +13,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-/** "¿Qué deseas?": los ocho servants con su arma; al elegir uno, el Grial concede su poder. */
+/** "¿Qué deseas?": los servants con su arma; al elegir uno, el Grial concede su poder. */
 public class GrailWishScreen extends Screen {
     private static final int BUTTON_W = 120, BUTTON_H = 20, GAP = 6;
 

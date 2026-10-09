@@ -115,6 +115,15 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   con la vida llena y recuperas una cada 2 minutos; el HUD muestra cuántas te quedan) y los golpes de menos de 4 de daño
   no te hacen nada. Habilidad: **Locura Mejorada** (Fuerza III, Velocidad II y Resistencia durante 15 s).
 
+**Archer (Ishtar)**
+- **Maanna**: la Barca del Cielo como arco dorado con una gema azul. Dispara flechas de luz sin gastar flechas; tensado
+  del todo, una joya que estalla. Agachado y cargando 3 s: **An Gal Ta Kigal Shè**, Venus disparada como un haz dorado
+  que estalla donde choca.
+- **Corpiño, falda y botas** negros con ribetes dorados y gema roja; la **tiara** (opcional) pone las dos coletas
+  negras, que se mecen. Conjunto completo: Velocidad I y sin daño por caída. Habilidades: **Ráfaga de Joyas** (cinco
+  joyas en abanico que estallan), **Manifestación de la Belleza** (los que tienes cerca quedan débiles y lentos y dejan
+  de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s).
+
 ![Caster, Assassin y Berserker](docs/new_servants.png)
 
 **Servants enemigos**
@@ -128,7 +137,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 **Guerra del Santo Grial**
 - **Círculo de invocación**: click derecho en el suelo con un catalizador en la otra mano. Tras un ritual de 3 s aparece
   el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de prismarina → Lancer, ojo de
-  ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero → Berserker (sin catalizador,
+  ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero → Berserker, diamante → Ishtar (sin catalizador,
   uno al azar).
 - **`/grailwar start`** (operadores): a cada jugador conectado le toca un servant distinto, con su equipo, el maná lleno
   y tres Sellos de Comando. Quien muere queda de espectador; el último en pie gana el **Santo Grial**.
@@ -159,6 +168,7 @@ tercera persona veis cómo se mueve todo el cuerpo:
 - **Gáe Bolg**: estocada a fondo al atravesar; al lanzarla (agachado), la echas atrás por encima de la cabeza y la arrojas.
 - **Rule Breaker**: puñalada de arriba abajo.
 - **Rho Aias**: la mano abierta al frente sosteniendo el escudo.
+- **Maanna**: al soltar An Gal Ta Kigal Shè, el mismo gesto que Enuma Elish.
 - **Monohoshizao**: guardia baja con el cuerpo girado mientras concentras, y los tres cortes de Tsubame Gaeshi.
 - **Kanshō y Bakuya**: el brazo que lanza (o los dos, si lanzas la pareja) con giro del torso.
 
@@ -167,7 +177,7 @@ Las animaciones están en `src/main/resources/assets/fate_ubw/player_animations/
 ## Líneas de voz
 
 Excalibur, Avalon, Gáe Bolg, Enuma Elish, Gate of Babylon, Unlimited Blade Works (y su aria), Trace On, Caladbolg,
-Rho Aias, Bellerophon, Rule Breaker, Tsubame Gaeshi y Nine Lives dicen su nombre al usarse. Se apagan con
+Rho Aias, Bellerophon, Rule Breaker, Tsubame Gaeshi, Nine Lives y An Gal Ta Kigal Shè dicen su nombre al usarse. Se apagan con
 `/gamerule fateVoiceLines false`.
 
 ## Gamerules

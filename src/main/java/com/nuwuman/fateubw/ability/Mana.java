@@ -45,6 +45,8 @@ public final class Mana {
         cost(FateUBW.RULE_BREAKER_NP, 20); cost(FateUBW.DIVINE_WORDS, 15); cost(FateUBW.SPATIAL_TRANSFER, 10);
         cost(FateUBW.TSUBAME_GAESHI, 25); cost(FateUBW.PRESENCE_CONCEALMENT, 15);
         cost(FateUBW.NINE_LIVES, 35); cost(FateUBW.MAD_ENHANCEMENT, 20);
+        cost(FateUBW.AN_GAL_TA_KIGAL_SHE_NP, 50); cost(FateUBW.JEWEL_BURST, 20); cost(FateUBW.MANIFESTATION_OF_BEAUTY, 15);
+        cost(FateUBW.SKY_BOAT, 10);
 
         // Se recarga sola; se sincroniza con su cliente cada medio segundo como mucho
         ServerTickEvents.END_SERVER_TICK.register(server -> {

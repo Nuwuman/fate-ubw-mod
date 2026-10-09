@@ -8,6 +8,7 @@ import com.nuwuman.fateubw.assassin.AssassinArmorItem;
 import com.nuwuman.fateubw.berserker.BerserkerArmorItem;
 import com.nuwuman.fateubw.caster.CasterArmorItem;
 import com.nuwuman.fateubw.gilgamesh.GilgameshArmorItem;
+import com.nuwuman.fateubw.ishtar.IshtarArmorItem;
 import com.nuwuman.fateubw.lancer.LancerArmorItem;
 import com.nuwuman.fateubw.rider.BellerophonItem;
 import com.nuwuman.fateubw.rider.PegasusEntity;
@@ -64,6 +65,9 @@ public final class Abilities {
         cooldown(FateUBW.MAD_ENHANCEMENT, BerserkerArmorItem.MAD_ENHANCEMENT_COOLDOWN);
         cooldown(FateUBW.HRUNTING, 20 * 20);
         cooldown(FateUBW.BLOOD_FORT_ANDROMEDA, com.nuwuman.fateubw.rider.RiderArmorItem.ANDROMEDA_COOLDOWN);
+        cooldown(FateUBW.JEWEL_BURST, IshtarArmorItem.JEWEL_BURST_COOLDOWN);
+        cooldown(FateUBW.MANIFESTATION_OF_BEAUTY, IshtarArmorItem.BEAUTY_COOLDOWN);
+        cooldown(FateUBW.SKY_BOAT, IshtarArmorItem.SKY_BOAT_COOLDOWN);
 
         PayloadTypeRegistry.playC2S().register(UseAbilityPayload.ID, UseAbilityPayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(UseAbilityPayload.ID, (payload, context) -> {
@@ -113,7 +117,12 @@ public final class Abilities {
                             new Ability("presence_concealment", Items.PHANTOM_MEMBRANE, FateUBW.PRESENCE_CONCEALMENT,
                                     AssassinArmorItem::presenceConcealment))),
                     new ServantSet(FateUBW.BERSERKER_CHESTPLATE, FateUBW.BERSERKER_LEGGINGS, FateUBW.BERSERKER_BOOTS, null, List.of(
-                            new Ability("mad_enhancement", Items.BLAZE_POWDER, FateUBW.MAD_ENHANCEMENT, BerserkerArmorItem::madEnhancement))));
+                            new Ability("mad_enhancement", Items.BLAZE_POWDER, FateUBW.MAD_ENHANCEMENT, BerserkerArmorItem::madEnhancement))),
+                    new ServantSet(FateUBW.ISHTAR_CHESTPLATE, FateUBW.ISHTAR_LEGGINGS, FateUBW.ISHTAR_BOOTS, null, List.of(
+                            new Ability("jewel_burst", FateUBW.RIN_JEWEL, FateUBW.JEWEL_BURST, IshtarArmorItem::jewelBurst),
+                            new Ability("manifestation_of_beauty", Items.PINK_PETALS, FateUBW.MANIFESTATION_OF_BEAUTY,
+                                    IshtarArmorItem::manifestationOfBeauty),
+                            new Ability("sky_boat", Items.FEATHER, FateUBW.SKY_BOAT, IshtarArmorItem::skyBoat))));
         }
         return sets;
     }
