@@ -9,9 +9,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** El HUD de habilidades se dibuja al final, por encima del chat. */
+/** El HUD de habilidades se dibuja al final, por encima del chat; las bandas de cine, al principio. */
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
+    // Las bandas de cine del plano de Noble Phantasm, debajo del resto del HUD
+    @Inject(method = "render", at = @At("HEAD"))
+    private void fateubw$cinemaBars(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        com.nuwuman.fateubw.client.NpCamera.drawBars(context);
+    }
+
     @Inject(method = "render", at = @At("TAIL"))
     private void fateubw$abilities(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         AbilityHud.render(context, tickCounter);

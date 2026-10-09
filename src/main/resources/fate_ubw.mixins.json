@@ -10,6 +10,7 @@
   ],
   "client": [
     "CameraMixin",
+    "GameRendererMixin",
     "HeldItemFeatureRendererMixin",
     "InGameHudMixin",
     "PlayerEntityRendererMixin"

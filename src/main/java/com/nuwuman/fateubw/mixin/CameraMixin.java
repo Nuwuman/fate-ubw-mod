@@ -2,6 +2,7 @@ package com.nuwuman.fateubw.mixin;
 
 import com.nuwuman.fateubw.client.NpCamera;
 import net.minecraft.client.render.Camera;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,8 +28,10 @@ public abstract class CameraMixin {
     // Girar la vista a la izquierda y bajarla antes de retroceder deja la cámara detrás, a la derecha y en alto
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;setRotation(FF)V", ordinal = 0, shift = At.Shift.AFTER))
     private void fateubw$npOrbit(CallbackInfo ci) {
-        float orbit = NpCamera.orbit();
-        if (thirdPerson && orbit != 0.0F) setRotation(getYaw() - orbit, Math.min(90.0F, getPitch() + NpCamera.tilt()));
+        if (thirdPerson && NpCamera.active()) {
+            setRotation(getYaw() - NpCamera.orbit() + NpCamera.shakeYaw(),
+                    MathHelper.clamp(getPitch() + NpCamera.tilt() + NpCamera.shakePitch(), -90.0F, 90.0F));
+        }
     }
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;clipToSpace(F)F"))

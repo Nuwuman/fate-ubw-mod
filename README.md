@@ -164,7 +164,8 @@ más maná en ese momento: el otro estalla y el ganador sigue hasta su largo com
 
 **Plano de cámara**: al lanzar Excalibur, Enuma Elish, An Gal Ta Kigal Shè, Caladbolg II o la Gáe Bolg arrojada, la
 cámara pasa a tercera persona y se coloca detrás de ti a la derecha, en diagonal y algo más alta, como vista desde
-arriba, para ver cómo lo lanzas y el ataque entero; a los 2,5 s vuelve a tu vista.
+arriba, para ver cómo lo lanzas y el ataque entero. Al lanzarlo la imagen tiembla y el campo de visión da un golpe; el
+plano gira despacio mientras dura, con bandas de cine arriba y abajo, y a los 2,5 s vuelve a tu vista.
 
 ## Encantamientos
 
