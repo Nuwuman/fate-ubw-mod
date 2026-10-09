@@ -34,6 +34,19 @@ Ordenadas por lo que aportan frente a lo que cuestan.
 - **Nuevos servants**: Rin y Sakura con kit propio, o clases extra como Ruler y Avenger (Jeanne, Jeanne Alter).
 - **Jefe final, la Sombra / Angra Mainyu**: sale del Grial corrompido al terminar la Guerra.
 
+**Más ideas (segunda tanda)**
+- **Encantamientos para las armas que no tienen**: Maanna ("Venus Overdrive": An Gal Ta Kigal Shè más grande cuanto
+  más maná te quede), Rho Aias ("Seven Petals": el escudo para un golpe más por nivel), y uno normal (I-III) para
+  Nine Lives y Tsubame Gaeshi.
+- **Mejora del Reality Marble**: dentro de Unlimited Blade Works, las armas proyectadas copian los encantamientos del
+  arma analizada con Trace On.
+- **Botín de Fuyuki**: cofres de aldeas y estructuras con algo de probabilidad de círculo de invocación, catalizador o
+  libro legendario.
+- **Recarga de maná junto al Grial o de noche**: un bloque u objeto de "línea ley" que acelera el maná a su lado.
+- **Logros del mod**: invocar cada servant, usar cada Noble Phantasm, ganar una Guerra del Grial, matar al Berserker.
+- **Ajuste para el choque de Noble Phantasms y la cámara**: si gustan, una opción para apagar la cámara y afinar
+  cuánto dura el choque.
+
 **Ajustes pendientes de decidir**
 - Ishtar: otros colores (la ropa blanca de su tercera ascensión), otras habilidades u otro catalizador (ahora diamante).
 - Gáe Bolg con Better Combat: ahora es "lanza" (combo de estocadas); "tridente" sería una sola estocada.

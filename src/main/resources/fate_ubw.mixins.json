@@ -9,6 +9,7 @@
     "SlotMixin"
   ],
   "client": [
+    "CameraMixin",
     "HeldItemFeatureRendererMixin",
     "InGameHudMixin",
     "PlayerEntityRendererMixin"

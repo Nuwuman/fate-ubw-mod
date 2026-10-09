@@ -60,6 +60,7 @@ public class ArcherBowItem extends BowItem {
         if (pull < 0.1F) return;
 
         boolean wantsCaladbolg = player.isSneaking() && pull >= 1.0F;
+        if (wantsCaladbolg && caladbolgReady(player)) com.nuwuman.fateubw.PlayerAnims.cinematic(player);
         if (!(world instanceof ServerWorld server)) return;
         // Sin recarga o sin maná sale una espada normal (ready avisa de lo que falte)
         boolean caladbolg = wantsCaladbolg && com.nuwuman.fateubw.Rules.ready(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN, "caladbolg");

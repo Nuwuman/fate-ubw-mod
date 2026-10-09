@@ -75,7 +75,10 @@ public class MaannaItem extends BowItem {
         int used = getMaxUseTime(stack, user) - remainingUseTicks;
         float pull = getPullProgress(used);
         if (pull < 0.1F) return;
-        if (npReady(player) && used >= NP_CHARGE) com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish");
+        if (npReady(player) && used >= NP_CHARGE) {
+            com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish");
+            com.nuwuman.fateubw.PlayerAnims.cinematic(player);
+        }
         if (!(world instanceof ServerWorld server)) return;
 
         // Sin recarga o sin maná sale un disparo normal (ready avisa de lo que falte)

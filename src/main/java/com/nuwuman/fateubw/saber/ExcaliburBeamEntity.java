@@ -9,6 +9,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -43,6 +45,15 @@ public class ExcaliburBeamEntity extends Entity {
     protected Entity owner;
     protected final Set<Integer> hit = new HashSet<>();
     private float carved = CARVE_START;
+    // Choque de Noble Phantasms: el largo al que se frena (sincronizado con el cliente; -1 = sin choque)
+    private static final TrackedData<Float> CLASH = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final int CLASH_TICKS = 14;
+    @Nullable
+    private ExcaliburBeamEntity rival;
+    private Vec3d clashPoint = Vec3d.ZERO;
+    private int clashTicks;
+    private boolean clashed;
+    private int bonusDamageTicks;
 
     public ExcaliburBeamEntity(EntityType<? extends ExcaliburBeamEntity> type, World world) {
         super(type, world);
@@ -88,7 +99,9 @@ public class ExcaliburBeamEntity extends Entity {
     }
 
     public float length(float age) {
-        return maxLength() * Math.min(1.0F, age / GROW_TICKS);
+        float length = maxLength() * Math.min(1.0F, age / GROW_TICKS);
+        float clash = dataTracker.get(CLASH);
+        return clash >= 0.0F ? Math.min(length, clash) : length;
     }
 
     public float fade(float age) {
@@ -99,9 +112,93 @@ public class ExcaliburBeamEntity extends Entity {
     public void tick() {
         super.tick();
         if (getWorld() instanceof ServerWorld world) {
-            if (age <= DAMAGE_TICKS) sweep(world);
-            if (age > LIFETIME) discard();
+            if (!clashed && age <= DAMAGE_TICKS) findRival(world);
+            if (rival != null) clash(world);
+            if (age <= DAMAGE_TICKS + bonusDamageTicks) sweep(world);
+            if (age > LIFETIME + bonusDamageTicks) discard();
         }
+    }
+
+    // Busca el haz de otro jugador que se cruce con este
+    private void findRival(ServerWorld world) {
+        Vec3d start = getPos(), end = start.add(getRotationVector().multiply(length(age)));
+        for (ExcaliburBeamEntity other : world.getEntitiesByClass(ExcaliburBeamEntity.class, new Box(start, end).expand(maxLength()),
+                e -> e != this && !e.clashed && e.rival == null && (owner == null || e.owner != owner))) {
+            Vec3d oStart = other.getPos(), oEnd = oStart.add(other.getRotationVector().multiply(other.length(other.age)));
+            Vec3d point = meeting(start, end, oStart, oEnd, radius() + other.radius());
+            if (point == null) continue;
+            for (ExcaliburBeamEntity beam : new ExcaliburBeamEntity[]{this, other}) {
+                beam.clashed = true;
+                beam.clashPoint = point;
+                beam.clashTicks = 0;
+                beam.dataTracker.set(CLASH, (float) beam.getPos().distanceTo(point));
+            }
+            rival = other;
+            other.rival = this;
+            world.playSound(null, point.x, point.y, point.z, net.minecraft.sound.SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
+                    net.minecraft.sound.SoundCategory.PLAYERS, 3.0F, 0.6F);
+            return;
+        }
+    }
+
+    // Los dos haces empujan en el punto de choque; gana el dueño con más maná y el otro estalla
+    private void clash(ServerWorld world) {
+        ExcaliburBeamEntity other = rival;
+        if (other == null || other.isRemoved()) {
+            win();
+            return;
+        }
+        Vec3d p = clashPoint;
+        world.spawnParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 12, 0.8, 0.8, 0.8, 0.35);
+        world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y, p.z, 10, 1.0, 1.0, 1.0, 0.4);
+        if (clashTicks % 4 == 0) {
+            world.spawnParticles(ParticleTypes.FLASH, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
+            world.playSound(null, p.x, p.y, p.z, net.minecraft.sound.SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT,
+                    net.minecraft.sound.SoundCategory.PLAYERS, 2.0F, 0.5F + clashTicks * 0.04F);
+        }
+        if (++clashTicks < CLASH_TICKS || getId() > other.getId()) return; // lo resuelve uno de los dos
+        ExcaliburBeamEntity winner = power(this) >= power(other) ? this : other;
+        ExcaliburBeamEntity loser = winner == this ? other : this;
+        world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, p.x, p.y, p.z, 2, 1.0, 1.0, 1.0, 0.0);
+        world.playSound(null, p.x, p.y, p.z, net.minecraft.sound.SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
+                net.minecraft.sound.SoundCategory.PLAYERS, 4.0F, 0.8F);
+        loser.discard();
+        winner.win();
+    }
+
+    private void win() {
+        rival = null;
+        dataTracker.set(CLASH, -1.0F);
+        bonusDamageTicks = Math.max(0, age + 8 - DAMAGE_TICKS); // le queda tiempo para atravesar lo que había detrás
+    }
+
+    // Maná que le queda al dueño (y, a igualdad, el daño del Noble Phantasm)
+    private static float power(ExcaliburBeamEntity beam) {
+        float mana = beam.owner instanceof PlayerEntity player ? com.nuwuman.fateubw.ability.Mana.get(player) : 0.0F;
+        return mana * 1000.0F + beam.damage();
+    }
+
+    /**
+     * Dónde chocan los haces ab y cd (de grosor conjunto {@code reach}), o null si no se tocan. Si van casi paralelos
+     * (de frente), chocan entre las dos puntas; si se cruzan, en el punto donde pasan más cerca.
+     */
+    @Nullable
+    private static Vec3d meeting(Vec3d a, Vec3d b, Vec3d c, Vec3d d, double reach) {
+        Vec3d u = b.subtract(a), v = d.subtract(c), w = a.subtract(c);
+        double uu = u.dotProduct(u), uv = u.dotProduct(v), vv = v.dotProduct(v), uw = u.dotProduct(w), vw = v.dotProduct(w);
+        if (uu < 1.0E-6 || vv < 1.0E-6) return null;
+        double den = uu * vv - uv * uv;
+        if (den < 1.0E-3 * uu * vv) {
+            double lateral = c.subtract(a).crossProduct(u).length() / Math.sqrt(uu);
+            double sc = c.subtract(a).dotProduct(u) / uu, sd = d.subtract(a).dotProduct(u) / uu;
+            boolean overlap = Math.max(sc, sd) >= 0.0 && Math.min(sc, sd) <= 1.0;
+            return lateral <= reach && overlap ? b.lerp(d, 0.5) : null;
+        }
+        double s = MathHelper.clamp((uv * vw - vv * uw) / den, 0.0, 1.0);
+        double t = MathHelper.clamp((uv * s + vw) / vv, 0.0, 1.0);
+        s = MathHelper.clamp((uv * t - uw) / uu, 0.0, 1.0);
+        Vec3d p = a.add(u.multiply(s)), q = c.add(v.multiply(t));
+        return p.distanceTo(q) <= reach ? p.lerp(q, 0.5) : null;
     }
 
     private void sweep(ServerWorld world) {
@@ -198,6 +295,7 @@ public class ExcaliburBeamEntity extends Entity {
 
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
+        builder.add(CLASH, -1.0F);
     }
 
     @Override

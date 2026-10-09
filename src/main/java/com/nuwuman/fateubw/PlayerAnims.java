@@ -35,6 +35,14 @@ public final class PlayerAnims {
     /** Lo pone el cliente: reproduce una animación en un jugador de su mundo. */
     public static BiConsumer<PlayerEntity, String> clientPlay = (player, animation) -> {};
 
+    /** Lo pone el cliente: plano de cámara al lanzar un Noble Phantasm (solo si lo lanza el propio jugador). */
+    public static java.util.function.Consumer<PlayerEntity> clientCinematic = player -> {};
+
+    /** Llamar al soltar un Noble Phantasm; en el cliente de quien lo lanza, la cámara se aleja un momento para verlo entero. */
+    public static void cinematic(PlayerEntity player) {
+        if (player.getWorld().isClient()) clientCinematic.accept(player);
+    }
+
     /**
      * Llamar en los dos lados. El propio jugador la ve al instante desde su cliente; el servidor solo avisa a los demás.
      * animation: nombre del archivo en assets/fate_ubw/player_animations.

@@ -201,6 +201,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
 
         Rules.commit(player, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
         com.nuwuman.fateubw.PlayerAnims.play(player, "excalibur_swing");
+        com.nuwuman.fateubw.PlayerAnims.cinematic(player);
         if (!(world instanceof ServerWorld server)) return;
 
         ExcaliburBeamEntity.fire(server, player);

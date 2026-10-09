@@ -120,6 +120,7 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         boolean soaring = player.isSneaking();
         if (charge < (soaring ? SOARING_CHARGE : PIERCE_CHARGE)) return;
         com.nuwuman.fateubw.PlayerAnims.play(player, soaring ? "gae_bolg_throw" : "gae_bolg_pierce");
+        if (soaring && !player.getItemCooldownManager().isCoolingDown(FateUBW.GAE_BOLG_SOARING)) com.nuwuman.fateubw.PlayerAnims.cinematic(player);
 
         if (!(world instanceof ServerWorld server)) return;
         // Puede haberse agachado o levantado mientras cargaba: se comprueba la versión que suelta

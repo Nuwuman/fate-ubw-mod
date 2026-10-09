@@ -158,6 +158,13 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
+**Choque de Noble Phantasms**: si los haces de dos jugadores (Excalibur, Enuma Elish, An Gal Ta Kigal Shè) se
+encuentran, los dos se frenan en el punto de choque y empujan durante unos 0,7 s entre destellos. Gana el que tenga
+más maná en ese momento: el otro estalla y el ganador sigue hasta su largo completo.
+
+**Plano de cámara**: al lanzar Excalibur, Enuma Elish, An Gal Ta Kigal Shè, Caladbolg II o la Gáe Bolg arrojada, la
+cámara pasa a tercera persona y se aleja detrás de ti unos 2,5 s para ver el ataque entero; luego vuelve a tu vista.
+
 ## Encantamientos
 
 Cada uno va solo en su arma. Los normales (I-III) salen en la mesa de encantamientos; los **legendarios** no: se
@@ -251,7 +258,7 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `glow`, `armors`, `grailwar`, o varios separados por
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `glow`, `armors`, `grailwar`, o varios separados por
   comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
   anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 

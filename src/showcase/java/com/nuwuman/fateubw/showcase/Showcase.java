@@ -138,6 +138,7 @@ public class Showcase implements ClientModInitializer {
             case "ishtar" -> ishtar(client, p, st);
             case "falchions" -> falchions(client, p, st);
             case "enchants" -> enchants(client, p, st);
+            case "clash" -> clash(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
             default -> true;
@@ -839,6 +840,52 @@ public class Showcase implements ClientModInitializer {
         }
         return false;
     }
+
+    // Choque de Noble Phantasms y plano de cámara: Excalibur contra un Enuma Elish que viene de frente
+    private boolean clash(MinecraftClient c, ClientPlayerEntity p, int t) {
+        var server = c.getServer();
+        var sp = server == null ? null : server.getPlayerManager().getPlayer(p.getUuid());
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{"hotbar.0 with fate_ubw:excalibur"}, new String[]{});
+                p.networkHandler.sendChatCommand("fill ~-8 ~ ~-3 ~8 ~10 ~64 air");
+                p.networkHandler.sendChatCommand("fill ~-8 ~-1 ~-3 ~8 ~-1 ~64 grass_block");
+            }
+            case 20 -> use(c, p);
+            case 85 -> {
+                if (waitCharge(c, p, 62)) return false;
+                holdUse = false;
+            }
+            case 150 -> {
+                log("cámara al final: " + c.options.getPerspective());
+                return true;
+            }
+            default -> {
+                if (t < 86 || t > 120 || sp == null) return false;
+                var world = sp.getServerWorld();
+                var beams = world.getEntitiesByClass(com.nuwuman.fateubw.saber.ExcaliburBeamEntity.class, sp.getBoundingBox().expand(90), e -> true);
+                // En cuanto sale Excalibur, un Enuma Elish de frente desde 60 bloques
+                if (!enemySent && beams.stream().anyMatch(e -> !(e instanceof com.nuwuman.fateubw.gilgamesh.EnumaElishEntity))) {
+                    double x = sp.getX(), y = sp.getEyeY() - 0.3, z = sp.getZ() + 38;
+                    server.execute(() -> {
+                        var enemy = new com.nuwuman.fateubw.gilgamesh.EnumaElishEntity(com.nuwuman.fateubw.FateUBW.ENUMA_ELISH, world);
+                        enemy.refreshPositionAndAngles(x, y, z, 180.0F, 0.0F);
+                        world.spawnEntity(enemy);
+                    });
+                    enemySent = true;
+                }
+                if (enemySent && t % 2 == 0) {
+                    log("t" + t + " cámara x" + String.format("%.2f", com.nuwuman.fateubw.client.NpCamera.distanceFactor()) + " haces: "
+                            + beams.stream().map(e -> e.getType().getUntranslatedName() + " edad " + e.age + " largo "
+                            + String.format("%.1f", e.length(e.age))).toList());
+                    shot(c, "clash_t" + t);
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean enemySent;
 
     // Kanshō y Bakuya de cerca: en las manos y en la barra
     private boolean falchions(MinecraftClient c, ClientPlayerEntity p, int t) {
