@@ -119,8 +119,10 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **Maanna**: la Barca del Cielo como arco dorado con una gema azul. Dispara flechas de luz sin gastar flechas; tensado
   del todo, una joya que estalla. Agachado y cargando 3 s: **An Gal Ta Kigal Shè**, Venus disparada como un haz dorado
   que estalla donde choca.
-- **Corpiño, falda y botas** negros con ribetes dorados y gema roja; la **tiara** (opcional) pone las dos coletas
-  negras, que se mecen. Conjunto completo: Velocidad I y sin daño por caída. Habilidades: **Ráfaga de Joyas** (cinco
+- **Ropa** como en su primera ascensión: top blanco con ribetes dorados y collar de oro con gema negra, braguita negra
+  con cinturón dorado, guante negro largo en el brazo izquierdo y brazalete en el derecho, media negra con liga en forma
+  de corona y espinillera en la pierna derecha y tobillera en la izquierda (lo que va al aire deja ver tu skin). La
+  **tiara** (opcional) es su corona dorada con picos. Conjunto completo: Velocidad I y sin daño por caída. Habilidades: **Ráfaga de Joyas** (cinco
   joyas en abanico que estallan), **Manifestación de la Belleza** (los que tienes cerca quedan débiles y lentos y dejan
   de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s).
 

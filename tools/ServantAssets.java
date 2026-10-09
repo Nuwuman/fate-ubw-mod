@@ -1631,48 +1631,61 @@ public class ServantAssets {
         return List.of(head, body, capeBack, capeLeft, capeRight, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
-    // Ishtar: corpiño negro con ribetes dorados y gema roja, mangas sueltas negras con brazaletes de oro, falda negra con
-    // bajo dorado, botas negras con tobilleras de oro. La tiara (opcional) pone las dos coletas negras, que se mecen
-    static final int ISH_BLACK = 0x1d1b24, ISH_GOLD = 0xdcae3e, ISH_RED = 0xc0182a, ISH_HAIR = 0x15131c;
+    // Ishtar (primera ascensión): top blanco con ribetes dorados, collar de oro con gema negra, braguita negra con
+    // cinturón dorado cruzado. Asimétrica: brazo derecho al aire con brazalete; el izquierdo con guante negro largo,
+    // aros dorados y adorno en el hombro; pierna derecha con media negra, liga dorada en forma de corona y espinillera;
+    // pierna izquierda al aire con tobillera. Lo que va al aire deja ver la skin del jugador. La tiara
+    // (opcional) es solo la corona dorada con picos
+    static final int ISH_BLACK = 0x1d1b24, ISH_GOLD = 0xdcae3e, ISH_WHITE = 0xffffff, ISH_RED = 0xc0182a;
 
     static List<Bone> ishtarArmor() {
-        Paint black = fabric(ISH_BLACK), gold = plate(ISH_GOLD), hair = fabric(ISH_HAIR), gem = plate(ISH_RED);
-        Paint trimmed = marked(black, ISH_GOLD, (x, y, w, h) -> y < 1 || y >= h - 1);
+        Paint black = fabric(ISH_BLACK), gold = plate(ISH_GOLD), white = fabric(ISH_WHITE),
+                gem = plate(0x101018);
+        // Liga y adornos dorados con picos, como una corona
+        Paint crown = marked(gold, 0x8a6418, (x, y, w, h) -> y == h - 1 && x % 3 == 1);
+
         Bone head = new Bone("armorHead", null, 0, 24, 0);
-        head.model.box(-4.4, 30.4, -4.6, 4.4, 31.2, 4.6, gold);                // tiara
-        head.model.box(-0.9, 30.6, -5.0, 0.9, 32.4, -4.5, gem);                // gema de la frente
-        head.model.box(-1.6, 31.2, -4.8, 1.6, 31.8, -4.5, gold);
-        head.model.box(-4.9, 26.0, -0.6, -4.3, 27.6, 0.6, gold);               // pendientes
-        head.model.box(4.3, 26.0, -0.6, 4.9, 27.6, 0.6, gold);
-        Bone tailRight = new Bone("tailRight", "armorHead", -5, 30.5, 1);
-        tailRight.model.box(-5.9, 29.6, 0.2, -4.3, 31.6, 1.8, gold);           // lazo dorado de la coleta
-        tailRight.model.box(-7.0, 17.0, 0.0, -4.8, 30.0, 2.2, hair);
-        tailRight.model.box(-6.6, 12.0, 0.3, -5.0, 17.0, 1.9, hair);
-        Bone tailLeft = tailRight.mirror("tailLeft", "armorHead");
+        head.model.box(-2.6, 32.0, -1.3, 2.6, 32.6, 0.3, gold);               // corona dorada con picos
+        head.model.box(-0.45, 32.6, -1.0, 0.45, 35.0, 0.0, gold);
+        head.model.box(-2.2, 32.6, -0.9, -1.5, 33.9, -0.1, gold);
+        head.model.box(1.5, 32.6, -0.9, 2.2, 33.9, -0.1, gold);
 
         Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 12, -2, 4, 24, 2, trimmed).inflate(0.45).face("north", marked(trimmed, ISH_GOLD,
-                (x, y, w, h) -> Math.abs(x - (w - 1) / 2.0) + Math.abs(y - h * 0.35) < 2.5 && Math.abs(x - (w - 1) / 2.0) + Math.abs(y - h * 0.35) > 1.2));
-        body.model.box(-1.0, 19.6, -2.9, 1.0, 21.6, -2.5, gem);                // gema del pecho
-        body.model.box(-4.6, 11.4, -2.7, 4.6, 12.6, 2.7, gold);                // cinturón
+        body.model.box(-4, 19, -2, 4, 22, 2, white).inflate(0.6);              // top
+        body.model.box(-4.2, 21.6, -2.75, 4.2, 22.3, 2.75, gold);
+        body.model.box(-4.2, 18.7, -2.75, 4.2, 19.4, 2.75, gold);
+        body.model.box(-0.5, 19.2, -2.85, 0.5, 21.8, -2.6, gold);
+        body.model.box(-2.3, 23.2, -2.7, 2.3, 24.5, 2.7, gold);                // collar con gema negra
+        body.model.box(-0.7, 22.2, -2.9, 0.7, 23.4, -2.6, gem);
+        body.model.box(-4, 12, -2, 4, 13.6, 2, black).inflate(0.6);            // braguita y cinturón cruzado
+        body.model.box(-4.2, 13.2, -2.8, 4.2, 13.8, 2.8, gold);
+        body.model.box(-1.8, 12.3, -2.85, 1.8, 12.9, -2.6, gold);
 
         Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
-        rightArm.model.box(-8.7, 12.0, -2.7, -3.3, 15.0, 2.7, edged(black, ISH_GOLD, 1));   // manga suelta acampanada
-        rightArm.model.box(-8.5, 15.0, -2.5, -3.5, 19.0, 2.5, black);
-        rightArm.model.box(-8, 19, -2, -4, 24, 2, black).inflate(0.45);        // tapa el brazo de la skin hasta el hombro
-        rightArm.model.box(-8.6, 20.2, -2.6, -3.4, 21.0, 2.6, gold);           // brazalete
-        Bone leftArm = rightArm.mirror("armorLeftArm", null);
+        rightArm.model.box(-8.6, 19.4, -2.6, -3.4, 20.6, 2.6, gold);           // brazalete
+        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
+        leftArm.model.box(4, 12, -2, 8, 20.6, 2, black).inflate(0.6);          // guante largo
+        leftArm.model.box(3.3, 13.4, -2.7, 8.7, 14.2, 2.7, gold);
+        leftArm.model.box(3.3, 17.6, -2.7, 8.7, 18.4, 2.7, gold);
+        leftArm.model.box(3.3, 20.2, -2.7, 8.7, 21.2, 2.7, crown);
+        leftArm.model.box(7.6, 21.0, -1.6, 8.9, 23.4, 1.6, gold);              // adorno del hombro
 
         Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4.4, 6.0, -2.5, 0, 12, 2.5, marked(black, ISH_GOLD, (x, y, w, h) -> y >= h - 2));  // falda
-        rightLeg.model.box(-4, 0.4, -2, 0, 6, 2, black).inflate(0.3);          // medias
-        Bone leftLeg = rightLeg.mirror("armorLeftLeg", null);
-        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
-        rightBoot.model.box(-4, 0, -2, 0, 1.8, 2, plate(ISH_BLACK)).inflate(0.4);
-        rightBoot.model.box(-4.5, 2.2, -2.5, 0.5, 2.9, 2.5, gold);             // tobillera
-        Bone leftBoot = rightBoot.mirror("armorLeftBoot", null);
+        rightLeg.model.box(-4, 9.6, -2, 0, 12, 2, black).inflate(0.55);
+        rightLeg.model.box(-4, 2.4, -2, 0, 9.6, 2, black).inflate(0.45);       // media negra
+        rightLeg.model.box(-4.7, 8.4, -2.7, 0.7, 9.8, 2.7, crown);             // liga en forma de corona
+        rightLeg.model.box(-3.6, 9.8, -2.75, -2.9, 10.7, -2.5, gold);
+        rightLeg.model.box(-1.1, 9.8, -2.75, -0.4, 10.7, -2.5, gold);
+        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
+        leftLeg.model.box(0, 9.6, -2, 4, 12, 2, black).inflate(0.55);
 
-        return List.of(head, tailRight, tailLeft, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 2.6, 2, black).inflate(0.5);
+        rightBoot.model.box(-3.6, 0.6, -2.95, -0.4, 6.0, -2.55, gold);         // espinillera
+        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
+        leftBoot.model.box(-0.6, 2.0, -2.6, 4.6, 2.9, 2.6, gold);              // tobillera
+
+        return List.of(head, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
     // Maanna, la Barca del Cielo como arco: dorada, con alas que se abren hacia las puntas y una gema azul en el centro.
