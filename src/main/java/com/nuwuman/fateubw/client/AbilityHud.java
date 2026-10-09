@@ -28,13 +28,14 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 
 /**
- * Las habilidades del conjunto de ropa en la esquina inferior derecha: la seleccionada resaltada, con su recarga,
+ * Las habilidades del conjunto de ropa, en pequeño en la esquina superior izquierda: la seleccionada resaltada, con su recarga,
  * el maná y los Sellos de Comando. R usa la seleccionada, G pasa a la siguiente y V gasta un Sello de Comando
  * (se pueden cambiar en Controles). Lo dibuja InGameHudMixin al final, por encima del chat.
  */
 public final class AbilityHud {
     private static final int ROW = 20;
     private static final int TOP = 14; // maná y sellos
+    private static final float SCALE = 0.7F;
     private static KeyBinding useKey;
     private static KeyBinding nextKey;
     private static KeyBinding sealKey;
@@ -83,6 +84,7 @@ public final class AbilityHud {
         // Cada capa del HUD vanilla sube 200 de profundidad y el chat va de las últimas: sin esto lo taparía
         context.getMatrices().push();
         context.getMatrices().translate(0.0F, 0.0F, 3000.0F);
+        context.getMatrices().scale(SCALE, SCALE, 1.0F);
         draw(context, counter, client, player, abilities);
         context.getMatrices().pop();
     }
@@ -98,11 +100,10 @@ public final class AbilityHud {
         boolean berserker = BerserkerArmorItem.fullSet(player);
         int rows = abilities.size() + (berserker ? 1 : 0);
         int height = TOP + rows * ROW + 12;
-        int x = context.getScaledWindowWidth() - width - 4;
-        int bottom = context.getScaledWindowHeight() - 4;
-        // En pantallas estrechas se pisaría con la barra de objetos: entonces va justo encima de ella
-        if (x < context.getScaledWindowWidth() / 2 + 96) bottom -= 24;
-        int top = bottom - height;
+        // Coordenadas del panel ya escalado: arriba a la izquierda, lejos del arma en mano y del chat
+        int x = 4;
+        int top = 4;
+        int bottom = top + height;
 
         context.fill(x - 2, top - 2, x + width + 2, bottom, 0x80000000);
 

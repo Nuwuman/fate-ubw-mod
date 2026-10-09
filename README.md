@@ -7,7 +7,7 @@ Mod de Fabric para Minecraft 1.21.1 con los servants de Fate/stay night UBW: arm
 ## Habilidades del conjunto
 
 Las habilidades que no son de un arma salen de la ropa: con el conjunto completo de un servant puesto aparecen en la
-esquina inferior derecha. **R** usa la seleccionada y **G** pasa a la siguiente (se cambian en Opciones → Controles →
+esquina superior izquierda. **R** usa la seleccionada y **G** pasa a la siguiente (se cambian en Opciones → Controles →
 Fate: Unlimited Blade Works). Cada habilidad muestra su recarga, y cada habilidad de un arma tiene la suya propia: usar
 una no bloquea a las demás.
 
