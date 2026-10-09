@@ -2,7 +2,13 @@ package com.nuwuman.fateubw.gilgamesh;
 
 import com.nuwuman.fateubw.FateUBW;
 import com.nuwuman.fateubw.saber.ExcaliburBeamEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,8 +26,32 @@ public class EnumaElishEntity extends ExcaliburBeamEntity {
         super(type, world);
     }
 
-    public static void fire(ServerWorld world, PlayerEntity owner) {
-        new EnumaElishEntity(FateUBW.ENUMA_ELISH, world).launch(world, owner);
+    // World Severance: el tajo es un 40 % más ancho y los bloques que arranca salen volando como escombros
+    private static final TrackedData<Boolean> SEVERANCE = DataTracker.registerData(EnumaElishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    public static void fire(ServerWorld world, PlayerEntity owner, boolean severance) {
+        EnumaElishEntity entity = new EnumaElishEntity(FateUBW.ENUMA_ELISH, world);
+        entity.dataTracker.set(SEVERANCE, severance);
+        entity.launch(world, owner);
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(SEVERANCE, false);
+    }
+
+    // Uno de cada tres bloques sale despedido como bloque que cae; el resto se rompe
+    @Override
+    protected void breakCarved(ServerWorld world, BlockPos pos, BlockState state) {
+        if (!dataTracker.get(SEVERANCE) || world.random.nextInt(3) != 0) {
+            super.breakCarved(world, pos, state);
+            return;
+        }
+        FallingBlockEntity debris = FallingBlockEntity.spawnFromBlock(world, pos, state);
+        debris.setVelocity((world.random.nextDouble() - 0.5) * 0.8, 0.5 + world.random.nextDouble() * 0.5, (world.random.nextDouble() - 0.5) * 0.8);
+        debris.velocityModified = true;
+        debris.dropItem = false;
     }
 
     @Override
@@ -31,7 +61,7 @@ public class EnumaElishEntity extends ExcaliburBeamEntity {
 
     @Override
     public float radius() {
-        return 3.5F;
+        return dataTracker.get(SEVERANCE) ? 3.5F * 1.4F : 3.5F;
     }
 
     @Override

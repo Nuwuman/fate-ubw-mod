@@ -1,8 +1,13 @@
 package com.nuwuman.fateubw.archer;
 
 import com.nuwuman.fateubw.FateUBW;
+import com.nuwuman.fateubw.enchant.FateEnchantments;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -82,6 +87,19 @@ public class SwordArrowEntity extends PersistentProjectileEntity {
             return;
         }
         super.onEntityHit(hit);
+        // Broken Blade: a veces la espada proyectada se rompe dentro y marchita un momento
+        if (getWorld() instanceof ServerWorld world && hit.getEntity() instanceof LivingEntity target) {
+            int level = bowLevel(FateEnchantments.BROKEN_BLADE);
+            if (level > 0 && world.random.nextFloat() < 0.15F * level) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 30 + 20 * level, 0), getOwner());
+                world.spawnParticles(ParticleTypes.SMOKE, target.getX(), target.getBodyY(0.5), target.getZ(), 10, 0.2, 0.3, 0.2, 0.02);
+            }
+        }
+    }
+
+    private int bowLevel(RegistryKey<Enchantment> key) {
+        ItemStack bow = getWeaponStack();
+        return bow == null ? 0 : FateEnchantments.level(getWorld(), bow, key);
     }
 
     @Override
@@ -101,7 +119,9 @@ public class SwordArrowEntity extends PersistentProjectileEntity {
     private void brokenPhantasm() {
         if (getWorld() instanceof ServerWorld world) {
             boolean griefing = FateUBW.breaksBlocks(world, getPos());
-            world.createExplosion(this, getX(), getY(), getZ(), griefing ? 5.0F : 4.0F,
+            // Phantasm Bloom: la explosión crece la mitad sin gastar más maná
+            float bloom = bowLevel(FateEnchantments.PHANTASM_BLOOM) > 0 ? 1.5F : 1.0F;
+            world.createExplosion(this, getX(), getY(), getZ(), (griefing ? 5.0F : 4.0F) * bloom,
                     griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
             world.spawnParticles(ParticleTypes.FLASH, getX(), getY(), getZ(), 1, 0.0, 0.0, 0.0, 0.0);
             world.spawnParticles(RED_DUST, getX(), getY(), getZ(), 40, 1.5, 1.5, 1.5, 0.0);

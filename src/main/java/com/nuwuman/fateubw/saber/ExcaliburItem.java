@@ -3,7 +3,10 @@ package com.nuwuman.fateubw.saber;
 import com.nuwuman.fateubw.FateUBW;
 import com.nuwuman.fateubw.Rules;
 import com.nuwuman.fateubw.Voices;
+import com.nuwuman.fateubw.enchant.FateEnchantments;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -45,6 +48,8 @@ import java.util.function.ToIntFunction;
 public class ExcaliburItem extends SwordItem implements GeoItem {
     // 3 s de carga para el Noble Phantasm
     public static final int FULL_CHARGE = 60;
+    // Carga mínima para que cuenten los encantamientos al soltar (1 s)
+    private static final int RADIANT_CHARGE = 20;
     private static final int EXCALIBUR_COOLDOWN = 20 * 20;
     private static final int STRIKE_AIR_COOLDOWN = 20 * 2;
     private static final DustParticleEffect GOLD_DUST = new DustParticleEffect(new Vector3f(1.0F, 0.8F, 0.25F), 1.3F);
@@ -166,12 +171,32 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
             server.spawnParticles(ParticleTypes.ELECTRIC_SPARK, user.getX(), user.getEyeY() + 1.0, user.getZ(),
                     4, 0.3, 0.7, 0.3, 0.1);
         }
+        // Avalon's Grace: la vaina cura poco a poco mientras carga
+        if (charge % 40 == 0 && FateEnchantments.level(world, stack, FateEnchantments.AVALONS_GRACE) > 0) {
+            user.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 50, 0, true, true));
+        }
     }
 
     // Al soltar con la carga completa: ¡Excalibur!
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int charge = getMaxUseTime(stack, user) - remainingUseTicks;
+        if (world instanceof ServerWorld server && user instanceof PlayerEntity player && charge >= RADIANT_CHARGE) {
+            // Avalon's Grace: el manto de luz cura al guardar la espada
+            if (FateEnchantments.level(world, stack, FateEnchantments.AVALONS_GRACE) > 0) {
+                player.heal(4.0F);
+                server.spawnParticles(GOLD_DUST, player.getX(), player.getBodyY(0.5), player.getZ(), 20, 0.4, 0.6, 0.4, 0.0);
+            }
+            // Radiant Blade: si no llega a Excalibur, el tajo deja llamas delante
+            int radiant = FateEnchantments.level(world, stack, FateEnchantments.RADIANT_BLADE);
+            if (charge < FULL_CHARGE && radiant > 0) {
+                Vec3d look = player.getRotationVec(1.0F);
+                Vec3d flat = new Vec3d(look.x, 0.0, look.z).normalize().multiply(2.5);
+                FateEnchantments.radiantArea(server, player.getPos().add(flat), player, radiant);
+                player.swingHand(player.getActiveHand(), true);
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 1.0F, 0.9F);
+            }
+        }
         if (charge < FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
 
         Rules.commit(player, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);

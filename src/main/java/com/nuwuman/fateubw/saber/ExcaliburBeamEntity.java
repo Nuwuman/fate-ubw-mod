@@ -164,10 +164,15 @@ public class ExcaliburBeamEntity extends Entity {
                 BlockState state = world.getBlockState(pos);
                 if (state.isAir() || state.getHardness(world, pos) < 0
                         || state.getBlock().getBlastResistance() >= MAX_BLAST_RESISTANCE) continue;
-                world.breakBlock(pos, false, this);
+                breakCarved(world, pos, state);
             }
         }
         carved = Math.max(carved, len);
+    }
+
+    /** Rompe un bloque del túnel (sin soltar objetos). */
+    protected void breakCarved(ServerWorld world, BlockPos pos, BlockState state) {
+        world.breakBlock(pos, false, this);
     }
 
     /** El haz atraviesa paredes, pero no la frontera de un Reality Marble: dentro y fuera son mundos distintos. */

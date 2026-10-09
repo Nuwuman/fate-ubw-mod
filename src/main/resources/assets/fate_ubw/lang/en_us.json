@@ -273,5 +273,19 @@
   "entity.fate_ubw.an_gal_ta_kigal_she": "An Gal Ta Kigal Shè",
   "death.attack.an_gal_ta_kigal_she": "%1$s was struck down by Venus",
   "death.attack.an_gal_ta_kigal_she.player": "%1$s was struck down by %2$s's An Gal Ta Kigal Shè",
-  "servant.fate_ubw.ishtar": "Ishtar"
+  "servant.fate_ubw.ishtar": "Ishtar",
+  "enchantment.fate_ubw.radiant_blade": "Radiant Blade",
+  "enchantment.fate_ubw.avalons_grace": "Avalon's Grace",
+  "enchantment.fate_ubw.yin_yang_resonance": "Yin-Yang Resonance",
+  "enchantment.fate_ubw.trace_resilience": "Trace Resilience",
+  "enchantment.fate_ubw.broken_blade": "Broken Blade",
+  "enchantment.fate_ubw.phantasm_bloom": "Phantasm Bloom",
+  "enchantment.fate_ubw.cursed_thrust": "Cursed Thrust",
+  "enchantment.fate_ubw.bloodied_spear": "Bloodied Spear",
+  "enchantment.fate_ubw.chain_whip": "Chain Whip",
+  "enchantment.fate_ubw.gorgons_grip": "Gorgon's Grip",
+  "enchantment.fate_ubw.world_severance": "World Severance",
+  "enchantment.fate_ubw.contract_breaker": "Contract Breaker",
+  "enchantment.fate_ubw.heartbeat": "Heartbeat",
+  "enchantment.fate_ubw.god_hand": "God Hand"
 }

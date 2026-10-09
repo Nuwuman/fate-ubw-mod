@@ -102,6 +102,13 @@ public class ChainDaggerEntity extends ProjectileEntity {
     // Lo hiere y tira de él hacia el dueño
     private void hook(ServerWorld world, Entity owner, LivingEntity target) {
         target.damage(getDamageSources().thrown(this, owner), DAMAGE);
+        // Chain Whip: la cadena deja débil y lento al enganchado; el nivel alarga el efecto
+        int whip = owner instanceof LivingEntity holder ? com.nuwuman.fateubw.enchant.FateEnchantments.held(holder,
+                com.nuwuman.fateubw.FateUBW.RIDER_DAGGER, com.nuwuman.fateubw.enchant.FateEnchantments.CHAIN_WHIP) : 0;
+        if (whip > 0 && com.nuwuman.fateubw.Rules.canAffect(owner, target)) {
+            target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.WEAKNESS, 30 + 30 * whip, 0), owner);
+            target.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(net.minecraft.entity.effect.StatusEffects.SLOWNESS, 30 + 30 * whip, 1), owner);
+        }
         if (com.nuwuman.fateubw.Rules.canAffect(owner, target)) {
             Vec3d pull = owner.getPos().subtract(target.getPos()).normalize().multiply(1.6);
             target.setVelocity(pull.x, 0.4, pull.z);

@@ -132,12 +132,12 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         if (soaring) {
             soaringSpear(server, player, stack);
         } else {
-            pierce(server, player);
+            pierce(server, player, stack);
         }
     }
 
     // Gáe Bolg: la lanza que atraviesa con la muerte. Invierte la causalidad: el corazón ya está atravesado
-    private void pierce(ServerWorld world, PlayerEntity player) {
+    private void pierce(ServerWorld world, PlayerEntity player, ItemStack stack) {
         Vec3d dir = player.getRotationVec(1.0F);
         LivingEntity target = findTarget(world, player, PIERCE_RANGE, 0.95);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 1.0F, 0.6F);
@@ -154,7 +154,9 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         player.addVelocity(dash.x, 0.15, dash.z);
         player.velocityModified = true;
 
-        target.damage(world.getDamageSources().create(FateUBW.GAE_BOLG_DAMAGE, player), PIERCE_DAMAGE);
+        // Cursed Thrust: +20 % de daño por nivel (el de la Gáe Bolg ya ignora la armadura)
+        int cursed = com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack, com.nuwuman.fateubw.enchant.FateEnchantments.CURSED_THRUST);
+        target.damage(world.getDamageSources().create(FateUBW.GAE_BOLG_DAMAGE, player), PIERCE_DAMAGE * (1.0F + 0.2F * cursed));
         target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200, 1));
 
         Vec3d from = eye.add(0.0, -0.3, 0.0);

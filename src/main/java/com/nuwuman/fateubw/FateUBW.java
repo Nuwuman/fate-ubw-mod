@@ -370,6 +370,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         Rules.register();
+        com.nuwuman.fateubw.enchant.FateEnchantments.register();
         Voices.register();
         Mana.register();
         CommandSeals.register();

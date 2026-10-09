@@ -1,6 +1,7 @@
 package com.nuwuman.fateubw.archer;
 
 import com.nuwuman.fateubw.FateUBW;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -62,6 +63,27 @@ public class FalchionItem extends SwordItem {
         com.nuwuman.fateubw.Rules.cooldown(user, this, THROW_COOLDOWN);
         if (pair) com.nuwuman.fateubw.Rules.cooldown(user, twin(), THROW_COOLDOWN);
         return TypedActionResult.success(stack, world.isClient());
+    }
+
+    // Yin-Yang Resonance: al golpear con uno, a veces la pareja de la otra mano golpea justo después
+    @Override
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        int level = com.nuwuman.fateubw.enchant.FateEnchantments.level(attacker.getWorld(), stack,
+                com.nuwuman.fateubw.enchant.FateEnchantments.YIN_YANG_RESONANCE);
+        Hand other = attacker.getMainHandStack() == stack ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        if (level > 0 && attacker.getWorld() instanceof ServerWorld world && attacker.getStackInHand(other).isOf(twin())
+                && world.random.nextFloat() < 0.15F * level) {
+            com.nuwuman.fateubw.enchant.FateEnchantments.later(4, () -> {
+                if (!target.isAlive() || !attacker.isAlive()) return;
+                attacker.swingHand(other, true);
+                target.timeUntilRegen = 0;
+                target.damage(attacker instanceof PlayerEntity player ? world.getDamageSources().playerAttack(player)
+                        : world.getDamageSources().mobAttack(attacker), 5.0F + level);
+                world.spawnParticles(net.minecraft.particle.ParticleTypes.SWEEP_ATTACK, target.getX(), target.getBodyY(0.5), target.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+                world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 1.0F, 1.3F);
+            });
+        }
+        return super.postHit(stack, target, attacker);
     }
 
     @Override

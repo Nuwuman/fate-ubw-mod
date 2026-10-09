@@ -158,6 +158,28 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
+## Encantamientos
+
+Cada uno va solo en su arma. Los normales (I-III) salen en la mesa de encantamientos; los **legendarios** no: se
+encuentran en cofres y los venden los aldeanos bibliotecarios (más caros). Con un libro se ponen en el yunque.
+
+| Arma | Encantamiento | Efecto |
+|---|---|---|
+| Excalibur | **Radiant Blade** (I-III) | Cargando más de 1 s y soltando antes de Excalibur, el tajo deja llamas delante 3 s; el nivel sube el radio y el daño. |
+| Excalibur | **Avalon's Grace** (legendario) | Mientras cargas, regeneración; al soltar (tras 1 s de carga) te curas 2 corazones. |
+| Kanshō y Bakuya | **Yin-Yang Resonance** (I-III) | Al golpear con uno, 15/30/45 % de que la pareja de la otra mano golpee justo después. |
+| Kanshō y Bakuya | **Trace Resilience** (legendario) | Llevándolos encima, las proyecciones de Trace On duran el triple (3 min). |
+| Arco de Archer | **Broken Blade** (I-III) | Las espadas disparadas tienen 15/30/45 % de dar Marchitamiento (más largo con el nivel). No afecta a no-muertos. |
+| Arco de Archer | **Phantasm Bloom** (legendario) | La explosión de Caladbolg II es un 50 % más grande, sin gastar más maná. |
+| Gáe Bolg | **Cursed Thrust** (I-III) | La estocada a fondo hace +20 % de daño por nivel (ignora la armadura, como toda la Gáe Bolg). |
+| Gáe Bolg | **Bloodied Spear** (legendario) | Quien muere a tus manos deja un círculo de sangre 6 s que da Marchitamiento y Lentitud a quien lo pisa. |
+| Daga de Rider | **Chain Whip** (I-III) | El enganchado por la cadena queda débil y lento (más tiempo con el nivel). |
+| Daga de Rider | **Gorgon's Grip** (legendario) | Con la daga en la mano, Ojos Místicos remata a los petrificados (el doble si están malheridos). |
+| Ea | **World Severance** (legendario) | Enuma Elish es un 40 % más ancho y, con `fateAbilitiesBreakBlocks`, los bloques que arranca salen volando como escombros. |
+| Rule Breaker | **Contract Breaker** (legendario) | Al apuñalar a alguien con mejoras, le quitas la más fuerte y la recibes tú un segundo después. |
+| Monohoshizao | **Heartbeat** (legendario) | 5 % de acertar en el corazón: los monstruos normales mueren de golpe; jefes, servants y jugadores reciben 25 de daño. |
+| Hacha-espada de Berserker | **God Hand** (legendario, I-III) | Al bajar del 30 % de vida, Resistencia III y Absorción durante 4/6/8 s (una vez por minuto). |
+
 ## Animaciones del cuerpo
 
 Con [Player Animator](https://modrinth.com/mod/playeranimator) (va incluido en el jar), los demás jugadores y tú en
@@ -229,7 +251,7 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `glow`, `armors`, `grailwar`, o varios separados por
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `glow`, `armors`, `grailwar`, o varios separados por
   comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
   anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 

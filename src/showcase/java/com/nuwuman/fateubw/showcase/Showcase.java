@@ -137,6 +137,7 @@ public class Showcase implements ClientModInitializer {
             case "caster" -> caster(client, p, st);
             case "ishtar" -> ishtar(client, p, st);
             case "falchions" -> falchions(client, p, st);
+            case "enchants" -> enchants(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
             default -> true;
@@ -722,6 +723,115 @@ public class Showcase implements ClientModInitializer {
                 shot(c, "caster_07_spatial_transfer");
             }
             case 130 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Encantamientos: cada uno se activa contra un husk delante y se comprueba en el servidor
+    private boolean enchants(MinecraftClient c, ClientPlayerEntity p, int t) {
+        var server = c.getServer();
+        var sp = server == null ? null : server.getPlayerManager().getPlayer(p.getUuid());
+        if (sp == null) return t > 400;
+        var husk = sp.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, sp.getBoundingBox().expand(8), e -> true)
+                .stream().findFirst().orElse(null);
+        String hp = husk == null ? "sin husk" : "husk " + husk.getHealth() + " efectos " + husk.getStatusEffects().stream()
+                .map(e -> e.getEffectType().getIdAsString()).toList();
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{
+                        "hotbar.0 with fate_ubw:excalibur[enchantments={levels:{'fate_ubw:radiant_blade':3,'fate_ubw:avalons_grace':1}}]",
+                        "hotbar.1 with fate_ubw:kanshou[enchantments={levels:{'fate_ubw:yin_yang_resonance':3}}]",
+                        "weapon.offhand with fate_ubw:bakuya",
+                        "hotbar.2 with fate_ubw:archer_bow[enchantments={levels:{'fate_ubw:broken_blade':3}}]",
+                        "hotbar.3 with fate_ubw:rule_breaker[enchantments={levels:{'fate_ubw:contract_breaker':1}}]",
+                        "hotbar.4 with fate_ubw:berserker_axe_sword[enchantments={levels:{'fate_ubw:god_hand':3}}]",
+                        "hotbar.5 with fate_ubw:gae_bolg[enchantments={levels:{'fate_ubw:bloodied_spear':1}}]"},
+                        new String[]{"~ ~ ~3"});
+                p.networkHandler.sendChatCommand("gamemode survival");
+            }
+            // Radiant Blade y Avalon's Grace: cargar 1,5 s y soltar
+            case 30 -> {
+                sp.setHealth(10.0F);
+                use(c, p);
+            }
+            case 55 -> log("avalon, regeneración mientras carga: " + sp.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.REGENERATION));
+            case 62 -> holdUse = false;
+            case 66 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+                log("radiant blade: " + hp + ", vida jugador " + sp.getHealth());
+            }
+            case 75 -> {
+                shot(c, "ench_01_radiant_blade");
+                log("radiant blade tras 0,5 s: " + hp + ", en llamas " + (husk != null && husk.isOnFire()));
+            }
+            // Yin-Yang Resonance: diez golpes con Kanshō (Bakuya en la otra mano)
+            case 90 -> {
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+                p.networkHandler.sendChatCommand("kill @e[type=husk]");
+                p.networkHandler.sendChatCommand("summon husk ~ ~ ~2 {NoAI:1b,PersistenceRequired:1b,Health:200f,attributes:[{id:'minecraft:generic.max_health',base:200d}]}");
+                p.getInventory().selectedSlot = 1;
+            }
+            case 100, 112, 124, 136, 148, 160 -> {
+                if (husk != null) c.interactionManager.attackEntity(p, c.world.getEntityById(husk.getId()));
+                p.swingHand(Hand.MAIN_HAND);
+            }
+            case 170 -> log("yin-yang tras 6 golpes (sin encantamiento serían 6x9=54): " + hp);
+            // Broken Blade: tres flechas
+            case 175 -> {
+                p.getInventory().selectedSlot = 2;
+                pitch = 5.0F;
+            }
+            case 180, 205, 230 -> use(c, p);
+            case 198, 223, 248 -> holdUse = false;
+            case 255 -> log("broken blade: " + hp);
+            // Contract Breaker: el husk tiene Velocidad II
+            case 260 -> {
+                pitch = 0.0F;
+                p.getInventory().selectedSlot = 3;
+                p.networkHandler.sendChatCommand("effect give @e[type=husk] speed 60 1");
+            }
+            case 266 -> {
+                if (husk != null) c.interactionManager.attackEntity(p, c.world.getEntityById(husk.getId()));
+                p.swingHand(Hand.MAIN_HAND);
+            }
+            case 272 -> log("contract breaker, nada más golpear: " + hp + ", jugador con velocidad " + sp.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.SPEED));
+            case 292 -> log("contract breaker, 1 s después: jugador con velocidad " + sp.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.SPEED));
+            // God Hand: con poca vida
+            case 300 -> {
+                p.getInventory().selectedSlot = 4;
+                sp.setHealth(20.0F);
+                sp.clearStatusEffects();
+            }
+            case 305 -> sp.damage(sp.getServerWorld().getDamageSources().generic(), 15.0F);
+            case 308 -> log("god hand: vida " + sp.getHealth() + ", resistencia " + sp.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.RESISTANCE)
+                    + ", absorción " + sp.getAbsorptionAmount());
+            // Bloodied Spear: matar con la Gáe Bolg deja el círculo
+            case 315 -> {
+                p.getInventory().selectedSlot = 5;
+                sp.setHealth(20.0F);
+                p.networkHandler.sendChatCommand("kill @e[type=husk]");
+                p.networkHandler.sendChatCommand("summon husk ~ ~ ~2 {NoAI:1b,PersistenceRequired:1b,Health:1f}");
+                p.networkHandler.sendChatCommand("summon husk ~1 ~ ~3 {NoAI:1b,PersistenceRequired:1b}");
+            }
+            case 325 -> {
+                var first = sp.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, sp.getBoundingBox().expand(3),
+                        e -> e.getHealth() <= 1.0F).stream().findFirst().orElse(null);
+                if (first != null) c.interactionManager.attackEntity(p, c.world.getEntityById(first.getId()));
+                p.swingHand(Hand.MAIN_HAND);
+            }
+            case 345 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+                log("bloodied spear, el husk de al lado: " + sp.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class,
+                        sp.getBoundingBox().expand(8), e -> e.isAlive()).stream()
+                        .map(e -> e.getHealth() + " " + e.getStatusEffects().stream().map(x -> x.getEffectType().getIdAsString()).toList()).toList());
+            }
+            case 352 -> shot(c, "ench_02_bloodied_spear");
+            case 360 -> {
+                p.networkHandler.sendChatCommand("gamemode creative");
                 return true;
             }
             default -> {

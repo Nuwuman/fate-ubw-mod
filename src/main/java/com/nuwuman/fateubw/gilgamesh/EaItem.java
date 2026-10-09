@@ -139,7 +139,8 @@ public class EaItem extends SwordItem implements GeoItem {
         com.nuwuman.fateubw.PlayerAnims.play(player, "enuma_elish");
         if (!(world instanceof ServerWorld server)) return;
 
-        EnumaElishEntity.fire(server, player);
+        EnumaElishEntity.fire(server, player, com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack,
+                com.nuwuman.fateubw.enchant.FateEnchantments.WORLD_SEVERANCE) > 0);
         com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
         player.swingHand(player.getActiveHand(), true);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.2F, 1.4F);

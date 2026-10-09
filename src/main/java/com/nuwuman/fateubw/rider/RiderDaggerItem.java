@@ -59,6 +59,8 @@ public class RiderDaggerItem extends SwordItem {
         Vec3d dir = player.getRotationVec(1.0F);
         world.spawnParticles(PURPLE, eye.x + dir.x * 0.4, eye.y, eye.z + dir.z * 0.4, 20, 0.15, 0.05, 0.15, 0.0);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 0.8F, 1.4F);
+        boolean grip = com.nuwuman.fateubw.enchant.FateEnchantments.held(player, FateUBW.RIDER_DAGGER,
+                com.nuwuman.fateubw.enchant.FateEnchantments.GORGONS_GRIP) > 0;
 
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(MYSTIC_EYES_RANGE),
                 e -> e != player && e.isAlive() && player.canSee(e) && com.nuwuman.fateubw.Rules.canAffect(player, e))) {
@@ -70,6 +72,13 @@ public class RiderDaggerItem extends SwordItem {
             world.spawnParticles(STONE, target.getX(), target.getBodyY(0.5), target.getZ(), 30,
                     target.getWidth() / 2, target.getHeight() / 3, target.getWidth() / 2, 0.0);
             world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BLOCK_STONE_PLACE, SoundCategory.PLAYERS, 1.0F, 0.6F);
+            // Gorgon's Grip: con la daga en la mano, la daga remata al petrificado (el doble si ya está malherido)
+            if (grip) {
+                target.timeUntilRegen = 0;
+                target.damage(world.getDamageSources().playerAttack(player), target.getHealth() < target.getMaxHealth() / 2 ? 12.0F : 6.0F);
+                world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.5), target.getZ(), 15, 0.3, 0.4, 0.3, 0.2);
+                world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BLOCK_STONE_BREAK, SoundCategory.PLAYERS, 1.2F, 0.5F);
+            }
         }
         return true;
     }

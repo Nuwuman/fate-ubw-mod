@@ -107,6 +107,30 @@ public class RuleBreakerItem extends SwordItem implements GeoItem {
         com.nuwuman.fateubw.Voices.say(world, user, "rule_breaker");
     }
 
+    // Contract Breaker: al apuñalar a alguien con mejoras, le arranca la más fuerte y te la pasa un segundo después
+    @Override
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker.getWorld() instanceof ServerWorld world && com.nuwuman.fateubw.Rules.canAffect(attacker, target)
+                && com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack, com.nuwuman.fateubw.enchant.FateEnchantments.CONTRACT_BREAKER) > 0) {
+            target.getStatusEffects().stream()
+                    .filter(e -> e.getEffectType().value().isBeneficial())
+                    .max(java.util.Comparator.comparingInt(net.minecraft.entity.effect.StatusEffectInstance::getAmplifier)
+                            .thenComparingInt(net.minecraft.entity.effect.StatusEffectInstance::getDuration))
+                    .ifPresent(buff -> {
+                        net.minecraft.entity.effect.StatusEffectInstance stolen = new net.minecraft.entity.effect.StatusEffectInstance(buff);
+                        target.removeStatusEffect(buff.getEffectType());
+                        world.spawnParticles(ParticleTypes.ENCHANT, target.getX(), target.getBodyY(0.5), target.getZ(), 20, 0.3, 0.5, 0.3, 0.5);
+                        com.nuwuman.fateubw.enchant.FateEnchantments.later(20, () -> {
+                            if (!attacker.isAlive()) return;
+                            attacker.addStatusEffect(stolen);
+                            world.spawnParticles(ParticleTypes.WITCH, attacker.getX(), attacker.getBodyY(0.5), attacker.getZ(), 15, 0.3, 0.5, 0.3, 0.0);
+                            world.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, SoundCategory.PLAYERS, 1.0F, 1.4F);
+                        });
+                    });
+        }
+        return super.postHit(stack, target, attacker);
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.fate_ubw.rule_breaker.tooltip").formatted(Formatting.LIGHT_PURPLE));

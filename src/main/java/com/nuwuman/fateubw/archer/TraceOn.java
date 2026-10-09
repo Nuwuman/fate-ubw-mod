@@ -115,7 +115,7 @@ public final class TraceOn {
             return false;
         }
         ServerWorld world = player.getServerWorld();
-        long expiry = world.getTime() + LIFETIME;
+        long expiry = world.getTime() + (resilient(player) ? LIFETIME * 3 : LIFETIME);
         ItemStack memory = memory(player);
         if (memory.isEmpty()) {
             // Sin nada analizado: Kanshō en la mano y Bakuya en la otra (o en el inventario)
@@ -205,6 +205,17 @@ public final class TraceOn {
                 player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_AMETHYST_BLOCK_BREAK, SoundCategory.PLAYERS, 1.0F, 1.2F);
             }
         }
+    }
+
+    // Trace Resilience: llevar unos Kanshō o Bakuya con ese encantamiento hace que las proyecciones duren el triple
+    private static boolean resilient(ServerPlayerEntity player) {
+        PlayerInventory inventory = player.getInventory();
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
+            if ((stack.isOf(FateUBW.KANSHOU) || stack.isOf(FateUBW.BAKUYA)) && com.nuwuman.fateubw.enchant.FateEnchantments.level(
+                    player.getWorld(), stack, com.nuwuman.fateubw.enchant.FateEnchantments.TRACE_RESILIENCE) > 0) return true;
+        }
+        return false;
     }
 
     private static boolean expired(ItemStack stack, long now) {

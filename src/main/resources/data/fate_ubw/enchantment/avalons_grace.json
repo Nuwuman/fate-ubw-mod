@@ -1,0 +1,20 @@
+{
+  "description": {
+    "translate": "enchantment.fate_ubw.avalons_grace"
+  },
+  "supported_items": "fate_ubw:excalibur",
+  "weight": 1,
+  "max_level": 1,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 65,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "mainhand"
+  ]
+}

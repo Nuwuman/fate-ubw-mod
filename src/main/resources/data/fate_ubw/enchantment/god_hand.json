@@ -1,0 +1,20 @@
+{
+  "description": {
+    "translate": "enchantment.fate_ubw.god_hand"
+  },
+  "supported_items": "fate_ubw:berserker_axe_sword",
+  "weight": 1,
+  "max_level": 3,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 65,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 8,
+  "slots": [
+    "hand"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "description": {
+    "translate": "enchantment.fate_ubw.chain_whip"
+  },
+  "supported_items": "fate_ubw:rider_dagger",
+  "weight": 3,
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 45,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "hand"
+  ]
+}

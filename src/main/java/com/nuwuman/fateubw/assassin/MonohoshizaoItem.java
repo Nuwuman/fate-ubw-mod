@@ -31,6 +31,7 @@ import java.util.List;
  * Mantén 1 s y suelta: Tsubame Gaeshi, tres cortes que caen a la vez y no se pueden esquivar.
  */
 public class MonohoshizaoItem extends SwordItem {
+    private static final float HEARTBEAT_CHANCE = 0.05F;
     public static final int CHARGE = 20;
     public static final int COOLDOWN = 20 * 15;
     private static final float CUT_DAMAGE = 9.0F;
@@ -109,6 +110,23 @@ public class MonohoshizaoItem extends SwordItem {
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 1.5F, 0.8F);
         player.sendMessage(Text.literal("Tsubame Gaeshi").formatted(Formatting.AQUA, Formatting.BOLD), true);
         com.nuwuman.fateubw.Voices.say(world, player, "tsubame_gaeshi");
+    }
+
+    // Heartbeat: a veces el filo acierta en el corazón. Los monstruos normales mueren de golpe; jefes y jugadores
+    // reciben un golpe enorme
+    @Override
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker.getWorld() instanceof ServerWorld world && target.isAlive() && attacker instanceof PlayerEntity player
+                && com.nuwuman.fateubw.Rules.canAffect(player, target) && world.random.nextFloat() < HEARTBEAT_CHANCE
+                && com.nuwuman.fateubw.enchant.FateEnchantments.level(world, stack, com.nuwuman.fateubw.enchant.FateEnchantments.HEARTBEAT) > 0) {
+            boolean tough = target instanceof PlayerEntity || target instanceof com.nuwuman.fateubw.npc.HostileServantEntity
+                    || target.getType().isIn(net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags.BOSSES);
+            target.timeUntilRegen = 0;
+            target.damage(world.getDamageSources().playerAttack(player), tough ? 25.0F : target.getHealth() + 100.0F);
+            world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getBodyY(0.5), target.getZ(), 12, 0.3, 0.4, 0.3, 0.1);
+            world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_WARDEN_HEARTBEAT, SoundCategory.PLAYERS, 2.0F, 1.0F);
+        }
+        return super.postHit(stack, target, attacker);
     }
 
     @Override
