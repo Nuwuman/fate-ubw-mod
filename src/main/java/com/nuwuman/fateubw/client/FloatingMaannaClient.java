@@ -141,13 +141,13 @@ public final class FloatingMaannaClient {
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((1 - k) * (-10.0F + 3.0F * MathHelper.sin(t * 0.05F))));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((1 - k) * 4.0F * MathHelper.sin(t * 0.06F)));
         int light = WorldRenderer.getLightmapCoordinates(world, player.getBlockPos().up());
-        drawBow(client, world, matrices, consumers, light, pull);
+        drawBow(client, world, matrices, consumers, light, pull, start != null);
         matrices.pop();
     }
 
     // El arco en el plano YZ: el centro (la empuñadura) en el origen, curvado hacia delante, puntas detrás arriba y abajo
     private static void drawBow(MinecraftClient client, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumers,
-                                int light, float pull) {
+                                int light, float pull, boolean nocked) {
         float step = 2 * ARC / SEGMENTS;
         for (int i = 0; i < SEGMENTS; i++) {
             float theta = -ARC + (i + 0.5F) * step;
@@ -168,8 +168,15 @@ public final class FloatingMaannaClient {
         Vec3d middle = top.add(bottom).multiply(0.5).add(0.0, 0.0, -0.9 * pull);
         VertexConsumer vc = consumers.getBuffer(RenderLayer.getLightning());
         Matrix4f m = matrices.peek().getPositionMatrix();
-        line(vc, m, top, middle);
-        line(vc, m, middle, bottom);
+        line(vc, m, top, middle, 0.025F);
+        line(vc, m, middle, bottom, 0.025F);
+        if (!nocked) return;
+        // Flecha de luz cargada en la cuerda: del centro de la cuerda a pasada la empuñadura, con punta
+        Vec3d tip = new Vec3d(0.0, 0.0, 1.0);
+        line(vc, m, middle, tip, 0.045F);
+        for (Vec3d barb : new Vec3d[]{new Vec3d(0.2, 0.0, 0.72), new Vec3d(-0.2, 0.0, 0.72), new Vec3d(0.0, 0.2, 0.72), new Vec3d(0.0, -0.2, 0.72)}) {
+            line(vc, m, tip, barb, 0.04F);
+        }
     }
 
     private static Vec3d point(float theta) {
@@ -185,8 +192,7 @@ public final class FloatingMaannaClient {
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-(theta + 90.0F)));
     }
 
-    private static void line(VertexConsumer vc, Matrix4f m, Vec3d a, Vec3d b) {
-        float t = 0.025F;
+    private static void line(VertexConsumer vc, Matrix4f m, Vec3d a, Vec3d b, float t) {
         quad(vc, m, a.add(-t, 0, 0), a.add(t, 0, 0), b.add(t, 0, 0), b.add(-t, 0, 0));
         quad(vc, m, a.add(0, 0, -t), a.add(0, 0, t), b.add(0, 0, t), b.add(0, 0, -t));
     }
