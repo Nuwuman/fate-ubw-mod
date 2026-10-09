@@ -68,7 +68,7 @@ public final class EnkiduClient {
             Vec3d side = new Vec3d(anchor.x - pos.x, 0.0, anchor.z - pos.z).normalize().multiply(r);
             Vec3d grab = new Vec3d(pos.x + side.x, grabY, pos.z + side.z);
             link(consumers, entry, anchor, anchor.lerp(grab, reach), age * 0.02F);
-            portal(consumers, entry, anchor, grab.subtract(anchor).normalize(), reach);
+            portal(matrices, consumers, anchor, grab.subtract(anchor).normalize(), age, reach);
         }
         // Dos vueltas alrededor del cuerpo, cuando las cadenas ya han llegado
         if (reach < 0.95F) return;
@@ -118,23 +118,14 @@ public final class EnkiduClient {
                 .light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(entry, 0.0F, 1.0F, 0.0F);
     }
 
-    // El portal dorado del que sale la cadena: un aro de luz perpendicular a ella
-    private static void portal(VertexConsumerProvider consumers, MatrixStack.Entry entry, Vec3d center, Vec3d normal, float open) {
-        VertexConsumer vc = consumers.getBuffer(RenderLayer.getLightning());
-        Vec3d u = normal.crossProduct(Math.abs(normal.y) > 0.9 ? new Vec3d(1, 0, 0) : new Vec3d(0, 1, 0)).normalize();
-        Vec3d v = normal.crossProduct(u).normalize();
-        float outer = 0.45F * Math.max(open, 0.2F), inner = outer * 0.7F;
-        int n = 16;
-        for (int k = 0; k < n; k++) {
-            double a0 = Math.PI * 2 * k / n, a1 = Math.PI * 2 * (k + 1) / n;
-            Vec3d d0 = u.multiply(Math.cos(a0)).add(v.multiply(Math.sin(a0))), d1 = u.multiply(Math.cos(a1)).add(v.multiply(Math.sin(a1)));
-            Vec3d[] quad = {center.add(d0.multiply(inner)), center.add(d0.multiply(outer)), center.add(d1.multiply(outer)), center.add(d1.multiply(inner))};
-            for (int side = 0; side < 2; side++) {
-                for (int j = 0; j < 4; j++) {
-                    Vec3d p = quad[side == 0 ? j : 3 - j];
-                    vc.vertex(entry.getPositionMatrix(), (float) p.x, (float) p.y, (float) p.z).color(200, 130, 20, 200);
-                }
-            }
-        }
+    // El portal dorado del que sale la cadena: el mismo remolino que el Gate of Babylon, de cara al atado
+    private static void portal(MatrixStack matrices, VertexConsumerProvider consumers, Vec3d center, Vec3d normal, float age, float open) {
+        matrices.push();
+        matrices.translate(center.x, center.y, center.z);
+        matrices.multiply(new org.joml.Quaternionf().rotationTo(0.0F, 1.0F, 0.0F, (float) normal.x, (float) normal.y, (float) normal.z));
+        matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(age * 6.0F));
+        BabylonPortalRenderer.drawPortal(consumers.getBuffer(RenderLayer.getLightning()), matrices.peek().getPositionMatrix(),
+                0.6F * Math.max(open, 0.2F), age);
+        matrices.pop();
     }
 }
