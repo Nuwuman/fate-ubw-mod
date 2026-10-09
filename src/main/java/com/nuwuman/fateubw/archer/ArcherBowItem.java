@@ -61,7 +61,7 @@ public class ArcherBowItem extends BowItem {
 
         boolean wantsCaladbolg = player.isSneaking() && pull >= 1.0F;
         if (wantsCaladbolg && caladbolgReady(player)) {
-            com.nuwuman.fateubw.PlayerAnims.play(player, "caladbolg_hold");
+            com.nuwuman.fateubw.PlayerAnims.play(player, "bow_hold");
             com.nuwuman.fateubw.PlayerAnims.cinematic(player);
         }
         if (!(world instanceof ServerWorld server)) return;
@@ -73,6 +73,9 @@ public class ArcherBowItem extends BowItem {
             stack.damage(1, player, LivingEntity.getSlotForHand(player.getActiveHand()));
             com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
                 if (!player.isAlive()) return;
+                if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
+                    com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "bow_release");
+                }
                 SwordArrowEntity arrow = new SwordArrowEntity(server, player, stack, true);
                 arrow.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 4.5F, 0.0F);
                 arrow.setCritical(true);

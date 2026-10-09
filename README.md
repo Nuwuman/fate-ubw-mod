@@ -205,7 +205,8 @@ tercera persona veis cómo se mueve todo el cuerpo:
 - **Gáe Bolg**: estocada a fondo al atravesar; al lanzarla (agachado), la echas atrás por encima de la cabeza y la arrojas.
 - **Rule Breaker**: puñalada de arriba abajo.
 - **Rho Aias**: la mano abierta al frente sosteniendo el escudo.
-- **Maanna**: al soltar An Gal Ta Kigal Shè, el mismo gesto que Enuma Elish.
+- **Maanna y el arco de Archer**: con An Gal Ta Kigal Shè o Caladbolg II mantienes el arco tenso un segundo y, al
+  soltar, la mano de la cuerda sale hacia atrás y el cuerpo recibe el retroceso.
 - **Monohoshizao**: guardia baja con el cuerpo girado mientras concentras, y los tres cortes de Tsubame Gaeshi.
 - **Kanshō y Bakuya**: el brazo que lanza (o los dos, si lanzas la pareja) con giro del torso.
 

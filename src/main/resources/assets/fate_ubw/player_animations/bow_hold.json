@@ -1,7 +1,7 @@
 {
   "format_version": "1.8.0",
   "animations": {
-    "caladbolg_hold": {
+    "bow_hold": {
       "animation_length": 1.05,
       "loop": false,
       "bones": {
