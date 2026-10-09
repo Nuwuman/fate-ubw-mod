@@ -9,7 +9,14 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.world.PersistentState;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -35,14 +42,68 @@ import java.util.UUID;
  * La Guerra del Santo Grial: {@code /grailwar start} reparte un servant distinto (si hay bastantes) a cada jugador
  * conectado, con su equipo, el maná lleno y tres Sellos de Comando. Quien muere queda como espectador hasta el final.
  * El último en pie gana el Santo Grial. {@code /grailwar stop} la termina; {@code /grailwar status} dice quién sigue.
- * Solo vive en memoria: si el servidor se reinicia, la guerra termina.
+ * Se guarda con el mundo: si el servidor se reinicia (o se cae), la guerra sigue donde estaba.
  */
 public final class GrailWar {
     // Participantes que siguen en pie, con su clase
     private static final Map<UUID, String> ALIVE = new LinkedHashMap<>();
     // Eliminados y el modo de juego que tenían, para devolvérselo al terminar
     private static final Map<UUID, GameMode> FALLEN = new HashMap<>();
+    // Eliminados que no estaban conectados al terminar: recuperan su modo de juego al volver
+    private static final Map<UUID, GameMode> RESTORE = new HashMap<>();
     private static boolean active;
+
+    /** Copia en disco del estado; es diminuto, así que se reescribe en cada autoguardado. */
+    private static final class Saved extends PersistentState {
+        @Override
+        public boolean isDirty() {
+            return true;
+        }
+
+        @Override
+        public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+            nbt.putBoolean("active", active);
+            NbtList alive = new NbtList();
+            ALIVE.forEach((id, servant) -> {
+                NbtCompound e = new NbtCompound();
+                e.putUuid("id", id);
+                e.putString("servant", servant);
+                alive.add(e);
+            });
+            nbt.put("alive", alive);
+            nbt.put("fallen", modes(FALLEN));
+            nbt.put("restore", modes(RESTORE));
+            return nbt;
+        }
+
+        static Saved load(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
+            active = nbt.getBoolean("active");
+            for (NbtElement e : nbt.getList("alive", NbtElement.COMPOUND_TYPE)) {
+                ALIVE.put(((NbtCompound) e).getUuid("id"), ((NbtCompound) e).getString("servant"));
+            }
+            modes(nbt.getList("fallen", NbtElement.COMPOUND_TYPE), FALLEN);
+            modes(nbt.getList("restore", NbtElement.COMPOUND_TYPE), RESTORE);
+            return new Saved();
+        }
+
+        private static NbtList modes(Map<UUID, GameMode> map) {
+            NbtList list = new NbtList();
+            map.forEach((id, mode) -> {
+                NbtCompound e = new NbtCompound();
+                e.putUuid("id", id);
+                e.putInt("mode", mode.getId());
+                list.add(e);
+            });
+            return list;
+        }
+
+        private static void modes(NbtList list, Map<UUID, GameMode> into) {
+            for (NbtElement e : list) into.put(((NbtCompound) e).getUuid("id"), GameMode.byId(((NbtCompound) e).getInt("mode")));
+        }
+    }
+
+    private static final PersistentState.Type<Saved> SAVED_TYPE = new PersistentState.Type<>(Saved::new, Saved::load,
+            DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     private GrailWar() {
     }
@@ -64,12 +125,20 @@ public final class GrailWar {
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             if (active && FALLEN.containsKey(newPlayer.getUuid())) newPlayer.changeGameMode(GameMode.SPECTATOR);
         });
+        // Salir es rendirse, salvo cuando es el servidor el que cierra (o el anfitrión del mundo local, que lo cierra)
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            if (active) eliminate(handler.getPlayer(), false);
+            if (active && server.isRunning() && !server.isHost(handler.getPlayer().getGameProfile())) eliminate(handler.getPlayer(), false);
         });
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            GameMode mode = RESTORE.remove(handler.getPlayer().getUuid());
+            if (mode != null) handler.getPlayer().changeGameMode(mode == GameMode.SPECTATOR ? GameMode.SURVIVAL : mode);
+        });
+        ServerLifecycleEvents.SERVER_STARTED.register(server ->
+                server.getOverworld().getPersistentStateManager().getOrCreate(SAVED_TYPE, "fate_ubw_grailwar"));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             ALIVE.clear();
             FALLEN.clear();
+            RESTORE.clear();
             active = false;
         });
     }
@@ -111,8 +180,9 @@ public final class GrailWar {
         if (!active) return fail(ctx, "command.fate_ubw.grailwar.none");
         MinecraftServer server = ctx.getSource().getServer();
         for (Map.Entry<UUID, String> entry : ALIVE.entrySet()) {
-            ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
-            String name = player != null ? player.getName().getString() : "?";
+            // Tras un reinicio puede quedar alguien desconectado: su nombre sale de la caché de perfiles
+            String name = server.getUserCache() == null ? "?"
+                    : server.getUserCache().getByUuid(entry.getKey()).map(GameProfile::getName).orElse("?");
             ctx.getSource().sendFeedback(() -> Text.literal(name + " — ").append(Text.translatable("servant.fate_ubw." + entry.getValue())), false);
         }
         return ALIVE.size();
@@ -150,6 +220,7 @@ public final class GrailWar {
         for (Map.Entry<UUID, GameMode> entry : FALLEN.entrySet()) {
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
             if (player != null) player.changeGameMode(entry.getValue() == GameMode.SPECTATOR ? GameMode.SURVIVAL : entry.getValue());
+            else RESTORE.put(entry.getKey(), entry.getValue());
         }
         ALIVE.clear();
         FALLEN.clear();

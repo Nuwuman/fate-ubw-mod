@@ -48,10 +48,24 @@ public class Showcase implements ClientModInitializer {
         ticks++;
         client.options.pauseOnLostFocus = false;
         if (client.world == null || client.player == null) {
+            // Al reabrir un mundo de prueba pregunta si hacer copia de seguridad: se carga sin ella
+            if (client.currentScreen instanceof net.minecraft.client.gui.screen.world.BackupPromptScreen s) {
+                String skip = net.minecraft.text.Text.translatable("selectWorld.backupJoinSkipButton").getString();
+                for (var child : s.children()) {
+                    if (child instanceof net.minecraft.client.gui.widget.ButtonWidget b && b.getMessage().getString().equals(skip)) b.onPress();
+                }
+            }
             if (!started && ticks > 40 && client.getOverlay() == null) {
                 started = true;
                 client.options.onboardAccessibility = false;
                 log("creando mundo");
+                // FATE_WORLD=<carpeta> reabre un mundo de una ejecución anterior (para probar lo que se guarda)
+                String reopen = System.getenv("FATE_WORLD");
+                if (reopen != null) {
+                    client.createIntegratedServerLoader().start(reopen, () -> {
+                    });
+                    return;
+                }
                 LevelInfo info = new LevelInfo("showcase", GameMode.CREATIVE, false, Difficulty.EASY, true,
                         new GameRules(), DataConfiguration.SAFE_MODE);
                 client.createIntegratedServerLoader().createAndStart("showcase-" + System.currentTimeMillis(), info,
@@ -114,6 +128,7 @@ public class Showcase implements ClientModInitializer {
             case "hud" -> hud(client, p, st);
             case "mana" -> mana(client, p, st);
             case "grail" -> grail(client, p, st);
+            case "grailwar" -> grailWar(p, st);
             case "masters" -> masters(client, p, st);
             case "npc" -> npc(client, p, st);
             case "newnps" -> newNps(client, p, st);
@@ -849,6 +864,16 @@ public class Showcase implements ClientModInitializer {
     }
 
     // Invocación con catalizador y el Santo Grial
+    // Guerra que sobrevive al reinicio: la primera ejecución la empieza; con FATE_WORLD, la segunda comprueba que sigue
+    private boolean grailWar(ClientPlayerEntity p, int t) {
+        if (t == 0) {
+            log("guerra al cargar: " + com.nuwuman.fateubw.grail.GrailWar.active());
+            if (System.getenv("FATE_WORLD") == null) p.networkHandler.sendChatCommand("grailwar start");
+        }
+        if (t == 20) log("guerra activa: " + com.nuwuman.fateubw.grail.GrailWar.active());
+        return t >= 20;
+    }
+
     private boolean grail(MinecraftClient c, ClientPlayerEntity p, int t) {
         switch (t) {
             case 0 -> setup(c, p, new String[]{"hotbar.0 with fate_ubw:summoning_circle", "weapon.offhand with minecraft:prismarine_shard"},

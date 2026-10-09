@@ -13,7 +13,6 @@
 
 - **Servants aliados**: invocar un servant que luche a tu lado en vez de llevar su equipo.
 - **Servants enemigos guardando estructuras** (ahora aparecen sueltos de noche).
-- **Guerra del Santo Grial guardada**: ahora vive en memoria; si el servidor se reinicia, la guerra termina.
 
 ## Problemas conocidos
 
