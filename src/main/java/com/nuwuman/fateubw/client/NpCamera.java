@@ -12,8 +12,8 @@ import net.minecraft.util.math.MathHelper;
  */
 public final class NpCamera {
     private static final int DURATION = 50, EASE = 10;
-    private static final float FAR = 1.6F; // veces la distancia normal de tercera persona
-    private static final float ORBIT = 35.0F;
+    private static final float FAR = 1.25F; // veces la distancia normal de tercera persona
+    private static final float ORBIT = 45.0F;
     private static final float TILT = 20.0F;
     private static long start = -1;
     private static long ticks;
