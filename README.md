@@ -163,7 +163,8 @@ encuentran, los dos se frenan en el punto de choque y empujan durante unos 0,7 s
 más maná en ese momento: el otro estalla y el ganador sigue hasta su largo completo.
 
 **Plano de cámara**: al lanzar Excalibur, Enuma Elish, An Gal Ta Kigal Shè, Caladbolg II o la Gáe Bolg arrojada, la
-cámara pasa a tercera persona y se aleja detrás de ti unos 2,5 s para ver el ataque entero; luego vuelve a tu vista.
+cámara pasa a tercera persona, se aleja y gira hasta quedar detrás de ti a la derecha, en diagonal, para ver cómo lo
+lanzas y el ataque entero; a los 2,5 s vuelve a tu vista.
 
 ## Encantamientos
 

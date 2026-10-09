@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 public final class NpCamera {
     private static final int DURATION = 50, EASE = 10;
     private static final float FAR = 2.6F; // veces la distancia normal de tercera persona
+    private static final float ORBIT = 35.0F;
     private static long start = -1;
     private static long ticks;
     private static Perspective previous;
@@ -42,13 +43,22 @@ public final class NpCamera {
         return ticks - start + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
     }
 
-    /** Multiplica la distancia de la cámara en tercera persona: sube suave, se mantiene y vuelve. */
-    public static float distanceFactor() {
-        if (start < 0) return 1.0F;
+    // 0..1: sube suave, se mantiene y vuelve
+    private static float ease() {
+        if (start < 0) return 0.0F;
         float t = elapsedTicks();
         float in = MathHelper.clamp(t / EASE, 0.0F, 1.0F), out = MathHelper.clamp((DURATION - t) / EASE, 0.0F, 1.0F);
         float k = Math.min(in, out);
-        k = k * k * (3 - 2 * k);
-        return 1.0F + (FAR - 1.0F) * k;
+        return k * k * (3 - 2 * k);
+    }
+
+    /** Multiplica la distancia de la cámara en tercera persona. */
+    public static float distanceFactor() {
+        return 1.0F + (FAR - 1.0F) * ease();
+    }
+
+    /** Grados que la cámara gira alrededor del jugador: queda detrás y a la derecha, en diagonal. */
+    public static float orbit() {
+        return ORBIT * ease();
     }
 }
