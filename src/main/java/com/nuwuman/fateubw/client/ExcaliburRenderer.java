@@ -15,6 +15,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
+import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 /**
  * Excalibur con GeckoLib: textura dorada al cargar, la hoja brilla en la oscuridad solo mientras carga,
@@ -24,6 +25,9 @@ public class ExcaliburRenderer extends GeoItemRenderer<ExcaliburItem> {
     private static final Identifier NORMAL = FateUBW.id("textures/item/excalibur.png");
     private static final Identifier CHARGING = FateUBW.id("textures/item/excalibur_charging.png");
     private static final Identifier CHARGED = FateUBW.id("textures/item/excalibur_charged.png");
+    // El halo suma su color a lo que hay detrás: a media intensidad para que siga pareciendo translúcido
+    private static final int AURA_COLOUR = 0xFF8C8C8C;
+    private boolean auraPass;
 
     public ExcaliburRenderer() {
         super(new DefaultedItemGeoModel<>(FateUBW.id("excalibur")));
@@ -36,6 +40,25 @@ public class ExcaliburRenderer extends GeoItemRenderer<ExcaliburItem> {
                 }
             }
         });
+        // El halo va aparte, sumando luz y sin escribir profundidad: si se dibuja antes que la hoja ya no la tapa
+        addRenderLayer(new GeoRenderLayer<>(this) {
+            @Override
+            public void render(MatrixStack poseStack, ExcaliburItem animatable, BakedGeoModel bakedModel, @Nullable RenderLayer renderType,
+                               VertexConsumerProvider bufferSource, @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+                if (state() < ExcaliburItem.CHARGING) return;
+                RenderLayer aura = RenderLayer.getEyes(getTextureLocation(animatable));
+                auraPass = true;
+                getRenderer().reRender(bakedModel, poseStack, bufferSource, animatable, aura, bufferSource.getBuffer(aura),
+                        partialTick, packedLight, packedOverlay, AURA_COLOUR);
+                auraPass = false;
+            }
+        });
+    }
+
+    // En la pasada del halo solo se pintan sus cubos; en las demás, todo menos el halo
+    @Override
+    public void renderCubesOfBone(MatrixStack poseStack, GeoBone bone, VertexConsumer buffer, int packedLight, int packedOverlay, int colour) {
+        if (bone.getName().equals("aura") == auraPass) super.renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, colour);
     }
 
     private int state() {
