@@ -1,0 +1,25 @@
+{
+  "parent": "fate_ubw:all_servants",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:holy_grail"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.grail_war"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.grail_war.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

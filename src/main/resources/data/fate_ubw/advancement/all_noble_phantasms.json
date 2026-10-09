@@ -1,0 +1,97 @@
+{
+  "parent": "fate_ubw:noble_phantasm",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:ea"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.all_noble_phantasms"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.all_noble_phantasms.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "excalibur": {
+      "trigger": "minecraft:impossible"
+    },
+    "avalon": {
+      "trigger": "minecraft:impossible"
+    },
+    "enuma_elish": {
+      "trigger": "minecraft:impossible"
+    },
+    "gate_of_babylon": {
+      "trigger": "minecraft:impossible"
+    },
+    "gae_bolg": {
+      "trigger": "minecraft:impossible"
+    },
+    "caladbolg": {
+      "trigger": "minecraft:impossible"
+    },
+    "unlimited_blade_works": {
+      "trigger": "minecraft:impossible"
+    },
+    "rho_aias": {
+      "trigger": "minecraft:impossible"
+    },
+    "rule_breaker": {
+      "trigger": "minecraft:impossible"
+    },
+    "bellerophon": {
+      "trigger": "minecraft:impossible"
+    },
+    "tsubame_gaeshi": {
+      "trigger": "minecraft:impossible"
+    },
+    "nine_lives": {
+      "trigger": "minecraft:impossible"
+    },
+    "an_gal_ta_kigal_she": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "excalibur"
+    ],
+    [
+      "avalon"
+    ],
+    [
+      "enuma_elish"
+    ],
+    [
+      "gate_of_babylon"
+    ],
+    [
+      "gae_bolg"
+    ],
+    [
+      "caladbolg"
+    ],
+    [
+      "unlimited_blade_works"
+    ],
+    [
+      "rho_aias"
+    ],
+    [
+      "rule_breaker"
+    ],
+    [
+      "bellerophon"
+    ],
+    [
+      "tsubame_gaeshi"
+    ],
+    [
+      "nine_lives"
+    ],
+    [
+      "an_gal_ta_kigal_she"
+    ]
+  ]
+}

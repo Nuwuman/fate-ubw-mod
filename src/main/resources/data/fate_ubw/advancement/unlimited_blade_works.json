@@ -1,0 +1,25 @@
+{
+  "parent": "fate_ubw:noble_phantasm",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:unlimited_blade_works"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.unlimited_blade_works"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.unlimited_blade_works.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

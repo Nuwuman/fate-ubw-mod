@@ -1720,6 +1720,30 @@ public class ServantAssets {
         return m;
     }
 
+    // Avalon (referencia: wiki de Type-Moon): vaina de oro con bandas de esmalte azul cruzadas en X, que se estrecha hacia
+    // la punta, y la boca ancha como una guarda. De pie: la boca abajo (y=0) y la punta arriba (y=16)
+    static Model avalonScabbard() {
+        int gold = 0xe8c65a, blue = 0x1f3fb0, light = 0xf8e7a0;
+        Paint lattice = marked(plate(gold), blue, (x, y, w, h) -> Math.floorMod(x + y, 5) == 0 || Math.floorMod(x - y, 5) == 0);
+        Model m = new Model();
+        m.box(4.5, 0.6, 7, 11.5, 2, 9, edged(plate(gold), blue, 1));      // boca, ancha como una guarda
+        m.box(6, 0, 7.4, 10, 0.6, 8.6, plate(blue));
+        m.box(6, 2, 6.9, 10, 7, 9.1, lattice);                               // cuerpo, estrechándose
+        m.box(6.4, 7, 7.1, 9.6, 11, 8.9, lattice);
+        m.box(6.9, 11, 7.3, 9.1, 14, 8.7, lattice);
+        m.box(7.3, 14, 7.5, 8.7, 15.2, 8.5, plate(gold));                   // punta con su adorno
+        m.box(7.6, 15.2, 7.7, 8.4, 16, 8.3, plate(light));
+        m.box(7.5, 3.2, 6.7, 8.5, 6.2, 9.3, plate(light));                   // inscripción de hadas en el centro
+        return m;
+    }
+
+    // Un fragmento de Avalon desplegada: placa de oro con una banda azul
+    static Model avalonFragment() {
+        Model m = new Model();
+        m.box(5, 4, 7.5, 11, 12, 8.5, marked(plate(0xe8c65a), 0x1f3fb0, (x, y, w, h) -> Math.abs(x - y * w / (double) h) < 1.0));
+        return m;
+    }
+
     // Remate de las puntas: adorno dorado con una cinta roja
     static Model maannaProw() {
         Model m = new Model();
@@ -1985,6 +2009,8 @@ public class ServantAssets {
         itemModel(root, "maanna", maanna(0), BOW_DISPLAY, maannaOverrides);
         itemModel(root, "maanna_hull", maannaHull(), handheld(1.0), null);
         itemModel(root, "maanna_prow", maannaProw(), handheld(1.0), null);
+        itemModel(root, "avalon_scabbard", avalonScabbard(), handheld(1.0), null);
+        itemModel(root, "avalon_fragment", avalonFragment(), handheld(1.0), null);
         for (int i = 0; i < 3; i++) {
             itemModel(root, "maanna_pulling_" + i, maanna(pulls[i]).add(gemArrow(8.5 - pulls[i])), BOW_DISPLAY, null);
         }

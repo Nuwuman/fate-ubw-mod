@@ -71,6 +71,8 @@ public class NineLivesItem extends SwordItem {
         com.nuwuman.fateubw.Rules.commit(player, FateUBW.NINE_LIVES, COOLDOWN);
         if (!(world instanceof ServerWorld server)) return;
         player.swingHand(player.getActiveHand(), true);
+        if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)
+            com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "nine_lives");
         nineLives(server, player);
     }
 

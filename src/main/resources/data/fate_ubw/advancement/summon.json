@@ -1,0 +1,57 @@
+{
+  "parent": "fate_ubw:root",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:summoning_circle"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.summon"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.summon.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "saber": {
+      "trigger": "minecraft:impossible"
+    },
+    "archer": {
+      "trigger": "minecraft:impossible"
+    },
+    "lancer": {
+      "trigger": "minecraft:impossible"
+    },
+    "rider": {
+      "trigger": "minecraft:impossible"
+    },
+    "gilgamesh": {
+      "trigger": "minecraft:impossible"
+    },
+    "caster": {
+      "trigger": "minecraft:impossible"
+    },
+    "assassin": {
+      "trigger": "minecraft:impossible"
+    },
+    "berserker": {
+      "trigger": "minecraft:impossible"
+    },
+    "ishtar": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "saber",
+      "archer",
+      "lancer",
+      "rider",
+      "gilgamesh",
+      "caster",
+      "assassin",
+      "berserker",
+      "ishtar"
+    ]
+  ]
+}

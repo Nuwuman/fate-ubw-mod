@@ -147,6 +147,8 @@ public class Showcase implements ClientModInitializer {
             case "clash" -> clash(client, p, st);
             case "npfx" -> npFx(client, p, st);
             case "maanna" -> maanna(client, p, st);
+            case "avalon" -> avalon(client, p, st);
+            case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
@@ -968,6 +970,63 @@ public class Showcase implements ClientModInitializer {
             default -> {
             }
         }
+        return false;
+    }
+
+    // Avalon a la vista: la vaina delante y los fragmentos alrededor, desde atrás, de frente y en primera persona
+    private boolean avalon(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"armor.chest with fate_ubw:saber_chestplate", "armor.legs with fate_ubw:saber_leggings",
+                    "armor.feet with fate_ubw:saber_boots"}, new String[]{});
+            case 30 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 40 -> ability(0);
+            case 44 -> shot(c, "avalon_01_opening");
+            case 54 -> shot(c, "avalon_02_front");
+            case 56 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 64 -> shot(c, "avalon_03_back");
+            case 66 -> yaw = 90.0F;
+            case 76 -> shot(c, "avalon_04_side");
+            case 78 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.FIRST_PERSON);
+            }
+            case 86 -> shot(c, "avalon_05_firstperson");
+            case 88 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 134 -> shot(c, "avalon_06_closing");
+            // Los logros: concede unos cuantos y abre la pestaña del mod
+            case 140 -> p.networkHandler.sendChatCommand("advancement grant @s only fate_ubw:summon saber");
+            case 142 -> p.networkHandler.sendChatCommand("advancement grant @s only fate_ubw:all_servants saber");
+            case 150 -> c.setScreen(new net.minecraft.client.gui.screen.advancement.AdvancementsScreen(p.networkHandler.getAdvancementHandler()));
+            case 175 -> shot(c, "avalon_07_advancements");
+            case 178 -> c.setScreen(null);
+            case 185 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Las posturas nuevas, una tras otra, de frente y en diagonal, capturadas en su punto álgido
+    private static final String[][] POSES = {{"avalon", "8"}, {"mana_burst", "4"}, {"gate_of_babylon", "8"}, {"enkidu", "8"},
+            {"hrunting", "15"}, {"ansuz", "6"}, {"divine_words", "10"}, {"jewel_burst", "4"}, {"mad_enhancement", "10"},
+            {"bellerophon", "10"}, {"nine_lives", "6"}};
+
+    private boolean poses(MinecraftClient c, ClientPlayerEntity p, int t) {
+        if (t == 0) {
+            setup(c, p, new String[]{"weapon.mainhand with fate_ubw:berserker_axe_sword"}, new String[]{});
+            return false;
+        }
+        if (t == 20) {
+            c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            yaw = -35.0F;
+        }
+        int i = (t - 30) / 30, k = (t - 30) % 30;
+        if (t < 30) return false;
+        if (i >= POSES.length) return true;
+        if (k == 0) com.nuwuman.fateubw.PlayerAnims.play(p, POSES[i][0]);
+        if (k == Integer.parseInt(POSES[i][1])) shot(c, "pose_" + String.format("%02d", i) + "_" + POSES[i][0]);
         return false;
     }
 

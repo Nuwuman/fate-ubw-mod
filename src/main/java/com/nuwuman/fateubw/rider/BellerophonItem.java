@@ -39,6 +39,7 @@ public class BellerophonItem extends Item {
         }
         if (user instanceof ServerPlayerEntity player && ability(player)) {
             com.nuwuman.fateubw.Rules.cooldown(player, key, key == FateUBW.BELLEROPHON ? SUMMON_COOLDOWN : CHARGE_COOLDOWN);
+            com.nuwuman.fateubw.PlayerAnims.playAll(player, "bellerophon");
         }
         return TypedActionResult.success(stack, world.isClient());
     }

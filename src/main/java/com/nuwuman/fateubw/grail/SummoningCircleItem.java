@@ -59,6 +59,8 @@ public class SummoningCircleItem extends Item {
             if (Servants.isCatalyst(catalyst)) catalyst.decrement(1);
         }
         Vec3d center = Vec3d.ofBottomCenter(context.getBlockPos().up());
+        if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)
+            com.nuwuman.fateubw.Achievements.summoned(serverPlayer, servant.id());
         RITUALS.add(new Ritual(world, center, servant, player.getUuid(), new int[]{0}));
         world.playSound(null, center.x, center.y, center.z, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.5F, 0.6F);
         player.sendMessage(Text.translatable("message.fate_ubw.summoning").formatted(Formatting.RED, Formatting.ITALIC), true);

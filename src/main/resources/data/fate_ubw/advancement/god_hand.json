@@ -1,0 +1,36 @@
+{
+  "parent": "fate_ubw:servant_hunter",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:berserker_axe_sword"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.god_hand"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.god_hand.description"
+    },
+    "frame": "challenge"
+  },
+  "criteria": {
+    "berserker": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "fate_ubw:berserker_servant"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "berserker"
+    ]
+  ]
+}

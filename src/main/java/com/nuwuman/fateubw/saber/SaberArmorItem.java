@@ -33,6 +33,13 @@ import java.util.List;
 public class SaberArmorItem extends ServantArmorItem {
     public static final int AVALON_COOLDOWN = 20 * 90;
     public static final int MANA_BURST_COOLDOWN = 20 * 6;
+    public static final int AVALON_TICKS = 100;
+    /** Tick del mundo en que se acaba Avalon (sincronizado con todos, para dibujar la vaina desplegada). */
+    public static final net.fabricmc.fabric.api.attachment.v1.AttachmentType<Long> AVALON_UNTIL =
+            net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry.<Long>builder()
+                    .syncWith(net.minecraft.network.codec.PacketCodecs.VAR_LONG.cast(),
+                            net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate.all())
+                    .buildAndRegister(FateUBW.id("avalon_until"));
 
     public SaberArmorItem(ArmorItem.Type type, Item.Settings settings) {
         super(FateUBW.SABER_MATERIAL, type, settings, "saber_armor");
@@ -66,10 +73,10 @@ public class SaberArmorItem extends ServantArmorItem {
 
     /** Avalon, la Utopía Lejana: la vaina se despliega y nada puede tocarla durante 5 s. */
     public static boolean avalon(ServerPlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 100, 4)); // nivel V: inmune
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 2));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 100, 0, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, AVALON_TICKS, 4)); // nivel V: inmune
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, AVALON_TICKS, 2));
         ServerWorld world = player.getServerWorld();
+        player.setAttached(AVALON_UNTIL, world.getTime() + AVALON_TICKS);
         for (int i = 0; i < 48; i++) {
             double angle = i * Math.PI * 2 / 48;
             world.spawnParticles(ParticleTypes.END_ROD, player.getX() + Math.cos(angle) * 1.6, player.getY() + 0.2 + (i % 6) * 0.35,

@@ -33,6 +33,7 @@ public final class Voices {
 
     /** Dice la línea desde la posición de quien usa la habilidad. */
     public static void say(World world, Entity speaker, String line) {
+        Achievements.spoke(speaker, line);
         SoundEvent sound = SOUNDS.get(line);
         if (sound == null || !(world instanceof ServerWorld server) || !server.getGameRules().getBoolean(FateUBW.VOICE_LINES)) return;
         world.playSound(null, speaker.getX(), speaker.getEyeY(), speaker.getZ(), sound, SoundCategory.VOICE, 1.0F, 1.0F);

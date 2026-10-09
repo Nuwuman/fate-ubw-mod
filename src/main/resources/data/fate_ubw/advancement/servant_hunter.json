@@ -1,0 +1,66 @@
+{
+  "parent": "fate_ubw:root",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:rider_dagger"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.servant_hunter"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.servant_hunter.description"
+    },
+    "frame": "task"
+  },
+  "criteria": {
+    "berserker": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "fate_ubw:berserker_servant"
+            }
+          }
+        ]
+      }
+    },
+    "lancer": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "fate_ubw:lancer_servant"
+            }
+          }
+        ]
+      }
+    },
+    "assassin": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "fate_ubw:assassin_servant"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "berserker",
+      "lancer",
+      "assassin"
+    ]
+  ]
+}

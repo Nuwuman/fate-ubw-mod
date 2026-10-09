@@ -146,6 +146,8 @@ public final class Abilities {
         if (ability.action().use(player)) {
             com.nuwuman.fateubw.Rules.cooldown(player, key, cooldownOf(key));
             Mana.spend(player, key);
+            // Postura de la habilidad, si tiene (player_animations/<id>.json); si no, no pasa nada
+            com.nuwuman.fateubw.PlayerAnims.playAll(player, ability.id());
         }
     }
 }

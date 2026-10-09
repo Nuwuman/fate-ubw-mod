@@ -1,0 +1,25 @@
+{
+  "parent": "fate_ubw:noble_phantasm",
+  "display": {
+    "icon": {
+      "id": "fate_ubw:gae_bolg"
+    },
+    "title": {
+      "translate": "advancement.fate_ubw.clash"
+    },
+    "description": {
+      "translate": "advancement.fate_ubw.clash.description"
+    },
+    "frame": "goal"
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "done"
+    ]
+  ]
+}

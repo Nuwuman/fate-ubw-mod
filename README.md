@@ -268,7 +268,7 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `carve`, `maanna`, `glow`, `armors`, `grailwar`, o varios separados por
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `carve`, `maanna`, `avalon`, `poses`, `glow`, `armors`, `grailwar`, o varios separados por
   comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
   anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 

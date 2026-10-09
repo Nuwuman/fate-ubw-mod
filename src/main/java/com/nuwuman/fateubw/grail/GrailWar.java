@@ -206,6 +206,7 @@ public final class GrailWar {
     private static void finish(MinecraftServer server, ServerPlayerEntity winner) {
         active = false;
         if (winner != null) {
+            com.nuwuman.fateubw.Achievements.grant(winner, "grail_war", "done");
             winner.getInventory().offerOrDrop(new ItemStack(FateUBW.HOLY_GRAIL));
             winner.getServerWorld().spawnParticles(ParticleTypes.END_ROD, winner.getX(), winner.getY() + 1.0, winner.getZ(),
                     200, 0.5, 4.0, 0.5, 0.1);

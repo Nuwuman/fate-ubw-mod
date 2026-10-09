@@ -225,6 +225,8 @@ public class FateUBW implements ModInitializer {
     // Piezas de la Maanna flotante (solo para dibujarla)
     public static final Item MAANNA_HULL = item("maanna_hull", new Item(new Item.Settings()));
     public static final Item MAANNA_PROW = item("maanna_prow", new Item(new Item.Settings()));
+    public static final Item AVALON_SCABBARD = item("avalon_scabbard", new Item(new Item.Settings()));
+    public static final Item AVALON_FRAGMENT = item("avalon_fragment", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);

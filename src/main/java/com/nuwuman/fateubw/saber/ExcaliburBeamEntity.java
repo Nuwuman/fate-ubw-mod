@@ -175,6 +175,8 @@ public class ExcaliburBeamEntity extends Entity {
                 net.minecraft.sound.SoundCategory.PLAYERS, 4.0F, 0.8F);
         loser.discard();
         winner.win();
+        if (winner.owner instanceof net.minecraft.server.network.ServerPlayerEntity player)
+            com.nuwuman.fateubw.Achievements.grant(player, "clash", "done");
     }
 
     private void win() {
