@@ -250,6 +250,11 @@ public class FateUBW implements ModInitializer {
                     .build("pegasus"));
 
     // Tipos de daño propios (data/fate_ubw/damage_type), ignoran armadura
+    /** Cadenas del Cielo: el debuff de Enkidu. */
+    public static final net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.effect.StatusEffect> ENKIDU_CHAINS =
+            net.minecraft.registry.Registry.registerReference(net.minecraft.registry.Registries.STATUS_EFFECT, id("enkidu"),
+                    new com.nuwuman.fateubw.gilgamesh.EnkiduEffect());
+
     public static final RegistryKey<DamageType> EXCALIBUR_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("excalibur"));
     public static final RegistryKey<DamageType> GAE_BOLG_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("gae_bolg"));
     public static final RegistryKey<DamageType> BELLEROPHON_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bellerophon"));

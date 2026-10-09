@@ -34,7 +34,6 @@ import java.util.List;
 public class GilgameshArmorItem extends ServantArmorItem {
     public static final int GATE_COOLDOWN = 20 * 12;
     public static final int ENKIDU_COOLDOWN = 20 * 25;
-    private static final int ENKIDU_TICKS = 100;
     private static final BlockStateParticleEffect CHAIN = new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.CHAIN.getDefaultState());
 
     public GilgameshArmorItem(ArmorItem.Type type, Item.Settings settings) {
@@ -64,32 +63,29 @@ public class GilgameshArmorItem extends ServantArmorItem {
             player.sendMessage(Text.translatable("message.fate_ubw.no_target").formatted(Formatting.GRAY), true);
             return false;
         }
+        bind(world, player, target);
+        return true;
+    }
+
+    /** Ata al objetivo con las Cadenas del Cielo. */
+    public static void bind(ServerWorld world, PlayerEntity player, LivingEntity target) {
         target.stopRiding();
-        target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, ENKIDU_TICKS, 9));
-        target.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, ENKIDU_TICKS, 3));
-        target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, ENKIDU_TICKS, 2));
+        target.addStatusEffect(new StatusEffectInstance(FateUBW.ENKIDU_CHAINS, EnkiduEffect.TICKS, 0));
+        target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, EnkiduEffect.TICKS, 1));
+        target.setAttached(EnkiduEffect.BOUND_UNTIL, world.getTime() + EnkiduEffect.TICKS);
         target.setVelocity(Vec3d.ZERO);
         target.velocityModified = true;
         target.damage(world.getDamageSources().magic(), 4.0F);
 
-        // Cadenas desde los portales hasta el objetivo, y anillos de cadena a su alrededor
-        Vec3d from = player.getPos().add(0.0, 2.5, 0.0), to = target.getBoundingBox().getCenter();
-        for (int i = 0; i <= 24; i++) {
-            Vec3d p = from.lerp(to, i / 24.0);
-            world.spawnParticles(CHAIN, p.x, p.y, p.z, 2, 0.05, 0.05, 0.05, 0.0);
+        // Las cadenas las dibuja el cliente (EnkiduClient); aquí el chispazo dorado de los portales al salir
+        for (Vec3d anchor : EnkiduEffect.anchors(target)) {
+            world.spawnParticles(ParticleTypes.END_ROD, anchor.x, anchor.y, anchor.z, 6, 0.2, 0.2, 0.2, 0.03);
         }
-        for (int ring = 0; ring < 3; ring++) {
-            double y = target.getY() + target.getHeight() * (0.25 + ring * 0.3);
-            for (int i = 0; i < 16; i++) {
-                double angle = i * Math.PI / 8;
-                world.spawnParticles(CHAIN, target.getX() + Math.cos(angle) * 0.8, y, target.getZ() + Math.sin(angle) * 0.8, 1, 0.0, 0.0, 0.0, 0.0);
-            }
-        }
-        world.spawnParticles(ParticleTypes.END_ROD, from.x, from.y, from.z, 10, 0.3, 0.3, 0.3, 0.05);
+        Vec3d center = target.getBoundingBox().getCenter();
+        world.spawnParticles(CHAIN, center.x, center.y, center.z, 20, target.getWidth() / 2, target.getHeight() / 3, target.getWidth() / 2, 0.0);
         world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BLOCK_CHAIN_PLACE, SoundCategory.PLAYERS, 2.0F, 0.6F);
         world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BLOCK_CHAIN_HIT, SoundCategory.PLAYERS, 2.0F, 0.8F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.0F, 1.2F);
-        return true;
     }
 
     @Override

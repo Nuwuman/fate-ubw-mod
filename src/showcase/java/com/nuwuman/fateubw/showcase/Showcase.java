@@ -3,6 +3,7 @@ package com.nuwuman.fateubw.showcase;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -148,6 +149,7 @@ public class Showcase implements ClientModInitializer {
             case "npfx" -> npFx(client, p, st);
             case "maanna" -> maanna(client, p, st);
             case "avalon" -> avalon(client, p, st);
+            case "enkidu" -> enkidu(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -749,7 +751,7 @@ public class Showcase implements ClientModInitializer {
         var sp = server == null ? null : server.getPlayerManager().getPlayer(p.getUuid());
         if (sp == null) return t > 400;
         var husk = sp.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, sp.getBoundingBox().expand(8), e -> true)
-                .stream().findFirst().orElse(null);
+                .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
         String hp = husk == null ? "sin husk" : "husk " + husk.getHealth() + " efectos " + husk.getStatusEffects().stream()
                 .map(e -> e.getEffectType().getIdAsString()).toList();
         switch (t) {
@@ -1006,6 +1008,59 @@ public class Showcase implements ClientModInitializer {
             }
         }
         return false;
+    }
+
+    // Enkidu: las cadenas atan a un zombi que viene hacia ti; se comprueba que no se mueve mientras dura
+    private Vec3d enkiduFrom;
+
+    private boolean enkidu(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{"armor.chest with fate_ubw:gilgamesh_chestplate", "armor.legs with fate_ubw:gilgamesh_leggings",
+                        "armor.feet with fate_ubw:gilgamesh_boots"}, new String[]{});
+                p.networkHandler.sendChatCommand("summon husk ~ ~ ~5 {PersistenceRequired:1b}");
+                                p.networkHandler.sendChatCommand("summon husk ~ ~ ~7 {PersistenceRequired:1b,attributes:[{id:'minecraft:generic.max_health',base:200d}],Health:200f}");
+            }
+            case 45 -> {
+                // Ata directamente al husk más cercano (en el servidor), sin depender de apuntar con el cliente lento
+                net.minecraft.server.MinecraftServer server = c.getServer();
+                server.execute(() -> {
+                    net.minecraft.server.network.ServerPlayerEntity sp = server.getPlayerManager().getPlayer(p.getUuid());
+                    if (sp == null) return;
+                    sp.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, sp.getBoundingBox().expand(20), e -> true)
+                            .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(sp)))
+                            .ifPresent(h -> com.nuwuman.fateubw.gilgamesh.GilgameshArmorItem.bind(sp.getServerWorld(), sp, h));
+                });
+            }
+            case 55 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                net.minecraft.entity.Entity z = zombie(c, p);
+                enkiduFrom = z == null ? null : z.getPos();
+                log("enkidu: zombi en " + enkiduFrom);
+            }
+            case 61 -> shot(c, "enkidu_01_back");
+            case 63 -> yaw += 60.0F;
+            case 71 -> shot(c, "enkidu_02_diagonal");
+            case 73 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 81 -> shot(c, "enkidu_03_front");
+            case 100 -> {
+                net.minecraft.entity.Entity z = zombie(c, p);
+                log("enkidu: zombi ahora en " + (z == null ? null : z.getPos()) + ", se ha movido "
+                        + (z == null || enkiduFrom == null ? "?" : String.format("%.2f", z.getPos().distanceTo(enkiduFrom))));
+            }
+            case 160 -> {
+                yaw = 0.0F;
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    private static net.minecraft.entity.Entity zombie(MinecraftClient c, ClientPlayerEntity p) {
+        return c.world.getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, p.getBoundingBox().expand(20), e -> true)
+                .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
     }
 
     // Las posturas nuevas, una tras otra, de frente y en diagonal, capturadas en su punto álgido
