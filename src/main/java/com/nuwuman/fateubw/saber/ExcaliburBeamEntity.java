@@ -2,7 +2,9 @@ package com.nuwuman.fateubw.saber;
 
 import com.nuwuman.fateubw.archer.UnlimitedBladeWorks;
 import com.nuwuman.fateubw.FateUBW;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -38,6 +40,7 @@ public class ExcaliburBeamEntity extends Entity {
 
     // Los primeros bloques del haz no se rompen, para no cavar bajo los pies del que dispara
     private static final float CARVE_START = 2.0F;
+    private static final int CARVE_BUDGET = 250;
     // Obsidiana y más duros resisten el haz
     private static final float MAX_BLAST_RESISTANCE = 1200.0F;
 
@@ -116,7 +119,8 @@ public class ExcaliburBeamEntity extends Entity {
             if (!clashed && age <= DAMAGE_TICKS) findRival(world);
             if (rival != null) clash(world);
             if (age <= DAMAGE_TICKS + bonusDamageTicks) sweep(world);
-            if (age > LIFETIME + bonusDamageTicks) discard();
+            else if (carving(world)) carve(world, getPos(), getRotationVector(), maxLength());
+            if (age > LIFETIME + bonusDamageTicks && !carving(world)) discard();
         }
     }
 
@@ -267,10 +271,15 @@ public class ExcaliburBeamEntity extends Entity {
     }
 
     // Rompe (sin soltar objetos) una esfera del radio del haz en cada paso del tramo que avanzó este tick
+    // Como mucho CARVE_BUDGET bloques por tick: si hay más, sigue en los siguientes donde lo dejó
     private void carve(ServerWorld world, Vec3d start, Vec3d dir, float len) {
-        float radius = radius();
-        int r = MathHelper.ceil(radius);
+        float radius = radius() * 0.8F; // el túnel, algo más estrecho que la luz del haz
+        int r = MathHelper.ceil(radius), broken = 0;
         for (float d = carved; d <= len; d += 1.0F) {
+            if (broken >= CARVE_BUDGET) {
+                carved = d;
+                return;
+            }
             Vec3d point = start.add(dir.multiply(d));
             BlockPos center = BlockPos.ofFloored(point);
             for (BlockPos pos : BlockPos.iterate(center.add(-r, -r, -r), center.add(r, r, r))) {
@@ -278,15 +287,24 @@ public class ExcaliburBeamEntity extends Entity {
                 BlockState state = world.getBlockState(pos);
                 if (state.isAir() || state.getHardness(world, pos) < 0
                         || state.getBlock().getBlastResistance() >= MAX_BLAST_RESISTANCE) continue;
-                breakCarved(world, pos, state);
+                breakCarved(world, pos.toImmutable(), state);
+                broken++;
             }
         }
         carved = Math.max(carved, len);
     }
 
-    /** Rompe un bloque del túnel (sin soltar objetos). */
+    /** ¿Le queda túnel por abrir? Mientras tanto el haz sigue vivo en el servidor. */
+    private boolean carving(ServerWorld world) {
+        return carved < maxLength() && FateUBW.breaksBlocks(world, getPos());
+    }
+
+    /**
+     * Quita un bloque del túnel sin soltar objetos. Sin partículas, sonido ni avisar a los vecinos: con miles de bloques
+     * por disparo, cada una de esas cosas por bloque es lo que congelaba el juego (los efectos del haz ya lo tapan).
+     */
     protected void breakCarved(ServerWorld world, BlockPos pos, BlockState state) {
-        world.breakBlock(pos, false, this);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
     }
 
     /** El haz atraviesa paredes, pero no la frontera de un Reality Marble: dentro y fuera son mundos distintos. */

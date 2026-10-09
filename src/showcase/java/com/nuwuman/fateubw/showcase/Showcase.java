@@ -42,6 +42,12 @@ public class Showcase implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.START_SERVER_TICK.register(server -> tickStart = System.nanoTime());
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server ->
+                {
+                    double ms = (System.nanoTime() - tickStart) / 1_000_000.0;
+                    slowestTick = Math.max(slowestTick, ms);
+                });
     }
 
     private void tick(MinecraftClient client) {
@@ -140,6 +146,7 @@ public class Showcase implements ClientModInitializer {
             case "enchants" -> enchants(client, p, st);
             case "clash" -> clash(client, p, st);
             case "npfx" -> npFx(client, p, st);
+            case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
             case "berserker" -> berserker(client, p, st);
             default -> true;
@@ -887,7 +894,37 @@ public class Showcase implements ClientModInitializer {
     }
 
     private boolean enemySent;
+    private static volatile long tickStart;
+    private static volatile double slowestTick;
     private int frozenAt = -1;
+
+    // Rendimiento al romper bloques: Excalibur y Ea (con World Severance) hacia el suelo, midiendo el tick más lento
+    private boolean carve(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{"hotbar.0 with fate_ubw:excalibur",
+                        "hotbar.1 with fate_ubw:ea[enchantments={levels:{'fate_ubw:world_severance':1}}]"}, new String[]{});
+                p.networkHandler.sendChatCommand("gamerule fateAbilitiesBreakBlocks true");
+                pitch = 30.0F;
+            }
+            case 20, 170 -> use(c, p);
+            case 85, 235 -> {
+                if (waitCharge(c, p, 62)) return false;
+                holdUse = false;
+                slowestTick = 0;
+            }
+            case 150, 300 -> log((t < 200 ? "excalibur" : "enuma elish") + ": tick más lento " + String.format("%.0f", slowestTick) + " ms");
+            case 160 -> p.getInventory().selectedSlot = 1;
+            case 310 -> {
+                p.networkHandler.sendChatCommand("gamerule fateAbilitiesBreakBlocks false");
+                pitch = 0.0F;
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
 
     // Excalibur y Enuma Elish de principio a fin: preparación, disparo y haz, con capturas cada 3 ticks
     private boolean npFx(MinecraftClient c, ClientPlayerEntity p, int t) {

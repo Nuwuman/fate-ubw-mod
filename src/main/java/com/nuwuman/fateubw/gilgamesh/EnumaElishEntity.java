@@ -49,17 +49,22 @@ public class EnumaElishEntity extends ExcaliburBeamEntity {
         world.spawnParticles(net.minecraft.particle.ParticleTypes.CRIMSON_SPORE, at.x, at.y, at.z, 15, spread, spread, spread, 0.2);
     }
 
+    // Escombros que salen volando por disparo, como mucho (cada uno es una entidad)
+    private static final int MAX_DEBRIS = 40;
+    private int debris;
+
     // Uno de cada tres bloques sale despedido como bloque que cae; el resto se rompe
     @Override
     protected void breakCarved(ServerWorld world, BlockPos pos, BlockState state) {
-        if (!dataTracker.get(SEVERANCE) || world.random.nextInt(3) != 0) {
+        if (!dataTracker.get(SEVERANCE) || debris >= MAX_DEBRIS || world.random.nextInt(3) != 0) {
             super.breakCarved(world, pos, state);
             return;
         }
-        FallingBlockEntity debris = FallingBlockEntity.spawnFromBlock(world, pos, state);
-        debris.setVelocity((world.random.nextDouble() - 0.5) * 0.8, 0.5 + world.random.nextDouble() * 0.5, (world.random.nextDouble() - 0.5) * 0.8);
-        debris.velocityModified = true;
-        debris.dropItem = false;
+        debris++;
+        FallingBlockEntity block = FallingBlockEntity.spawnFromBlock(world, pos, state);
+        block.setVelocity((world.random.nextDouble() - 0.5) * 0.8, 0.5 + world.random.nextDouble() * 0.5, (world.random.nextDouble() - 0.5) * 0.8);
+        block.velocityModified = true;
+        block.dropItem = false;
     }
 
     @Override
