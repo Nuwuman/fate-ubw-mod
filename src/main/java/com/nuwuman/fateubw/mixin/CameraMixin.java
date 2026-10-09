@@ -24,11 +24,11 @@ public abstract class CameraMixin {
     @Shadow
     protected abstract void setRotation(float yaw, float pitch);
 
-    // Girar la vista a la izquierda antes de retroceder deja la cámara detrás y a la derecha, mirando en diagonal
+    // Girar la vista a la izquierda y bajarla antes de retroceder deja la cámara detrás, a la derecha y en alto
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;setRotation(FF)V", ordinal = 0, shift = At.Shift.AFTER))
     private void fateubw$npOrbit(CallbackInfo ci) {
         float orbit = NpCamera.orbit();
-        if (thirdPerson && orbit != 0.0F) setRotation(getYaw() - orbit, getPitch());
+        if (thirdPerson && orbit != 0.0F) setRotation(getYaw() - orbit, Math.min(90.0F, getPitch() + NpCamera.tilt()));
     }
 
     @ModifyArg(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;clipToSpace(F)F"))
