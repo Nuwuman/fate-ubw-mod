@@ -9,10 +9,11 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -22,8 +23,8 @@ import net.minecraft.util.math.Vec3d;
  * azul que giran a su alrededor como una barrera (como en el anime, donde Avalon se abre en cientos de piezas).
  */
 public final class AvalonClient {
-    private static final ItemStack SCABBARD = new ItemStack(FateUBW.AVALON_SCABBARD);
-    private static final ItemStack FRAGMENT = new ItemStack(FateUBW.AVALON_FRAGMENT);
+    private static final Identifier TEXTURE = FateUBW.id("textures/misc/avalon.png");
+    private static final float WIDTH = 0.64F, HEIGHT = 1.7F;     // misma proporción que la textura (48x128)
     private static final int OPEN = 8, CLOSE = 12;            // ticks en desplegarse y en recogerse
     private static final float[] RING_HEIGHTS = {0.25F, 1.0F, 1.75F};
     private static final int PER_RING = 9;
@@ -65,16 +66,15 @@ public final class AvalonClient {
         matrices.translate(pos.x - cam.x, pos.y - cam.y, pos.z - cam.z);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
 
-        // La vaina, de pie delante del pecho, flotando y girando despacio (en primera persona taparía la vista)
+        // La vaina delante, de cara al enemigo: la boca a la altura de las manos y la punta hacia el suelo (en primera persona taparía la vista)
         boolean ownFirstPerson = player == client.player && client.options.getPerspective().isFirstPerson();
         if (!ownFirstPerson) {
             matrices.push();
-            matrices.translate(0.0, 0.35 + 0.06 * MathHelper.sin(age * 0.15F), 0.85);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(age * 4.0F));
-            float size = 1.8F * Math.max(open, 0.35F);
+            matrices.translate(0.0, 0.05 + 0.04 * MathHelper.sin(age * 0.15F), 0.7);
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(3.0F * MathHelper.sin(age * 0.1F)));
+            float size = Math.max(open, 0.35F);
             matrices.scale(size, size, size);
-            matrices.translate(0.0, 0.5, 0.0); // el ItemRenderer centra el modelo: así la boca queda abajo
-            client.getItemRenderer().renderItem(SCABBARD, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, consumers, world, 0);
+            drawScabbard(matrices, consumers, light);
             matrices.pop();
         }
 
@@ -91,12 +91,28 @@ public final class AvalonClient {
                 matrices.translate(at.x, at.y, at.z);
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle));   // mirando hacia fuera
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-12.0F * (ring - 1)));
-                float s = 0.55F * open;
+                float s = 0.3F * open;  // cada fragmento, una Avalon en pequeño
                 matrices.scale(s, s, s);
-                client.getItemRenderer().renderItem(FRAGMENT, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, consumers, world, 0);
+                matrices.translate(0.0, -HEIGHT / 2, 0.0);
+                drawScabbard(matrices, consumers, light);
                 matrices.pop();
             }
         }
         matrices.pop();
+    }
+
+    // La vaina: una placa con su textura, visible por las dos caras; la punta abajo, en el origen
+    private static void drawScabbard(MatrixStack matrices, VertexConsumerProvider consumers, int light) {
+        VertexConsumer vc = consumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
+        MatrixStack.Entry entry = matrices.peek();
+        float w = WIDTH / 2;
+        vertex(vc, entry, -w, 0, 1, 1, light);
+        vertex(vc, entry, w, 0, 0, 1, light);
+        vertex(vc, entry, w, HEIGHT, 0, 0, light);
+        vertex(vc, entry, -w, HEIGHT, 1, 0, light);
+    }
+
+    private static void vertex(VertexConsumer vc, MatrixStack.Entry entry, float x, float y, float u, float v, int light) {
+        vc.vertex(entry, x, y, 0.0F).color(0xFFFFFFFF).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(entry, 0.0F, 0.0F, 1.0F);
     }
 }
