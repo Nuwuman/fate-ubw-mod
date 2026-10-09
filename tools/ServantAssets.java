@@ -1063,7 +1063,14 @@ public class ServantAssets {
         m.box(7.4, 13.6, 7.62, 10.4, 17.2, 8.38, blade).rot("z", 22.5, 7.4, 13.6, 8);   // se curva hacia la punta
         m.box(10.4, 13.6, 7.77, 10.9, 17.2, 8.23, edge).rot("z", 22.5, 7.4, 13.6, 8);
         m.box(6.6, 16.0, 7.65, 9.2, 18.4, 8.35, blade).rot("z", -45, 6.6, 16.0, 8);     // punta recortada
-        return m;
+        // Reflejado sobre x=8: en la mano el filo queda abajo y el lomo arriba
+        Model flipped = m.mirrored();
+        for (Cube c : flipped.cubes) {
+            c.from[0] += 16;
+            c.to[0] += 16;
+            if (c.axis != null) c.origin[0] += 16;
+        }
+        return flipped;
     }
 
     // Espada-flecha que dispara el arco, de base en y=b hacia arriba
