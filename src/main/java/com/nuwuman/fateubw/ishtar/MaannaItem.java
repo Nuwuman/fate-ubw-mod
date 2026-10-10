@@ -47,7 +47,7 @@ public class MaannaItem extends BowItem {
         return TypedActionResult.consume(user.getStackInHand(hand));
     }
 
-    static boolean npReady(PlayerEntity player) {
+    public static boolean npReady(PlayerEntity player) {
         return player.isSneaking() && !player.getItemCooldownManager().isCoolingDown(FateUBW.AN_GAL_TA_KIGAL_SHE_NP);
     }
 
