@@ -53,13 +53,25 @@ public class ExcaliburBeamEntity extends Entity {
     private float carved = CARVE_START;
     // Choque de Noble Phantasms: el largo al que se frena (sincronizado con el cliente; -1 = sin choque)
     private static final TrackedData<Float> CLASH = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final int CLASH_TICKS = 14;
+    /** Lo que dura el choque: un quick time event con W/A/S/D para los jugadores. */
+    public static final int QTE_TICKS = 60;
+    /** Ventaja (aciertos de más) con la que se gana el choque antes de tiempo. */
+    public static final int KO_POINTS = 12;
+    private static final float PUSH_PER_POINT = 0.7F;          // bloques que se mueve el punto de choque por acierto de ventaja
+    private static final int AI_PRESS_TICKS = 6;               // un haz sin jugador "acierta" una tecla cada tantos ticks
+    // Ventaja en aciertos de este haz sobre su rival (sincronizada: la barra del QTE en pantalla)
+    private static final TrackedData<Integer> PUSH = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    // Ticks que el haz lleva retenido en choques: no envejece mientras empuja (sincronizado, para el dibujo)
+    private static final TrackedData<Integer> HELD = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final int ERUPTION_TICKS = 10;
     @Nullable
     private ExcaliburBeamEntity rival;
     private Vec3d clashPoint = Vec3d.ZERO;
     private int clashTicks;
     private boolean clashed;
+    private float clashBase;                                   // largo al que se frenó al empezar el choque
+    private String qteKeys = "";
+    private int qteIndex, qteScore;
     private int bonusDamageTicks;
 
     public ExcaliburBeamEntity(EntityType<? extends ExcaliburBeamEntity> type, World world) {
@@ -105,13 +117,26 @@ public class ExcaliburBeamEntity extends Entity {
     protected void affectNearby(ServerWorld world, Vec3d start, Vec3d end) {
     }
 
+    /** Edad sin contar el tiempo retenido en choques. */
+    public int life() {
+        return age - dataTracker.get(HELD);
+    }
+
+    /** Ventaja en aciertos sobre el rival durante un choque (positiva: gana este haz). */
+    public int push() {
+        return dataTracker.get(PUSH);
+    }
+
     public float length(float age) {
+        age -= dataTracker.get(HELD);
         float length = maxLength() * Math.min(1.0F, age / GROW_TICKS);
         float clash = dataTracker.get(CLASH);
-        return clash >= 0.0F ? Math.min(length, clash) : length;
+        // Chocando, el largo lo marca el punto de choque, que se mueve con el tira y afloja
+        return clash >= 0.0F ? Math.min(maxLength(), clash) : length;
     }
 
     public float fade(float age) {
+        age -= dataTracker.get(HELD);
         return age < LIFETIME - 10 ? 1.0F : Math.max(0.0F, (LIFETIME - age) / 10.0F);
     }
 
@@ -119,11 +144,14 @@ public class ExcaliburBeamEntity extends Entity {
     public void tick() {
         super.tick();
         if (getWorld() instanceof ServerWorld world) {
-            if (!clashed && age <= DAMAGE_TICKS) findRival(world);
-            if (rival != null) clash(world);
-            if (age <= DAMAGE_TICKS + bonusDamageTicks) sweep(world);
+            if (!clashed && life() <= DAMAGE_TICKS) findRival(world);
+            if (rival != null) {
+                dataTracker.set(HELD, dataTracker.get(HELD) + 1);
+                clash(world);
+            }
+            if (life() <= DAMAGE_TICKS + bonusDamageTicks) sweep(world);
             else if (carving(world)) carve(world, getPos(), getRotationVector(), maxLength());
-            if (age > LIFETIME + bonusDamageTicks && !carving(world)) discard();
+            if (life() > LIFETIME + bonusDamageTicks && !carving(world)) discard();
         }
     }
 
@@ -145,7 +173,9 @@ public class ExcaliburBeamEntity extends Entity {
                 beam.clashed = true;
                 beam.clashPoint = point;
                 beam.clashTicks = 0;
-                beam.dataTracker.set(CLASH, (float) beam.getPos().distanceTo(point));
+                beam.clashBase = (float) beam.getPos().distanceTo(point);
+                beam.dataTracker.set(CLASH, beam.clashBase);
+                beam.startQte();
             }
             rival = other;
             other.rival = this;
@@ -155,27 +185,75 @@ public class ExcaliburBeamEntity extends Entity {
         }
     }
 
-    // Los dos haces empujan en el punto de choque; gana el dueño con más maná y el otro estalla
+    // Quick time event: cada jugador recibe una tira de teclas W/A/S/D; los aciertos empujan el punto de choque hacia el
+    // rival. Un haz sin jugador detrás "acierta" a ritmo fijo. Se aparta al jugador de moverse mientras dura
+    private void startQte() {
+        qteIndex = qteScore = 0;
+        dataTracker.set(PUSH, 0);
+        if (!(owner instanceof net.minecraft.server.network.ServerPlayerEntity player)) return;
+        StringBuilder keys = new StringBuilder();
+        for (int i = 0; i < 64; i++) keys.append("WASD".charAt(random.nextInt(4)));
+        qteKeys = keys.toString();
+        player.addStatusEffect(new net.minecraft.entity.effect.StatusEffectInstance(FateUBW.ENKIDU_CHAINS, QTE_TICKS + 5, 0, true, false, false));
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new BeamClash.QtePayload(getId(), qteKeys, QTE_TICKS));
+    }
+
+    /** Una tecla del QTE (la manda el cliente del dueño): acertar suma, fallar resta. */
+    public void press(net.minecraft.server.network.ServerPlayerEntity player, char key) {
+        if (rival == null || player != owner || qteKeys.isEmpty()) return;
+        if (key == qteKeys.charAt(qteIndex % qteKeys.length())) {
+            qteIndex++;
+            qteScore++;
+        } else {
+            qteScore = Math.max(0, qteScore - 1);
+        }
+    }
+
+    private int score() {
+        return owner instanceof net.minecraft.server.network.ServerPlayerEntity ? qteScore : clashTicks / AI_PRESS_TICKS;
+    }
+
+    private void endQte() {
+        dataTracker.set(PUSH, 0);
+        if (owner instanceof net.minecraft.server.network.ServerPlayerEntity player) {
+            player.removeStatusEffect(FateUBW.ENKIDU_CHAINS);
+            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new BeamClash.QtePayload(getId(), "", 0));
+        }
+    }
+
+    // Los dos haces empujan en el punto de choque; lo resuelve el QTE (o, empatados, el dueño con más maná)
     private void clash(ServerWorld world) {
         ExcaliburBeamEntity other = rival;
         if (other == null || other.isRemoved()) {
+            endQte();
             win();
             return;
         }
-        Vec3d p = clashPoint;
+        ++clashTicks;
+        if (getId() > other.getId()) return; // lo lleva uno de los dos
+        int diff = score() - other.score();
+        // El punto de choque se desplaza hacia el que va perdiendo
+        float shift = MathHelper.clamp(diff * PUSH_PER_POINT, -(clashBase - 1.0F), other.clashBase - 1.0F);
+        dataTracker.set(CLASH, clashBase + shift);
+        other.dataTracker.set(CLASH, other.clashBase - shift);
+        dataTracker.set(PUSH, diff);
+        other.dataTracker.set(PUSH, -diff);
+        Vec3d p = clashPoint.add(getRotationVector().multiply(shift));
         world.spawnParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 12, 0.8, 0.8, 0.8, 0.35);
         world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y, p.z, 10, 1.0, 1.0, 1.0, 0.4);
         if (clashTicks % 4 == 0) {
             world.spawnParticles(ParticleTypes.FLASH, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
             world.playSound(null, p.x, p.y, p.z, net.minecraft.sound.SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT,
-                    net.minecraft.sound.SoundCategory.PLAYERS, 2.0F, 0.5F + clashTicks * 0.04F);
+                    net.minecraft.sound.SoundCategory.PLAYERS, 2.0F, 0.5F + Math.min(clashTicks, 40) * 0.025F);
         }
-        if (++clashTicks < CLASH_TICKS || getId() > other.getId()) return; // lo resuelve uno de los dos
-        ExcaliburBeamEntity winner = power(this) >= power(other) ? this : other;
+        if (clashTicks < QTE_TICKS && Math.abs(diff) < KO_POINTS) return;
+        ExcaliburBeamEntity winner = diff > 0 ? this : diff < 0 ? other : power(this) >= power(other) ? this : other;
         ExcaliburBeamEntity loser = winner == this ? other : this;
         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, p.x, p.y, p.z, 2, 1.0, 1.0, 1.0, 0.0);
         world.playSound(null, p.x, p.y, p.z, net.minecraft.sound.SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
                 net.minecraft.sound.SoundCategory.PLAYERS, 4.0F, 0.8F);
+        endQte();
+        other.endQte();
         loser.discard();
         winner.win();
         if (winner.owner instanceof net.minecraft.server.network.ServerPlayerEntity player)
@@ -185,7 +263,7 @@ public class ExcaliburBeamEntity extends Entity {
     private void win() {
         rival = null;
         dataTracker.set(CLASH, -1.0F);
-        bonusDamageTicks = Math.max(0, age + 8 - DAMAGE_TICKS); // le queda tiempo para atravesar lo que había detrás
+        bonusDamageTicks = Math.max(0, life() + 8 - DAMAGE_TICKS); // le queda tiempo para atravesar lo que había detrás
     }
 
     // Maná que le queda al dueño (y, a igualdad, el daño del Noble Phantasm)
@@ -225,6 +303,7 @@ public class ExcaliburBeamEntity extends Entity {
         Vec3d end = start.add(dir.multiply(len));
 
         // Frente del haz mientras avanza
+        int age = life();
         if (age <= GROW_TICKS) {
             world.spawnParticles(ParticleTypes.FLASH, end.x, end.y, end.z, 1, 0.0, 0.0, 0.0, 0.0);
             world.spawnParticles(ParticleTypes.END_ROD, end.x, end.y, end.z, 15, 1.0, 1.0, 1.0, 0.15);
@@ -263,7 +342,7 @@ public class ExcaliburBeamEntity extends Entity {
             Vec3d p = start.add(dir.multiply(random.nextFloat() * len));
             world.spawnParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, radius() * 0.6, radius() * 0.6, radius() * 0.6, 0.03);
         }
-        if (age != GROW_TICKS || !FateUBW.breaksBlocks(world, start)) return;
+        if (life() != GROW_TICKS || !FateUBW.breaksBlocks(world, start)) return;
         for (float d = 2.0F; d <= len; d += 2.0F) {
             BlockPos pos = BlockPos.ofFloored(start.add(dir.multiply(d)));
             for (int down = 0; down < 5; down++, pos = pos.down()) {
@@ -336,6 +415,8 @@ public class ExcaliburBeamEntity extends Entity {
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         builder.add(CLASH, -1.0F);
+        builder.add(PUSH, 0);
+        builder.add(HELD, 0);
     }
 
     @Override

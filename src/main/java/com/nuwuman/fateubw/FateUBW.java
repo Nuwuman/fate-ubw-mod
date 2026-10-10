@@ -384,6 +384,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(IshtarArmorItem::allowDamage);
         IshtarArmorItem.register();
         com.nuwuman.fateubw.ishtar.FloatingMaanna.register();
+        com.nuwuman.fateubw.saber.BeamClash.register();
         ServerLivingEntityEvents.ALLOW_DEATH.register(BerserkerArmorItem::allowDeath);
         FabricDefaultAttributeRegistry.register(PEGASUS, PegasusEntity.createAttributes());
         Rules.register();

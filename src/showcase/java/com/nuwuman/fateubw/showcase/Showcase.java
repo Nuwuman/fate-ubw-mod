@@ -868,18 +868,25 @@ public class Showcase implements ClientModInitializer {
                 setup(c, p, new String[]{"hotbar.0 with fate_ubw:excalibur"}, new String[]{});
                 p.networkHandler.sendChatCommand("fill ~-8 ~ ~-3 ~8 ~10 ~64 air");
                 p.networkHandler.sendChatCommand("fill ~-8 ~-1 ~-3 ~8 ~-1 ~64 grass_block");
+                // Que la zona del haz enemigo (a 38 bloques) se actualice aunque quede lejos del jugador
+                p.networkHandler.sendChatCommand("forceload add ~-8 ~-8 ~8 ~72");
             }
             case 20 -> use(c, p);
             case 85 -> {
                 if (waitCharge(c, p, 62)) return false;
                 holdUse = false;
             }
-            case 150 -> {
+            case 200 -> {
                 log("cámara al final: " + c.options.getPerspective());
+                p.networkHandler.sendChatCommand("forceload remove all");
                 return true;
             }
             default -> {
-                if (t < 86 || t > 120 || sp == null) return false;
+                // QTE: acierta la tecla que toca cada 3 ticks (y falla una de vez en cuando)
+                char key = com.nuwuman.fateubw.client.ClashQteClient.next(c);
+                if (key != 0 && t % 3 == 0) com.nuwuman.fateubw.client.ClashQteClient.press(c, t % 21 == 0 ? (key == 'W' ? 'S' : 'W') : key);
+                if (key != 0 && t % 10 == 0) shot(c, "clash_qte_t" + t);
+                if (t < 86 || t > 180 || sp == null) return false;
                 var world = sp.getServerWorld();
                 var beams = world.getEntitiesByClass(com.nuwuman.fateubw.saber.ExcaliburBeamEntity.class, sp.getBoundingBox().expand(90), e -> true);
                 // En cuanto sale Excalibur, un Enuma Elish de frente desde 60 bloques
@@ -888,15 +895,14 @@ public class Showcase implements ClientModInitializer {
                     server.execute(() -> {
                         var enemy = new com.nuwuman.fateubw.gilgamesh.EnumaElishEntity(com.nuwuman.fateubw.FateUBW.ENUMA_ELISH, world);
                         enemy.refreshPositionAndAngles(x, y, z, 180.0F, 0.0F);
-                        world.spawnEntity(enemy);
+                        log("enemigo: spawn " + world.spawnEntity(enemy) + " tickea " + world.shouldTickEntity(enemy.getBlockPos()) + " en " + enemy.getPos());
                     });
                     enemySent = true;
                 }
-                if (enemySent && t % 2 == 0) {
+                if (enemySent && t % 4 == 0) {
                     log("t" + t + " cámara x" + String.format("%.2f", com.nuwuman.fateubw.client.NpCamera.distanceFactor()) + " haces: "
                             + beams.stream().map(e -> e.getType().getUntranslatedName() + " edad " + e.age + " largo "
-                            + String.format("%.1f", e.length(e.age))).toList());
-                    shot(c, "clash_t" + t);
+                            + String.format("%.1f", e.length(e.age)) + " ventaja " + e.push()).toList());
                 }
             }
         }

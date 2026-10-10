@@ -312,5 +312,6 @@
   "advancement.fate_ubw.grail_war.description": "Be the last Master standing in a Holy Grail War",
   "effect.fate_ubw.enkidu": "Chains of Heaven",
   "death.attack.fate_ubw.explosion": "%1$s was blown up",
-  "death.attack.fate_ubw.explosion.player": "%1$s was blown up by %2$s"
+  "death.attack.fate_ubw.explosion.player": "%1$s was blown up by %2$s",
+  "hud.fate_ubw.clash": "NOBLE PHANTASM CLASH!"
 }

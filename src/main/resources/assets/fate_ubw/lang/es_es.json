@@ -312,5 +312,6 @@
   "advancement.fate_ubw.grail_war.description": "Sé el último Master en pie de una Guerra del Santo Grial",
   "effect.fate_ubw.enkidu": "Cadenas del Cielo",
   "death.attack.fate_ubw.explosion": "%1$s voló por los aires",
-  "death.attack.fate_ubw.explosion.player": "%1$s voló por los aires por %2$s"
+  "death.attack.fate_ubw.explosion.player": "%1$s voló por los aires por %2$s",
+  "hud.fate_ubw.clash": "¡CHOQUE DE NOBLE PHANTASMS!"
 }

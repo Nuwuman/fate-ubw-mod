@@ -165,8 +165,12 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 Todo está en la pestaña **Fate: Unlimited Blade Works** del creativo, y tiene recetas de crafteo.
 
 **Choque de Noble Phantasms**: si los haces de dos jugadores (Excalibur, Enuma Elish, An Gal Ta Kigal Shè) se
-encuentran, los dos se frenan en el punto de choque y empujan durante unos 0,7 s entre destellos. Gana el que tenga
-más maná en ese momento: el otro estalla y el ganador sigue hasta su largo completo.
+encuentran, se frenan en el punto de choque y empieza un **quick time event** de 3 s: en pantalla sale una tira de
+teclas W/A/S/D (o las que tengas para moverte). Cada acierto empuja el punto de choque hacia el rival y cada fallo
+resta; mientras dura no te puedes mover. Gana quien acabe con ventaja (o quien saque 12 aciertos de ventaja antes de
+tiempo); empatados, el que tenga más maná. El otro estalla y el ganador sigue hasta su largo completo. Contra un haz sin
+jugador detrás, ese haz "acierta" una tecla cada 0,3 s. Los haces avanzan (1,5 s hasta la punta), así que hay margen
+para provocar el choque.
 
 **Plano de cámara**: al soltar la carga de Excalibur, Enuma Elish, An Gal Ta Kigal Shè, Caladbolg II o la Gáe Bolg
 arrojada, tu personaje mantiene la postura un segundo (el arma en alto o el arco tenso) y entonces sale el ataque. La

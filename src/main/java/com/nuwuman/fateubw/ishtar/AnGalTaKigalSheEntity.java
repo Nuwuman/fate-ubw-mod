@@ -55,7 +55,7 @@ public class AnGalTaKigalSheEntity extends ExcaliburBeamEntity {
     // Cuando el haz llega a su largo, Venus estalla en el primer bloque que encuentra o en la punta
     @Override
     protected void affectNearby(ServerWorld world, Vec3d start, Vec3d end) {
-        if (age != GROW_TICKS) return;
+        if (life() != GROW_TICKS) return;
         HitResult block = world.raycast(new RaycastContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
         Vec3d at = block.getType() == HitResult.Type.MISS ? end : block.getPos();
         boolean griefing = FateUBW.breaksBlocks(world, at);
