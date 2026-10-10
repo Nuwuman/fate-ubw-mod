@@ -134,6 +134,8 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         if (soaring) {
             // La lanza en alto un segundo mientras la cámara se coloca; luego salta y la arroja en lo más alto del salto
             net.minecraft.util.Hand hand = player.getActiveHand();
+            // La voz arranca con la cinemática, no un segundo después con el disparo
+            com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
             com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
                 if (!player.isAlive()) return;
                 player.addVelocity(0.0, SOARING_JUMP, 0.0);
@@ -143,7 +145,6 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
                     if (!player.isAlive() || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
                     com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "gae_bolg_throw");
                     player.swingHand(hand, true);
-                    com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
                     soaringSpear(server, player, stack);
                 });
             });

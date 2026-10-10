@@ -103,11 +103,12 @@ public class MaannaItem extends BowItem {
                 && com.nuwuman.fateubw.Rules.ready(player, FateUBW.AN_GAL_TA_KIGAL_SHE_NP, NP_COOLDOWN, "an_gal_ta_kigal_she")) {
             com.nuwuman.fateubw.Rules.commit(player, FateUBW.AN_GAL_TA_KIGAL_SHE_NP, NP_COOLDOWN);
             // Maanna en alto un segundo mientras la cámara se coloca; luego sale Venus
+            // La voz arranca con la cinemática, no un segundo después con el disparo
+            com.nuwuman.fateubw.Voices.say(world, player, "an_gal_ta_kigal_she");
             com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
                 if (!player.isAlive() || !(player instanceof ServerPlayerEntity serverPlayer)) return;
                 com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "bow_release");
                 AnGalTaKigalSheEntity.fire(world, player);
-                com.nuwuman.fateubw.Voices.say(world, player, "an_gal_ta_kigal_she");
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.6F);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 2.0F, 1.2F);
             });

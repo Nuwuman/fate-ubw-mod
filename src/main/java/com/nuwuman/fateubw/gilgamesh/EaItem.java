@@ -149,12 +149,13 @@ public class EaItem extends SwordItem implements GeoItem {
                 if (player.isAlive()) com.nuwuman.fateubw.NpFx.redWhirlwind(server, player, progress);
             });
         }
+        // La voz arranca con la cinemática, no un segundo después con el disparo
+        com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
         com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
             if (!player.isAlive()) return;
             com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "enuma_elish");
             EnumaElishEntity.fire(server, player, severance);
             com.nuwuman.fateubw.NpFx.launchBlast(server, player, false);
-            com.nuwuman.fateubw.Voices.say(world, player, "enuma_elish");
             player.swingHand(hand, true);
             world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.2F, 1.4F);
             world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.6F);

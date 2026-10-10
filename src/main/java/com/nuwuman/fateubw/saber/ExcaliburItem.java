@@ -211,12 +211,13 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
                 if (player.isAlive()) com.nuwuman.fateubw.NpFx.lightPillar(server, player, progress);
             });
         }
+        // La voz arranca con la cinemática, no un segundo después con el disparo
+        Voices.say(world, player, "excalibur");
         FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
             if (!player.isAlive()) return;
             com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "excalibur_swing");
             ExcaliburBeamEntity.fire(server, player);
             com.nuwuman.fateubw.NpFx.launchBlast(server, player, true);
-            Voices.say(world, player, "excalibur");
             player.swingHand(hand, true);
             world.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 3.0F, 0.8F);

@@ -71,6 +71,8 @@ public class ArcherBowItem extends BowItem {
             // El arco se queda tenso un segundo mientras la cámara se coloca; luego sale Caladbolg II
             com.nuwuman.fateubw.Rules.commit(player, FateUBW.CALADBOLG, CALADBOLG_COOLDOWN);
             stack.damage(1, player, LivingEntity.getSlotForHand(player.getActiveHand()));
+            // La voz arranca con la cinemática, no un segundo después con el disparo
+            com.nuwuman.fateubw.Voices.say(world, player, "caladbolg");
             com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
                 if (!player.isAlive()) return;
                 if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
@@ -80,7 +82,6 @@ public class ArcherBowItem extends BowItem {
                 arrow.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 4.5F, 0.0F);
                 arrow.setCritical(true);
                 server.spawnEntity(arrow);
-                com.nuwuman.fateubw.Voices.say(world, player, "caladbolg");
                 world.playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 1.4F);
                 world.playSound(null, player.getX(), player.getY(), player.getZ(),
