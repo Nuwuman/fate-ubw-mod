@@ -21,7 +21,9 @@ public final class Achievements {
 
     public static void grant(ServerPlayerEntity player, String advancement, String criterion) {
         AdvancementEntry entry = player.server.getAdvancementLoader().get(FateUBW.id(advancement));
-        if (entry != null) player.getAdvancementTracker().grantCriterion(entry, criterion);
+        // Ya hecho: no se marca nada más, o el cliente volvería a enseñar el aviso con cada criterio nuevo
+        if (entry == null || player.getAdvancementTracker().getProgress(entry).isDone()) return;
+        player.getAdvancementTracker().grantCriterion(entry, criterion);
     }
 
     /** Al invocar un servant con el círculo. */

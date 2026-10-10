@@ -153,6 +153,7 @@ public class Showcase implements ClientModInitializer {
             case "hrunting" -> hrunting(client, p, st);
             case "soaring" -> soaring(client, p, st);
             case "andromeda" -> andromeda(client, p, st);
+            case "repeat" -> repeatAchievement(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -1064,6 +1065,31 @@ public class Showcase implements ClientModInitializer {
     private static net.minecraft.entity.Entity zombie(MinecraftClient c, ClientPlayerEntity p) {
         return c.world.getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, p.getBoundingBox().expand(20), e -> true)
                 .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
+    }
+
+    // Invocar dos servants distintos: el logro "¿Eres tú mi Master?" solo debe salir la primera vez
+    private boolean repeatAchievement(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> p.networkHandler.sendChatCommand("advancement revoke @s from fate_ubw:root");
+            case 10, 40 -> c.getServer().execute(() -> {
+                var sp = c.getServer().getPlayerManager().getPlayer(p.getUuid());
+                if (sp != null) com.nuwuman.fateubw.Achievements.summoned(sp, t == 10 ? "saber" : "archer");
+            });
+            case 60 -> c.getServer().execute(() -> {
+                var sp = c.getServer().getPlayerManager().getPlayer(p.getUuid());
+                if (sp == null) return;
+                for (String id : new String[]{"summon", "all_servants"}) {
+                    var entry = c.getServer().getAdvancementLoader().get(com.nuwuman.fateubw.FateUBW.id(id));
+                    log("repeat: " + id + " -> " + sp.getAdvancementTracker().getProgress(entry).getObtainedCriteria());
+                }
+            });
+            case 70 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
     }
 
     // Blood Fort Andromeda montada en Pegaso: la cúpula no debe dañar a su propio Pegaso
