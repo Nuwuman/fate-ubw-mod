@@ -38,8 +38,8 @@ public class ExcaliburBeamEntity extends Entity {
     public static final int GROW_TICKS = 30;
     /** Lo que tarda el haz en alcanzar su grosor. */
     public static final int WIDEN_TICKS = 8;
-    public static final int DAMAGE_TICKS = 46;
-    public static final int LIFETIME = 58;
+    public static final int DAMAGE_TICKS = 86;
+    public static final int LIFETIME = 98;
 
     // Los primeros bloques del haz no se rompen, para no cavar bajo los pies del que dispara
     private static final float CARVE_START = 2.0F;
