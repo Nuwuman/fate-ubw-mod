@@ -1,5 +1,5 @@
 # Texturiza las caras de color plano de la armadura de Berserker: cinturón de cuero (con hebilla delante),
-# grilletes de hierro (remaches y algo de óxido) y el paño azul del taparrabos (pliegues y bajo deshilachado).
+# grilletes de hierro (remaches y algo de óxido) y el paño azul del taparrabos (pliegues y bajo deshilachado, sin dorado).
 # Uso: python tools/berserker_texture.py <textura entrada> <textura salida> <berserker_armor.geo.bbmodel>
 import sys, json, random
 from collections import Counter
@@ -64,9 +64,6 @@ def cloth(x0, y0, w, h):
             if y == h - 1 and x % 2 == 1:
                 c = shade(base, 0.5)                        # bajo deshilachado
             px[x0 + x, y0 + y] = c
-    for x in range(w):                                      # una franja dorada cerca del bajo
-        if h >= 6:
-            px[x0 + x, y0 + h - 3] = (176, 140, 60, 255)
 
 
 d = json.load(open(model, encoding='utf-8'))
