@@ -1789,8 +1789,8 @@ public class ServantAssets {
     // En tercera persona va sujeto al antebrazo, al costado, con la cara hacia fuera, como el del Capitán América (también al cubrirse)
 
     static final String SHIELD_DISPLAY = "{\n"
-            + "    \"thirdperson_righthand\": { \"rotation\": [90, 90, 0], \"translation\": [0, 0, 5.5], \"scale\": [0.34, 0.34, 0.34] },\n"
-            + "    \"thirdperson_lefthand\": { \"rotation\": [90, 90, 0], \"translation\": [0, 0, 5.5], \"scale\": [0.34, 0.34, 0.34] },\n"
+            + "    \"thirdperson_righthand\": { \"rotation\": [90, 90, 0], \"translation\": [3.5, 0, 4.5], \"scale\": [0.34, 0.34, 0.34] },\n"
+            + "    \"thirdperson_lefthand\": { \"rotation\": [90, 90, 0], \"translation\": [3.5, 0, 4.5], \"scale\": [0.34, 0.34, 0.34] },\n"
             + "    \"firstperson_righthand\": { \"rotation\": [0, 180, 5], \"translation\": [0, -2, -4], \"scale\": [0.32, 0.32, 0.32] },\n"
             + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, 5], \"translation\": [0, -2, -4], \"scale\": [0.32, 0.32, 0.32] },\n"
             + "    \"gui\": { \"rotation\": [15, -25, -5], \"translation\": [0, 0, 0], \"scale\": [0.42, 0.42, 0.42] },\n"
@@ -1800,8 +1800,8 @@ public class ServantAssets {
 
     // Cubriéndose: el escudo más delante y girado, como el vanilla al bloquear
     static final String SHIELD_BLOCKING_DISPLAY = "{\n"
-            + "    \"thirdperson_righthand\": { \"rotation\": [90, 90, 0], \"translation\": [0, 0, 5.5], \"scale\": [0.34, 0.34, 0.34] },\n"
-            + "    \"thirdperson_lefthand\": { \"rotation\": [90, 90, 0], \"translation\": [0, 0, 5.5], \"scale\": [0.34, 0.34, 0.34] },\n"
+            + "    \"thirdperson_righthand\": { \"rotation\": [90, 90, 0], \"translation\": [3.5, 0, 4.5], \"scale\": [0.34, 0.34, 0.34] },\n"
+            + "    \"thirdperson_lefthand\": { \"rotation\": [90, 90, 0], \"translation\": [3.5, 0, 4.5], \"scale\": [0.34, 0.34, 0.34] },\n"
             + "    \"firstperson_righthand\": { \"rotation\": [0, 180, -5], \"translation\": [-2, -3, -5], \"scale\": [0.36, 0.36, 0.36] },\n"
             + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, -5], \"translation\": [-2, -3, -5], \"scale\": [0.36, 0.36, 0.36] },\n"
             + "    \"gui\": { \"rotation\": [15, -25, -5], \"translation\": [0, 0, 0], \"scale\": [0.42, 0.42, 0.42] }\n"

@@ -1087,7 +1087,10 @@ public class Showcase implements ClientModInitializer {
             case 80 -> shot(c, "mashphoto_2_threequarter");
             case 82 -> yaw = -90.0F;
             case 110 -> shot(c, "mashphoto_3_side");
-            case 112 -> yaw = -135.0F;
+            case 112 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            }
             case 140 -> shot(c, "mashphoto_4_back");
             case 150 -> {
                 yaw = 0.0F;
