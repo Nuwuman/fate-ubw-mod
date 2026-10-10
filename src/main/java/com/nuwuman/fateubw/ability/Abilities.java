@@ -68,6 +68,10 @@ public final class Abilities {
         cooldown(FateUBW.JEWEL_BURST, IshtarArmorItem.JEWEL_BURST_COOLDOWN);
         cooldown(FateUBW.MANIFESTATION_OF_BEAUTY, IshtarArmorItem.BEAUTY_COOLDOWN);
         cooldown(FateUBW.SKY_BOAT, IshtarArmorItem.SKY_BOAT_COOLDOWN);
+        cooldown(FateUBW.LORD_CAMELOT_NP, com.nuwuman.fateubw.mash.MashShieldItem.NP_COOLDOWN);
+        cooldown(FateUBW.BUNKER_BOLT, com.nuwuman.fateubw.mash.MashArmorItem.BUNKER_BOLT_COOLDOWN);
+        cooldown(FateUBW.WALL_OF_SNOWFLAKES, com.nuwuman.fateubw.mash.MashArmorItem.SNOWFLAKES_COOLDOWN);
+        cooldown(FateUBW.WALL_OF_CHALK, com.nuwuman.fateubw.mash.MashArmorItem.CHALK_COOLDOWN);
 
         PayloadTypeRegistry.playC2S().register(UseAbilityPayload.ID, UseAbilityPayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(UseAbilityPayload.ID, (payload, context) -> {
@@ -122,7 +126,12 @@ public final class Abilities {
                             new Ability("jewel_burst", FateUBW.RIN_JEWEL, FateUBW.JEWEL_BURST, IshtarArmorItem::jewelBurst),
                             new Ability("manifestation_of_beauty", Items.PINK_PETALS, FateUBW.MANIFESTATION_OF_BEAUTY,
                                     IshtarArmorItem::manifestationOfBeauty),
-                            new Ability("sky_boat", Items.FEATHER, FateUBW.SKY_BOAT, IshtarArmorItem::skyBoat))));
+                            new Ability("sky_boat", Items.FEATHER, FateUBW.SKY_BOAT, IshtarArmorItem::skyBoat))),
+                    new ServantSet(FateUBW.MASH_CHESTPLATE, FateUBW.MASH_LEGGINGS, FateUBW.MASH_BOOTS, null, List.of(
+                            new Ability("bunker_bolt", Items.IRON_CHESTPLATE, FateUBW.BUNKER_BOLT, com.nuwuman.fateubw.mash.MashArmorItem::bunkerBolt),
+                            new Ability("wall_of_snowflakes", Items.SNOWBALL, FateUBW.WALL_OF_SNOWFLAKES,
+                                    com.nuwuman.fateubw.mash.MashArmorItem::wallOfSnowflakes),
+                            new Ability("wall_of_chalk", Items.QUARTZ, FateUBW.WALL_OF_CHALK, com.nuwuman.fateubw.mash.MashArmorItem::wallOfChalk))));
         }
         return sets;
     }

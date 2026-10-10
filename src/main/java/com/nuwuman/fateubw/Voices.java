@@ -18,7 +18,7 @@ import java.util.Map;
 public final class Voices {
     private static final String[] LINES = {"an_gal_ta_kigal_she", "avalon", "bellerophon", "caladbolg", "enuma_elish", "excalibur", "gae_bolg",
             "gate_of_babylon", "nine_lives", "rho_aias", "rule_breaker", "trace_on", "tsubame_gaeshi", "ubw_chant",
-            "unlimited_blade_works"};
+            "unlimited_blade_works", "lord_camelot"};
     private static final Map<String, SoundEvent> SOUNDS = new HashMap<>();
 
     private Voices() {

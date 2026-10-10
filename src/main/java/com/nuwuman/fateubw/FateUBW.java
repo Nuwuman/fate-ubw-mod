@@ -189,6 +189,14 @@ public class FateUBW implements ModInitializer {
     public static final Item ISHTAR_LEGGINGS = item("ishtar_leggings", new IshtarArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item ISHTAR_BOOTS = item("ishtar_boots", new IshtarArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Mash Kyrielight ----------
+    public static final RegistryEntry<ArmorMaterial> MASH_MATERIAL = armorMaterial("mash");
+
+    public static final Item MASH_SHIELD = item("mash_shield", new com.nuwuman.fateubw.mash.MashShieldItem(new Item.Settings().maxDamage(2000).rarity(Rarity.EPIC).fireproof()));
+    public static final Item MASH_CHESTPLATE = item("mash_chestplate", new com.nuwuman.fateubw.mash.MashArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item MASH_LEGGINGS = item("mash_leggings", new com.nuwuman.fateubw.mash.MashArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item MASH_BOOTS = item("mash_boots", new com.nuwuman.fateubw.mash.MashArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
     // Sin pestaña: modelos que usan los proyectiles y claves de cooldown de las habilidades
     // (cada habilidad tiene la suya, así una no bloquea a las demás del mismo arma o conjunto)
     public static final Item CALADBOLG = item("caladbolg", new Item(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
@@ -222,6 +230,10 @@ public class FateUBW implements ModInitializer {
     public static final Item JEWEL_BURST = item("jewel_burst", new Item(new Item.Settings()));
     public static final Item MANIFESTATION_OF_BEAUTY = item("manifestation_of_beauty", new Item(new Item.Settings()));
     public static final Item SKY_BOAT = item("sky_boat", new Item(new Item.Settings()));
+    public static final Item LORD_CAMELOT_NP = item("lord_camelot_np", new Item(new Item.Settings()));
+    public static final Item BUNKER_BOLT = item("bunker_bolt", new Item(new Item.Settings()));
+    public static final Item WALL_OF_SNOWFLAKES = item("wall_of_snowflakes", new Item(new Item.Settings()));
+    public static final Item WALL_OF_CHALK = item("wall_of_chalk", new Item(new Item.Settings()));
     // Piezas de la Maanna flotante (solo para dibujarla)
     public static final Item MAANNA_HULL = item("maanna_hull", new Item(new Item.Settings()));
     public static final Item MAANNA_PROW = item("maanna_prow", new Item(new Item.Settings()));
@@ -241,6 +253,7 @@ public class FateUBW implements ModInitializer {
     public static final EntityType<RinJewelEntity> RIN_JEWEL_ENTITY = entity("rin_jewel", RinJewelEntity::new, 10);
     public static final EntityType<ZelzerizEntity> ZELZERIZ_ENTITY = entity("zelzeriz", ZelzerizEntity::new, 1);
     public static final EntityType<AnGalTaKigalSheEntity> AN_GAL_TA_KIGAL_SHE = entity("an_gal_ta_kigal_she", AnGalTaKigalSheEntity::new, 20);
+    public static final EntityType<com.nuwuman.fateubw.mash.LordCamelotEntity> LORD_CAMELOT = entity("lord_camelot", com.nuwuman.fateubw.mash.LordCamelotEntity::new, 20);
     public static final EntityType<PegasusEntity> PEGASUS = Registry.register(Registries.ENTITY_TYPE, id("pegasus"),
             EntityType.Builder.create(PegasusEntity::new, SpawnGroup.MISC)
                     .dimensions(1.4F, 1.6F)
@@ -327,6 +340,10 @@ public class FateUBW implements ModInitializer {
                 entries.add(ISHTAR_CHESTPLATE);
                 entries.add(ISHTAR_LEGGINGS);
                 entries.add(ISHTAR_BOOTS);
+                entries.add(MASH_SHIELD);
+                entries.add(MASH_CHESTPLATE);
+                entries.add(MASH_LEGGINGS);
+                entries.add(MASH_BOOTS);
                 entries.add(SUMMONING_CIRCLE);
                 entries.add(HOLY_GRAIL);
                 entries.add(RIN_JEWEL);

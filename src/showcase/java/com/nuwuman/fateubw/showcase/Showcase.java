@@ -155,6 +155,7 @@ public class Showcase implements ClientModInitializer {
             case "andromeda" -> andromeda(client, p, st);
             case "repeat" -> repeatAchievement(client, p, st);
             case "boom" -> boom(client, p, st);
+            case "mash" -> mash(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -1072,6 +1073,100 @@ public class Showcase implements ClientModInitializer {
     private static net.minecraft.entity.Entity zombie(MinecraftClient c, ClientPlayerEntity p) {
         return c.world.getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, p.getBoundingBox().expand(20), e -> true)
                 .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
+    }
+
+    // Mash: armadura, escudo (en reposo y cubriéndose), habilidades y Lord Camelot parando un haz y una flecha
+    private int camelotAt = -1;
+
+    private boolean mash(MinecraftClient c, ClientPlayerEntity p, int t) {
+        var server = c.getServer();
+        switch (t) {
+            case 0 -> {
+                camelotAt = -1;
+                setup(c, p, new String[]{"armor.chest with fate_ubw:mash_chestplate", "armor.legs with fate_ubw:mash_leggings",
+                        "armor.feet with fate_ubw:mash_boots", "hotbar.0 with fate_ubw:mash_shield"}, new String[]{"~2 ~ ~6"});
+                p.networkHandler.sendChatCommand("forceload add ~-8 ~-8 ~8 ~40");
+            }
+            case 30 -> shot(c, "mash_01_firstperson");
+            case 32 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 42 -> shot(c, "mash_02_front");
+            case 44 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 54 -> shot(c, "mash_03_back");
+            case 56 -> yaw = 90.0F;
+            case 66 -> shot(c, "mash_04_side");
+            case 68 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+                use(c, p);
+            }
+            case 80 -> shot(c, "mash_05_guard_front");
+            case 82 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 90 -> shot(c, "mash_06_guard_firstperson");
+            case 92 -> {
+                holdUse = false;
+                c.options.useKey.setPressed(false);
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            }
+            case 100 -> ability(0);       // Bunker Bolt
+            case 104 -> shot(c, "mash_07_bunker_bolt");
+            case 130 -> ability(1);       // Copos de Nieve
+            case 136 -> shot(c, "mash_08_snowflakes");
+            case 160 -> ability(2);       // Tiza
+            case 166 -> shot(c, "mash_09_chalk");
+            // Lord Camelot: agachada, cubriéndose 2 s y soltando
+            case 190 -> {
+                p.networkHandler.sendChatCommand("kill @e[type=husk]");
+                holdSneak = true;
+                use(c, p);
+            }
+            case 215 -> shot(c, "mash_10_plant");
+            case 244 -> server.execute(() -> {
+                var sp = server.getPlayerManager().getPlayer(p.getUuid());
+                if (sp != null) log("mash: antes de soltar: usando " + sp.isUsingItem() + " " + sp.getActiveItem() + " tiempo " + sp.getItemUseTime()
+                        + " agachada " + sp.isSneaking() + " maná " + com.nuwuman.fateubw.ability.Mana.get(sp));
+            });
+            case 245 -> {
+                holdUse = false;
+                c.options.useKey.setPressed(false);
+            }
+            case 248 -> holdSneak = false;
+            case 400 -> {
+                p.networkHandler.sendChatCommand("forceload remove all");
+                return true;
+            }
+            default -> {
+                if (t < 250 || server == null) return false;
+                var sp = server.getPlayerManager().getPlayer(p.getUuid());
+                if (sp == null) return false;
+                var world = sp.getServerWorld();
+                var walls = c.world.getEntitiesByClass(com.nuwuman.fateubw.mash.LordCamelotEntity.class, p.getBoundingBox().expand(20), e -> true);
+                if (camelotAt < 0 && !walls.isEmpty()) {
+                    camelotAt = t;
+                    log("mash: Lord Camelot levantado en " + walls.get(0).getPos());
+                    // De frente, desde 24 bloques: un Excalibur sin dueño y una flecha contra el muro
+                    double x = sp.getX(), y = sp.getEyeY() - 0.3, z = sp.getZ() + 24;
+                    server.execute(() -> {
+                        var beam = new com.nuwuman.fateubw.saber.ExcaliburBeamEntity(com.nuwuman.fateubw.FateUBW.BEAM, world);
+                        beam.refreshPositionAndAngles(x, y, z, 180.0F, 0.0F);
+                        world.spawnEntity(beam);
+                        var arrow = new net.minecraft.entity.projectile.ArrowEntity(net.minecraft.entity.EntityType.ARROW, world);
+                        arrow.refreshPositionAndAngles(x + 1, y, z - 4, 180.0F, 0.0F);
+                        arrow.setVelocity(0, 0, -2.0);
+                        arrow.setNoGravity(true);
+                        world.spawnEntity(arrow);
+                    });
+                }
+                if (camelotAt >= 0 && (t - camelotAt) % 6 == 0 && t - camelotAt <= 48) {
+                    var beams = world.getEntitiesByClass(com.nuwuman.fateubw.saber.ExcaliburBeamEntity.class, sp.getBoundingBox().expand(40), e -> true);
+                    var arrows = world.getEntitiesByClass(net.minecraft.entity.projectile.ArrowEntity.class, sp.getBoundingBox().expand(40), e -> true);
+                    log("mash: t+" + (t - camelotAt) + " haz " + beams.stream().map(b -> String.format("largo %.1f", b.length(b.age))).toList()
+                            + " flechas " + arrows.size() + " vida " + sp.getHealth());
+                    shot(c, "mash_11_camelot_t" + (t - camelotAt));
+                }
+                if (camelotAt >= 0 && t == camelotAt + 10) c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
+        }
+        return false;
     }
 
     // Daño de explosión a un jugador en Pacífico: la del mod debe hacer daño, la vanilla (que escala con la dificultad) no

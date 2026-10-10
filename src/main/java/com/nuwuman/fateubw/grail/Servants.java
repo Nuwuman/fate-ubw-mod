@@ -53,7 +53,9 @@ public final class Servants {
                             List.of(FateUBW.BERSERKER_AXE_SWORD)),
                     new Servant("ishtar", Items.DIAMOND,
                             List.of(FateUBW.ISHTAR_TIARA, FateUBW.ISHTAR_CHESTPLATE, FateUBW.ISHTAR_LEGGINGS, FateUBW.ISHTAR_BOOTS),
-                            List.of(FateUBW.MAANNA)));
+                            List.of(FateUBW.MAANNA)),
+                    new Servant("mash", Items.SHIELD,
+                            List.of(FateUBW.MASH_CHESTPLATE, FateUBW.MASH_LEGGINGS, FateUBW.MASH_BOOTS), List.of(FateUBW.MASH_SHIELD)));
         }
         return all;
     }

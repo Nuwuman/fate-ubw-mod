@@ -51,6 +51,9 @@
     },
     "an_gal_ta_kigal_she": {
       "trigger": "minecraft:impossible"
+    },
+    "lord_camelot": {
+      "trigger": "minecraft:impossible"
     }
   },
   "requirements": [
@@ -92,6 +95,9 @@
     ],
     [
       "an_gal_ta_kigal_she"
+    ],
+    [
+      "lord_camelot"
     ]
   ]
 }

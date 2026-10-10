@@ -39,6 +39,9 @@
     },
     "ishtar": {
       "trigger": "minecraft:impossible"
+    },
+    "mash": {
+      "trigger": "minecraft:impossible"
     }
   },
   "requirements": [
@@ -68,6 +71,9 @@
     ],
     [
       "ishtar"
+    ],
+    [
+      "mash"
     ]
   ]
 }

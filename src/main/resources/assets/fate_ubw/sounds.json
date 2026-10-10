@@ -13,5 +13,6 @@
   "voice.trace_on": { "sounds": [{ "name": "fate_ubw:voice/trace_on" }], "subtitle": "subtitles.fate_ubw.voice" },
   "voice.tsubame_gaeshi": { "sounds": [{ "name": "fate_ubw:voice/tsubame_gaeshi" }], "subtitle": "subtitles.fate_ubw.voice" },
   "voice.ubw_chant": { "sounds": [{ "name": "fate_ubw:voice/ubw_chant" }], "subtitle": "subtitles.fate_ubw.voice" },
-  "voice.unlimited_blade_works": { "sounds": [{ "name": "fate_ubw:voice/unlimited_blade_works" }], "subtitle": "subtitles.fate_ubw.voice" }
+  "voice.unlimited_blade_works": { "sounds": [{ "name": "fate_ubw:voice/unlimited_blade_works" }], "subtitle": "subtitles.fate_ubw.voice" },
+  "voice.lord_camelot": { "sounds": [{ "name": "fate_ubw:voice/lord_camelot" }], "subtitle": "subtitles.fate_ubw.voice" }
 }

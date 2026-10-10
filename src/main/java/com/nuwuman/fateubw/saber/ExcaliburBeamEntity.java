@@ -63,6 +63,8 @@ public class ExcaliburBeamEntity extends Entity {
     private static final TrackedData<Integer> PUSH = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
     // Ticks que el haz lleva retenido en choques: no envejece mientras empuja (sincronizado, para el dibujo)
     private static final TrackedData<Integer> HELD = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    // Distancia a la que lo para un Lord Camelot (sincronizada, para el dibujo; -1 = nada lo para)
+    private static final TrackedData<Float> WALL = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final int ERUPTION_TICKS = 10;
     @Nullable
     private ExcaliburBeamEntity rival;
@@ -132,7 +134,9 @@ public class ExcaliburBeamEntity extends Entity {
         float length = maxLength() * Math.min(1.0F, age / GROW_TICKS);
         float clash = dataTracker.get(CLASH);
         // Chocando, el largo lo marca el punto de choque, que se mueve con el tira y afloja
-        return clash >= 0.0F ? Math.min(maxLength(), clash) : length;
+        float len = clash >= 0.0F ? Math.min(maxLength(), clash) : length;
+        float wall = dataTracker.get(WALL);
+        return wall >= 0.0F ? Math.min(len, wall) : len;
     }
 
     public float fade(float age) {
@@ -144,13 +148,19 @@ public class ExcaliburBeamEntity extends Entity {
     public void tick() {
         super.tick();
         if (getWorld() instanceof ServerWorld world) {
+            // Un Lord Camelot de frente lo para: ni daña ni rompe nada detrás del muro
+            float wall = com.nuwuman.fateubw.mash.LordCamelotEntity.blockDistance(world, getPos(), getRotationVector(), maxLength(), owner);
+            dataTracker.set(WALL, wall);
+            if (wall >= 0 && wall <= length(age) + 0.5F && age % 3 == 0) {
+                com.nuwuman.fateubw.mash.LordCamelotEntity.impact(world, getPos().add(getRotationVector().multiply(wall)));
+            }
             if (!clashed && life() <= DAMAGE_TICKS) findRival(world);
             if (rival != null) {
                 dataTracker.set(HELD, dataTracker.get(HELD) + 1);
                 clash(world);
             }
             if (life() <= DAMAGE_TICKS + bonusDamageTicks) sweep(world);
-            else if (carving(world)) carve(world, getPos(), getRotationVector(), maxLength());
+            else if (carving(world)) carve(world, getPos(), getRotationVector(), length(age));
             if (life() > LIFETIME + bonusDamageTicks && !carving(world)) discard();
         }
     }
@@ -380,7 +390,7 @@ public class ExcaliburBeamEntity extends Entity {
 
     /** ¿Le queda túnel por abrir? Mientras tanto el haz sigue vivo en el servidor. */
     private boolean carving(ServerWorld world) {
-        return carved < maxLength() && FateUBW.breaksBlocks(world, getPos());
+        return carved < length(age) && FateUBW.breaksBlocks(world, getPos());
     }
 
     /**
@@ -417,6 +427,7 @@ public class ExcaliburBeamEntity extends Entity {
         builder.add(CLASH, -1.0F);
         builder.add(PUSH, 0);
         builder.add(HELD, 0);
+        builder.add(WALL, -1.0F);
     }
 
     @Override

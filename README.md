@@ -132,6 +132,18 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   joyas en abanico que estallan), **Manifestación de la Belleza** (los que tienes cerca quedan débiles y lentos y dejan
   de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s; se puede usar dos veces seguidas, con 4 s para el segundo salto, antes de la recarga).
 
+**Shielder (Mash Kyrielight)**
+- **Lord Chaldeas**: su escudo enorme con la cruz y la lente morada. Click derecho para cubrirte como con un escudo
+  (no se gasta); golpear con él es un porrazo con mucho empuje. Agachado, cubriéndote 2 s y soltando: **Lord Camelot**,
+  un muro de luz con la forma de las murallas de Camelot delante de ti durante 6 s. Para los proyectiles y los haces de
+  Noble Phantasm (Excalibur, Enuma Elish, An Gal Ta Kigal Shè…) que le llegan de frente, y los jugadores que tiene
+  detrás reciben Resistencia II.
+- **Armadura** de su primera ascensión: negra con líneas moradas, con el abdomen, los hombros y los muslos al aire
+  (se ve tu skin); sin casco. Conjunto completo: Resistencia I y un 30 % menos de daño por la espalda. Habilidades:
+  **Bunker Bolt** (embiste con el escudo, arrolla y aturde 1 s), **Muro Transitorio de Copos de Nieve** (tú y los
+  jugadores a 5 bloques recibís la mitad de daño 4 s) y **Muro Oscuro de Tiza** (el jugador al que miras, o tú, se
+  libra del siguiente golpe fuerte).
+
 ![Caster, Assassin y Berserker](docs/new_servants.png)
 
 **Servants enemigos**
@@ -145,7 +157,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 **Guerra del Santo Grial**
 - **Círculo de invocación**: click derecho en el suelo con un catalizador en la otra mano. Tras un ritual de 3 s aparece
   el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de prismarina → Lancer, ojo de
-  ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero → Berserker, diamante → Ishtar (sin catalizador,
+  ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero → Berserker, diamante → Ishtar, escudo → Mash (sin catalizador,
   uno al azar).
 - **`/grailwar start`** (operadores): a cada jugador conectado le toca un servant distinto, con su equipo, el maná lleno
   y tres Sellos de Comando. Quien muere queda de espectador; el último en pie gana el **Santo Grial**.
@@ -272,7 +284,7 @@ El jar sale en `build/libs/`.
 - `gradlew runShowcase`: abre un cliente de desarrollo que crea un mundo, usa cada arma y habilidad,
   guarda capturas en `run-showcase/screenshots` y se cierra solo. No entra en el jar publicado.
   Con la variable de entorno `FATE_SHOWCASE=saber` (o `archer`, `lancer`, `rider`, `gilgamesh`, `ubw`, `trace`, `hud`,
-  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `carve`, `maanna`, `avalon`, `enkidu`, `poses`, `glow`, `armors`, `grailwar`, o varios separados por
+  `caster`, `assassin`, `berserker`, `ishtar`, `falchions`, `enchants`, `clash`, `npfx`, `carve`, `maanna`, `avalon`, `enkidu`, `mash`, `poses`, `glow`, `armors`, `grailwar`, o varios separados por
   comas) solo prueba esas secciones. `FATE_WORLD=<carpeta de run-showcase/saves>` reabre un mundo de una ejecución
   anterior en vez de crear uno (para probar lo que se guarda, como la Guerra del Santo Grial).
 

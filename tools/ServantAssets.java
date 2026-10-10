@@ -1702,6 +1702,93 @@ public class ServantAssets {
         return List.of(head, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
+    // Mash Kyrielight (Shielder), primera ascensión: armadura negra con líneas moradas. El abdomen, los hombros, los
+    // brazos por encima del codo y los muslos van al aire (se ve la skin del jugador). Sin casco ni pelo
+    static final int MASH_BLACK = 0x1f1e27, MASH_PLATE = 0x2e2d38, MASH_PURPLE = 0x8a5ad8, MASH_LIGHT = 0xc9b8f0;
+
+    static List<Bone> mashArmor() {
+        Paint suit = fabric(MASH_BLACK), plateP = edged(metal(MASH_PLATE), MASH_PURPLE, 1), purple = plate(MASH_PURPLE);
+        Paint lined = marked(metal(MASH_PLATE), MASH_PURPLE, (x, y, w, h) -> y == h - 1 || x == w / 2);
+
+        Bone head = new Bone("armorHead", null, 0, 24, 0);
+
+        Bone body = new Bone("armorBody", null, 0, 24, 0);
+        body.model.box(-4, 18.6, -2, 4, 24, 2, suit).inflate(0.5);                 // pecho (el abdomen queda al aire)
+        body.model.box(-3.6, 19.4, -2.75, 3.6, 23.2, -2.3, lined);                 // placa del pecho con la línea morada
+        body.model.box(-4.4, 18.2, -2.6, 4.4, 18.8, 2.6, purple);                  // borde inferior morado
+        body.model.box(-2.4, 23.4, -2.6, 2.4, 24.3, 2.6, plateP);                  // gorguera
+        body.model.box(-4, 12, -2, 4, 14.4, 2, suit).inflate(0.55);                // cintura y cadera
+        body.model.box(-4.6, 13.8, -2.7, 4.6, 14.5, 2.7, purple);                  // cinturón morado
+        body.model.box(-1.2, 12.2, -2.75, 1.2, 13.8, -2.45, plateP);               // hebilla
+        body.model.box(-5.0, 8.6, -2.2, -4.4, 13.8, 2.2, plateP);                  // escarcelas a los lados de la cadera
+        body.model.box(4.4, 8.6, -2.2, 5.0, 13.8, 2.2, plateP);
+
+        // Guanteletes largos hasta el codo: cubren el brazo entero (4x4) con margen, para que no asome
+        Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
+        rightArm.model.box(-8, 12, -2, -4, 19, 2, suit).inflate(0.35);
+        rightArm.model.box(-8.7, 13, -1.8, -8.2, 18, 1.8, lined);                  // placa del antebrazo
+        rightArm.model.box(-8.5, 18.6, -2.5, -3.5, 19.3, 2.5, purple);             // remate morado en el codo
+        Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
+        leftArm.model.box(4, 12, -2, 8, 19, 2, suit).inflate(0.35);
+        leftArm.model.box(8.2, 13, -1.8, 8.7, 18, 1.8, lined);
+        leftArm.model.box(3.5, 18.6, -2.5, 8.5, 19.3, 2.5, purple);
+
+        // Botas altas hasta medio muslo; por encima, el muslo al aire
+        Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
+        rightLeg.model.box(-4, 4.4, -2, 0, 9.4, 2, suit).inflate(0.4);
+        rightLeg.model.box(-4.5, 9.0, -2.5, 0.5, 9.6, 2.5, purple);                // borde morado
+        rightLeg.model.box(-3.3, 5.0, -2.75, -0.7, 7.6, -2.35, plateP);            // rodillera
+        Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
+        leftLeg.model.box(0, 4.4, -2, 4, 9.4, 2, suit).inflate(0.4);
+        leftLeg.model.box(-0.5, 9.0, -2.5, 4.5, 9.6, 2.5, purple);
+        leftLeg.model.box(0.7, 5.0, -2.75, 3.3, 7.6, -2.35, plateP);
+
+        Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
+        rightBoot.model.box(-4, 0, -2, 0, 4.6, 2, metal(MASH_PLATE)).inflate(0.45);
+        rightBoot.model.box(-4.5, 3.9, -2.5, 0.5, 4.4, 2.5, purple);
+        rightBoot.model.box(-3.2, 0.2, -2.9, -0.8, 3.6, -2.45, lined);             // espinillera
+        Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
+        leftBoot.model.box(0, 0, -2, 4, 4.6, 2, metal(MASH_PLATE)).inflate(0.45);
+        leftBoot.model.box(-0.5, 3.9, -2.5, 4.5, 4.4, 2.5, purple);
+        leftBoot.model.box(0.8, 0.2, -2.9, 3.2, 3.6, -2.45, lined);
+
+        return List.of(head, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
+    }
+
+    // El escudo de Mash (Lord Chaldeas): una plancha grande gris clara con el borde oscuro, una cruz que la recorre y una
+    // lente morada en el centro; el asa detrás. De pie: la punta abajo, el remate redondeado arriba
+    static Model mashShield() {
+        Paint face = edged(metal(0xd9dbe4), 0x55586a, 1), dark = metal(0x3a3c4a), cross = edged(metal(0x6b6e80), 0x2a2c36, 1);
+        Model m = new Model();
+        m.box(1, -4, 7.2, 15, 24, 8.8, face);                       // plancha
+        m.box(3.5, 24, 7.3, 12.5, 26.5, 8.7, face);                // remate de arriba
+        m.box(5, -7, 7.3, 11, -4, 8.7, face);                      // punta de abajo
+        m.box(6.8, -6.5, 6.6, 9.2, 26, 7.2, cross);                // la cruz, por delante
+        m.box(1.4, 13.6, 6.6, 14.6, 16.4, 7.2, cross);
+        m.box(6.4, 13.2, 6.2, 9.6, 16.8, 6.6, plate(MASH_LIGHT));                   // lente central
+        m.box(7.1, 7, 8.8, 8.9, 14, 10, dark);                     // asa, por detrás
+        return m;
+    }
+
+    static final String SHIELD_DISPLAY = "{\n"
+            + "    \"thirdperson_righthand\": { \"rotation\": [0, 90, 0], \"translation\": [-2, 3, 1], \"scale\": [0.95, 0.95, 0.95] },\n"
+            + "    \"thirdperson_lefthand\": { \"rotation\": [0, 90, 0], \"translation\": [-2, 3, 1], \"scale\": [0.95, 0.95, 0.95] },\n"
+            + "    \"firstperson_righthand\": { \"rotation\": [0, 180, 5], \"translation\": [-3, -1, -4], \"scale\": [0.55, 0.55, 0.55] },\n"
+            + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, 5], \"translation\": [-3, -1, -4], \"scale\": [0.55, 0.55, 0.55] },\n"
+            + "    \"gui\": { \"rotation\": [15, -25, -5], \"translation\": [0, 0, 0], \"scale\": [0.42, 0.42, 0.42] },\n"
+            + "    \"ground\": { \"translation\": [0, 2, 0], \"scale\": [0.35, 0.35, 0.35] },\n"
+            + "    \"fixed\": { \"rotation\": [0, 180, 0], \"scale\": [0.5, 0.5, 0.5] }\n"
+            + "  }";
+
+    // Cubriéndose: el escudo más delante y girado, como el vanilla al bloquear
+    static final String SHIELD_BLOCKING_DISPLAY = "{\n"
+            + "    \"thirdperson_righthand\": { \"rotation\": [35, 135, 0], \"translation\": [-3, 3, -1], \"scale\": [0.95, 0.95, 0.95] },\n"
+            + "    \"thirdperson_lefthand\": { \"rotation\": [35, 135, 0], \"translation\": [-3, 3, -1], \"scale\": [0.95, 0.95, 0.95] },\n"
+            + "    \"firstperson_righthand\": { \"rotation\": [0, 180, -5], \"translation\": [-1, -4, -5], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, -5], \"translation\": [-1, -4, -5], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"gui\": { \"rotation\": [15, -25, -5], \"translation\": [0, 0, 0], \"scale\": [0.42, 0.42, 0.42] }\n"
+            + "  }";
+
     // Maanna, la Barca del Cielo como arco: dorada, con alas que se abren hacia las puntas y una gema azul en el centro.
     // Horizontal y con la flecha hacia +Y, como el arco de EMIYA
     static final Paint MAANNA_GOLD = metal(0xe3b545), MAANNA_WHITE = metal(0xf2ead2), MAANNA_GEM = metal(0x3a7bd8),
@@ -1996,6 +2083,16 @@ public class ServantAssets {
         itemModel(root, "ishtar_leggings", bonesToModel(ishtar, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "ishtar_boots", bonesToModel(ishtar, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
+        // ---------- Mash Kyrielight ----------
+        List<Bone> mash = mashArmor();
+        armorModel(root, "mash_armor", mash);
+        itemModel(root, "mash_chestplate", bonesToModel(mash, 8, -4, 8, "armorBody", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
+        itemModel(root, "mash_leggings", bonesToModel(mash, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
+        itemModel(root, "mash_boots", bonesToModel(mash, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+        itemModel(root, "mash_shield", mashShield(), SHIELD_DISPLAY,
+                "[\n    { \"predicate\": { \"blocking\": 1 }, \"model\": \"fate_ubw:item/mash_shield_blocking\" }\n  ]");
+        itemModel(root, "mash_shield_blocking", mashShield(), SHIELD_BLOCKING_DISPLAY, null);
+
         // ---------- Assassin ----------
         itemModel(root, "monohoshizao", monohoshizao(), handheld(0.55, 0.6), null);
         List<Bone> assassin = assassinArmor();
@@ -2006,7 +2103,7 @@ public class ServantAssets {
         itemModel(root, "assassin_boots", bonesToModel(assassin, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Berserker ----------
-        itemModel(root, "berserker_axe_sword", axeSword(), handheld(0.7), null);
+        // berserker_axe_sword: modelo del usuario (tools/blockbench/berserker_axe_sword.bbmodel), no se genera
         List<Bone> berserker = berserkerArmor();
         armorModel(root, "berserker_armor", berserker);
         itemModel(root, "berserker_chestplate", bonesToModel(berserker, 8, -4, 8, "armorBody", "loinFront", "loinBack",

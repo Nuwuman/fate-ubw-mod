@@ -42,6 +42,10 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(FateUBW.PEGASUS, PegasusRenderer::new);
         EntityRendererRegistry.register(FateUBW.ENUMA_ELISH, EnumaElishRenderer::new);
         EntityRendererRegistry.register(FateUBW.AN_GAL_TA_KIGAL_SHE, AnGalTaKigalSheRenderer::new);
+        EntityRendererRegistry.register(FateUBW.LORD_CAMELOT, LordCamelotRenderer::new);
+        // El escudo de Mash cambia de modelo al cubrirse, como el vanilla
+        ModelPredicateProviderRegistry.register(FateUBW.MASH_SHIELD, Identifier.ofVanilla("blocking"),
+                (stack, world, entity, seed) -> using(entity, stack) ? 1.0F : 0.0F);
         EntityRendererRegistry.register(FateUBW.UBW_CORE, UbwCoreRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_PORTAL, BabylonPortalRenderer::new);
         ItemStack hrunting = new ItemStack(FateUBW.HRUNTING);

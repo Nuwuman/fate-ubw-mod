@@ -63,6 +63,7 @@ public final class PlayerAnimsClient {
         if (stack.isOf(FateUBW.EXCALIBUR)) return "excalibur_charge";
         if (stack.isOf(FateUBW.EA)) return "enuma_elish_charge";
         if (stack.isOf(FateUBW.MONOHOSHIZAO)) return "tsubame_stance";
+        if (stack.isOf(FateUBW.MASH_SHIELD)) return player.isSneaking() ? "mash_plant" : "mash_guard";
         return null;
     }
 

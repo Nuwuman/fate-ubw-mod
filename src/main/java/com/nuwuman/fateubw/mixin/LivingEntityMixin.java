@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class LivingEntityMixin {
     @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
     private float fateubw$playerDamage(float amount, @Local(argsOnly = true) DamageSource source) {
-        return Rules.playerDamage((LivingEntity) (Object) this, source, amount);
+        LivingEntity self = (LivingEntity) (Object) this;
+        return com.nuwuman.fateubw.mash.MashArmorItem.adjustDamage(self, source, Rules.playerDamage(self, source, amount));
     }
 }

@@ -65,3 +65,35 @@ anim("nine_lives", 1.3, {
     "leftArm": [(0.0, Z)] + [(round(0.06 + i * 0.1, 2), [c[0] * 0.6, -c[1], -c[2]]) for i, c in enumerate(cuts)] + [(1.3, Z)],
     "torso": [(0.0, Z)] + [(round(0.06 + i * 0.1, 2), [10 if i % 2 else -5, 18 if i % 2 else -18, 0]) for i in range(len(cuts))] + [(1.3, Z)],
     "rightLeg": hold([-25, 0, 5], 0, 1.0, 1.3, 0.1), "leftLeg": hold([20, 0, -5], 0, 1.0, 1.3, 0.1)})
+
+# ---------- Mash ----------
+def pose(name, bones):
+    """Postura mantenida mientras se usa el ítem: llega en 0,2 s y se queda (hold_on_last_frame)."""
+    d = {"format_version": "1.8.0", "animations": {name: {"animation_length": 0.2, "loop": "hold_on_last_frame", "bones": {
+        b: {"rotation": {"0.0": Z, "0.2": v}} for b, v in bones.items()}}}}
+    json.dump(d, open(os.path.join(out, name + ".json"), "w"), indent=2)
+
+# Guardia: el escudo en alto delante, el cuerpo un poco agachado tras él
+pose("mash_guard", {"leftArm": [-80, 25, 0], "rightArm": [-75, -30, 0], "torso": [8, 0, 0],
+                    "rightLeg": [-12, 0, 4], "leftLeg": [10, 0, -4]})
+# Cargando Lord Camelot: el escudo plantado en el suelo con las dos manos, el peso hacia delante
+pose("mash_plant", {"leftArm": [-45, 20, 0], "rightArm": [-45, -20, 0], "torso": [18, 0, 0], "head": [-15, 0, 0],
+                    "rightLeg": [-30, 0, 6], "leftLeg": [20, 0, -6]})
+# Lord Camelot: alza el escudo y lo planta con fuerza
+anim("lord_camelot", 1.4, {
+    "leftArm": [(0.0, [-45, 20, 0]), (0.25, [-150, 15, 0]), (0.5, [-60, 20, 0]), (1.1, [-60, 20, 0]), (1.4, Z)],
+    "rightArm": [(0.0, [-45, -20, 0]), (0.25, [-150, -15, 0]), (0.5, [-60, -20, 0]), (1.1, [-60, -20, 0]), (1.4, Z)],
+    "torso": [(0.0, [18, 0, 0]), (0.25, [-8, 0, 0]), (0.5, [20, 0, 0]), (1.1, [20, 0, 0]), (1.4, Z)],
+    "rightLeg": hold([-30, 0, 6], 0, 1.1, 1.4, 0.1), "leftLeg": hold([20, 0, -6], 0, 1.1, 1.4, 0.1)})
+# Bunker Bolt: embestida con el hombro y el escudo por delante
+anim("bunker_bolt", 0.8, {
+    "torso": hold([30, -20, 0], 0, 0.5, 0.8, 0.08), "leftArm": hold([-90, 30, 0], 0, 0.5, 0.8, 0.08),
+    "rightArm": hold([30, 0, 15], 0, 0.5, 0.8, 0.08), "rightLeg": hold([-40, 0, 0], 0, 0.5, 0.8, 0.08),
+    "leftLeg": hold([30, 0, 0], 0, 0.5, 0.8, 0.08)})
+# Muro de Copos de Nieve: los brazos abiertos hacia los compañeros
+anim("wall_of_snowflakes", 1.2, {
+    "rightArm": hold([-100, 0, 45], 0, 0.9, 1.2, 0.2), "leftArm": hold([-100, 0, -45], 0, 0.9, 1.2, 0.2),
+    "torso": hold([-6, 0, 0], 0, 0.9, 1.2, 0.2)})
+# Muro de Tiza: señala con la mano libre a quien protege
+anim("wall_of_chalk", 1.0, {
+    "rightArm": hold([-95, -10, 0], 0, 0.7, 1.0, 0.15), "torso": hold([0, -10, 0], 0, 0.7, 1.0, 0.15)})

@@ -39,6 +39,9 @@
     },
     "ishtar": {
       "trigger": "minecraft:impossible"
+    },
+    "mash": {
+      "trigger": "minecraft:impossible"
     }
   },
   "requirements": [
@@ -51,7 +54,8 @@
       "caster",
       "assassin",
       "berserker",
-      "ishtar"
+      "ishtar",
+      "mash"
     ]
   ]
 }
