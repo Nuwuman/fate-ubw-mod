@@ -1702,79 +1702,96 @@ public class ServantAssets {
         return List.of(head, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
-    // Mash Kyrielight (Shielder), primera ascensión: armadura negra con líneas moradas. El abdomen, los hombros, los
-    // brazos por encima del codo y los muslos van al aire (se ve la skin del jugador). Sin casco ni pelo
-    static final int MASH_BLACK = 0x1f1e27, MASH_PLATE = 0x2e2d38, MASH_PURPLE = 0x8a5ad8, MASH_LIGHT = 0xc9b8f0;
+    // Mash Kyrielight (Shielder), primera ascensión (referencia del usuario): armadura azul marino muy oscuro con líneas
+    // moradas que cubre el torso entero, escarcelas en capas sobre la cadera y una capa morada que cae por detrás y por
+    // los lados; guanteletes hasta el codo y medias altas. Los hombros, los brazos por encima del codo y lo alto del
+    // muslo van al aire (se ve la skin del jugador). Sin casco ni pelo
+    static final int MASH_BLACK = 0x20203a, MASH_PLATE = 0x2c2c48, MASH_PURPLE = 0x7a55d6, MASH_CAPE = 0x5a3caa, MASH_LIGHT = 0xd9dbe6;
 
     static List<Bone> mashArmor() {
         Paint suit = fabric(MASH_BLACK), plateP = edged(metal(MASH_PLATE), MASH_PURPLE, 1), purple = plate(MASH_PURPLE);
-        Paint lined = marked(metal(MASH_PLATE), MASH_PURPLE, (x, y, w, h) -> y == h - 1 || x == w / 2);
+        Paint lined = marked(metal(MASH_PLATE), MASH_PURPLE, (x, y, w, h) -> x == w / 2);
+        Paint faulds = marked(metal(MASH_PLATE), 0x15152a, (x, y, w, h) -> y % 3 == 2);      // placas en capas
+        Paint cape = marked(fabric(MASH_CAPE), 0x3d2878, (x, y, w, h) -> x % 3 == 0);       // pliegues de la capa
 
         Bone head = new Bone("armorHead", null, 0, 24, 0);
 
         Bone body = new Bone("armorBody", null, 0, 24, 0);
-        body.model.box(-4, 18.6, -2, 4, 24, 2, suit).inflate(0.5);                 // pecho (el abdomen queda al aire)
-        body.model.box(-3.6, 19.4, -2.75, 3.6, 23.2, -2.3, lined);                 // placa del pecho con la línea morada
-        body.model.box(-4.4, 18.2, -2.6, 4.4, 18.8, 2.6, purple);                  // borde inferior morado
-        body.model.box(-2.4, 23.4, -2.6, 2.4, 24.3, 2.6, plateP);                  // gorguera
-        body.model.box(-4, 12, -2, 4, 14.4, 2, suit).inflate(0.55);                // cintura y cadera
-        body.model.box(-4.6, 13.8, -2.7, 4.6, 14.5, 2.7, purple);                  // cinturón morado
-        body.model.box(-1.2, 12.2, -2.75, 1.2, 13.8, -2.45, plateP);               // hebilla
-        body.model.box(-5.0, 8.6, -2.2, -4.4, 13.8, 2.2, plateP);                  // escarcelas a los lados de la cadera
-        body.model.box(4.4, 8.6, -2.2, 5.0, 13.8, 2.2, plateP);
+        body.model.box(-4, 12, -2, 4, 24, 2, suit).inflate(0.5);                   // traje: el torso entero
+        body.model.box(-3.4, 14.5, -2.75, 3.4, 23.0, -2.3, lined);                 // peto con la línea morada en el centro
+        body.model.box(-3.6, 19.2, -2.85, 3.6, 19.8, -2.6, purple);                // bajo el pecho
+        body.model.box(-2.4, 23.2, -2.6, 2.4, 24.6, 2.6, plateP);                  // cuello alto
+        body.model.box(-4.6, 9.6, -2.8, 4.6, 12.8, -2.3, faulds);                  // escarcelas delante
+        body.model.box(-4.6, 12.4, -2.8, 4.6, 13.1, 2.8, purple);                  // cinturón morado
+        body.model.box(-4.7, 3.0, 2.3, 4.7, 12.8, 2.8, cape);                      // capa por detrás
+        body.model.box(-5.2, 4.0, -1.2, -4.7, 12.8, 2.8, cape);                    // y por los lados
+        body.model.box(4.7, 4.0, -1.2, 5.2, 12.8, 2.8, cape);
+        body.model.box(-5.4, 9.0, -2.4, -4.6, 12.8, -1.0, plateP);                 // escarcelas laterales
+        body.model.box(4.6, 9.0, -2.4, 5.4, 12.8, -1.0, plateP);
 
-        // Guanteletes largos hasta el codo: cubren el brazo entero (4x4) con margen, para que no asome
+        // Guanteletes hasta el codo: cubren el brazo entero (4x4) con margen, para que no asome
         Bone rightArm = new Bone("armorRightArm", null, -5, 22, 0);
         rightArm.model.box(-8, 12, -2, -4, 19, 2, suit).inflate(0.35);
-        rightArm.model.box(-8.7, 13, -1.8, -8.2, 18, 1.8, lined);                  // placa del antebrazo
-        rightArm.model.box(-8.5, 18.6, -2.5, -3.5, 19.3, 2.5, purple);             // remate morado en el codo
+        rightArm.model.box(-8.7, 13, -1.8, -8.2, 18, 1.8, lined);
+        rightArm.model.box(-8.5, 18.6, -2.5, -3.5, 19.3, 2.5, purple);
         Bone leftArm = new Bone("armorLeftArm", null, 5, 22, 0);
         leftArm.model.box(4, 12, -2, 8, 19, 2, suit).inflate(0.35);
         leftArm.model.box(8.2, 13, -1.8, 8.7, 18, 1.8, lined);
         leftArm.model.box(3.5, 18.6, -2.5, 8.5, 19.3, 2.5, purple);
 
-        // Botas altas hasta medio muslo; por encima, el muslo al aire
+        // Medias altas casi hasta la ingle, con la rodillera; arriba del todo, el muslo al aire
         Bone rightLeg = new Bone("armorRightLeg", null, -2, 12, 0);
-        rightLeg.model.box(-4, 4.4, -2, 0, 9.4, 2, suit).inflate(0.4);
-        rightLeg.model.box(-4.5, 9.0, -2.5, 0.5, 9.6, 2.5, purple);                // borde morado
-        rightLeg.model.box(-3.3, 5.0, -2.75, -0.7, 7.6, -2.35, plateP);            // rodillera
+        rightLeg.model.box(-4, 4.4, -2, 0, 10.6, 2, suit).inflate(0.4);
+        rightLeg.model.box(-4.5, 10.2, -2.5, 0.5, 10.8, 2.5, purple);              // liga morada
+        rightLeg.model.box(-3.3, 4.8, -2.75, -0.7, 7.6, -2.35, plateP);            // rodillera
         Bone leftLeg = new Bone("armorLeftLeg", null, 2, 12, 0);
-        leftLeg.model.box(0, 4.4, -2, 4, 9.4, 2, suit).inflate(0.4);
-        leftLeg.model.box(-0.5, 9.0, -2.5, 4.5, 9.6, 2.5, purple);
-        leftLeg.model.box(0.7, 5.0, -2.75, 3.3, 7.6, -2.35, plateP);
+        leftLeg.model.box(0, 4.4, -2, 4, 10.6, 2, suit).inflate(0.4);
+        leftLeg.model.box(-0.5, 10.2, -2.5, 4.5, 10.8, 2.5, purple);
+        leftLeg.model.box(0.7, 4.8, -2.75, 3.3, 7.6, -2.35, plateP);
 
         Bone rightBoot = new Bone("armorRightBoot", null, -2, 12, 0);
         rightBoot.model.box(-4, 0, -2, 0, 4.6, 2, metal(MASH_PLATE)).inflate(0.45);
-        rightBoot.model.box(-4.5, 3.9, -2.5, 0.5, 4.4, 2.5, purple);
-        rightBoot.model.box(-3.2, 0.2, -2.9, -0.8, 3.6, -2.45, lined);             // espinillera
+        rightBoot.model.box(-4.5, 0, -2.6, 0.5, 0.6, 2.6, purple);                 // suela morada
+        rightBoot.model.box(-3.2, 0.8, -2.9, -0.8, 4.0, -2.45, lined);             // espinillera
         Bone leftBoot = new Bone("armorLeftBoot", null, 2, 12, 0);
         leftBoot.model.box(0, 0, -2, 4, 4.6, 2, metal(MASH_PLATE)).inflate(0.45);
-        leftBoot.model.box(-0.5, 3.9, -2.5, 4.5, 4.4, 2.5, purple);
-        leftBoot.model.box(0.8, 0.2, -2.9, 3.2, 3.6, -2.45, lined);
+        leftBoot.model.box(-0.5, 0, -2.6, 4.5, 0.6, 2.6, purple);
+        leftBoot.model.box(0.8, 0.8, -2.9, 3.2, 4.0, -2.45, lined);
 
         return List.of(head, body, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
-    // El escudo de Mash (Lord Chaldeas): una plancha grande gris clara con el borde oscuro, una cruz que la recorre y una
-    // lente morada en el centro; el asa detrás. De pie: la punta abajo, el remate redondeado arriba
+    // El escudo de Mash (referencia del usuario): una cruz enorme azul marino; en el centro un disco claro con puntos
+    // oscuros alrededor, una pequeña figura blanca arriba y otra abajo, y la punta de abajo blanca. El asa detrás
     static Model mashShield() {
-        Paint face = edged(metal(0xd9dbe4), 0x55586a, 1), dark = metal(0x3a3c4a), cross = edged(metal(0x6b6e80), 0x2a2c36, 1);
+        Paint navy = edged(metal(0x2b2c4c), 0x17182c, 1), white = metal(0xe2e4ee);
+        Paint disk = marked(metal(MASH_LIGHT), 0x2b2c4c, (x, y, w, h) -> (x == 1 || x == w - 2 || y == 1 || y == h - 2) && (x + y) % 2 == 0);
         Model m = new Model();
-        m.box(1, -4, 7.2, 15, 24, 8.8, face);                       // plancha
-        m.box(3.5, 24, 7.3, 12.5, 26.5, 8.7, face);                // remate de arriba
-        m.box(5, -7, 7.3, 11, -4, 8.7, face);                      // punta de abajo
-        m.box(6.8, -6.5, 6.6, 9.2, 26, 7.2, cross);                // la cruz, por delante
-        m.box(1.4, 13.6, 6.6, 14.6, 16.4, 7.2, cross);
-        m.box(6.4, 13.2, 6.2, 9.6, 16.8, 6.6, plate(MASH_LIGHT));                   // lente central
-        m.box(7.1, 7, 8.8, 8.9, 14, 10, dark);                     // asa, por detrás
+        m.box(4, -8, 7.2, 12, 30, 8.8, navy);                     // palo vertical de la cruz
+        m.box(5, 30, 7.3, 11, 31.5, 8.7, navy);                   // remate redondeado arriba
+        m.box(-2, 11, 7.2, 18, 21, 8.8, navy);                    // brazos de la cruz
+        m.box(-3, 12, 7.3, -2, 20, 8.7, navy);
+        m.box(18, 12, 7.3, 19, 20, 8.7, navy);
+        m.box(3, 11, 6.8, 13, 21, 7.2, disk);                      // el disco claro del centro (por delante), con su anillo de puntos
+        Paint diskEdge = metal(MASH_LIGHT);                        // y cuatro remates un poco detrás que lo redondean
+        m.box(5, 21, 6.95, 11, 22, 7.2, diskEdge);
+        m.box(5, 10, 6.95, 11, 11, 7.2, diskEdge);
+        m.box(2, 13, 6.95, 3, 19, 7.2, diskEdge);
+        m.box(13, 13, 6.95, 14, 19, 7.2, diskEdge);
+        m.box(7.3, 24, 6.9, 8.7, 27, 7.2, white);                 // figura de arriba
+        m.box(7.3, 3, 6.9, 8.7, 7, 7.2, white);                   // y de abajo, como una espada
+        m.box(6.3, 6, 6.9, 9.7, 6.6, 7.2, white);
+        m.box(5.5, -10, 7.3, 10.5, -8, 8.7, white);               // punta blanca abajo
+        m.box(6.8, -12, 7.4, 9.2, -10, 8.6, white);
+        m.box(7.1, 8, 8.8, 8.9, 15, 10, metal(0x3a3c4a));         // asa, por detrás
         return m;
     }
 
     static final String SHIELD_DISPLAY = "{\n"
             + "    \"thirdperson_righthand\": { \"rotation\": [0, 90, 0], \"translation\": [-2, 3, 1], \"scale\": [0.95, 0.95, 0.95] },\n"
             + "    \"thirdperson_lefthand\": { \"rotation\": [0, 90, 0], \"translation\": [-2, 3, 1], \"scale\": [0.95, 0.95, 0.95] },\n"
-            + "    \"firstperson_righthand\": { \"rotation\": [0, 180, 5], \"translation\": [-3, -1, -4], \"scale\": [0.55, 0.55, 0.55] },\n"
-            + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, 5], \"translation\": [-3, -1, -4], \"scale\": [0.55, 0.55, 0.55] },\n"
+            + "    \"firstperson_righthand\": { \"rotation\": [0, 180, 5], \"translation\": [0, -2, -4], \"scale\": [0.32, 0.32, 0.32] },\n"
+            + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, 5], \"translation\": [0, -2, -4], \"scale\": [0.32, 0.32, 0.32] },\n"
             + "    \"gui\": { \"rotation\": [15, -25, -5], \"translation\": [0, 0, 0], \"scale\": [0.42, 0.42, 0.42] },\n"
             + "    \"ground\": { \"translation\": [0, 2, 0], \"scale\": [0.35, 0.35, 0.35] },\n"
             + "    \"fixed\": { \"rotation\": [0, 180, 0], \"scale\": [0.5, 0.5, 0.5] }\n"
@@ -1784,8 +1801,8 @@ public class ServantAssets {
     static final String SHIELD_BLOCKING_DISPLAY = "{\n"
             + "    \"thirdperson_righthand\": { \"rotation\": [35, 135, 0], \"translation\": [-3, 3, -1], \"scale\": [0.95, 0.95, 0.95] },\n"
             + "    \"thirdperson_lefthand\": { \"rotation\": [35, 135, 0], \"translation\": [-3, 3, -1], \"scale\": [0.95, 0.95, 0.95] },\n"
-            + "    \"firstperson_righthand\": { \"rotation\": [0, 180, -5], \"translation\": [-1, -4, -5], \"scale\": [0.5, 0.5, 0.5] },\n"
-            + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, -5], \"translation\": [-1, -4, -5], \"scale\": [0.5, 0.5, 0.5] },\n"
+            + "    \"firstperson_righthand\": { \"rotation\": [0, 180, -5], \"translation\": [-2, -3, -5], \"scale\": [0.36, 0.36, 0.36] },\n"
+            + "    \"firstperson_lefthand\": { \"rotation\": [0, 180, -5], \"translation\": [-2, -3, -5], \"scale\": [0.36, 0.36, 0.36] },\n"
             + "    \"gui\": { \"rotation\": [15, -25, -5], \"translation\": [0, 0, 0], \"scale\": [0.42, 0.42, 0.42] }\n"
             + "  }";
 

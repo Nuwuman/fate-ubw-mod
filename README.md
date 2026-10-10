@@ -138,7 +138,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   un muro de luz con la forma de las murallas de Camelot delante de ti durante 6 s. Para los proyectiles y los haces de
   Noble Phantasm (Excalibur, Enuma Elish, An Gal Ta Kigal Shè…) que le llegan de frente, y los jugadores que tiene
   detrás reciben Resistencia II.
-- **Armadura** de su primera ascensión: negra con líneas moradas, con el abdomen, los hombros y los muslos al aire
+- **Armadura** de su primera ascensión: azul marino oscuro con líneas moradas, escarcelas y capa morada; los hombros y lo alto de los muslos al aire
   (se ve tu skin); sin casco. Conjunto completo: Resistencia I y un 30 % menos de daño por la espalda. Habilidades:
   **Bunker Bolt** (embiste con el escudo, arrolla y aturde 1 s), **Muro Transitorio de Copos de Nieve** (tú y los
   jugadores a 5 bloques recibís la mitad de daño 4 s) y **Muro Oscuro de Tiza** (el jugador al que miras, o tú, se
