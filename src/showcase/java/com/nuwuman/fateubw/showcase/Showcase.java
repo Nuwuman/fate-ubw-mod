@@ -156,6 +156,7 @@ public class Showcase implements ClientModInitializer {
             case "repeat" -> repeatAchievement(client, p, st);
             case "boom" -> boom(client, p, st);
             case "mash" -> mash(client, p, st);
+            case "mashphoto" -> mashPhoto(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -1073,6 +1074,29 @@ public class Showcase implements ClientModInitializer {
     private static net.minecraft.entity.Entity zombie(MinecraftClient c, ClientPlayerEntity p) {
         return c.world.getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, p.getBoundingBox().expand(20), e -> true)
                 .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
+    }
+
+    // Fotos del escudo de Mash en el brazo: de frente, de tres cuartos y de lado (el brazo derecho hacia la cámara)
+    private boolean mashPhoto(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"armor.chest with fate_ubw:mash_chestplate", "armor.legs with fate_ubw:mash_leggings",
+                    "armor.feet with fate_ubw:mash_boots", "hotbar.0 with fate_ubw:mash_shield"}, new String[]{});
+            case 30 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 50 -> shot(c, "mashphoto_1_front");
+            case 52 -> yaw = -45.0F;
+            case 80 -> shot(c, "mashphoto_2_threequarter");
+            case 82 -> yaw = -90.0F;
+            case 110 -> shot(c, "mashphoto_3_side");
+            case 112 -> yaw = -135.0F;
+            case 140 -> shot(c, "mashphoto_4_back");
+            case 150 -> {
+                yaw = 0.0F;
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
     }
 
     // Mash: armadura, escudo (en reposo y cubriéndose), habilidades y Lord Camelot parando un haz y una flecha
