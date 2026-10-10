@@ -45,7 +45,7 @@ public final class FloatingMaannaClient {
     private static final float ARC = 100.0F;                 // grados de cada brazo desde el centro
     private static final ItemStack HULL = new ItemStack(FateUBW.MAANNA_HULL);
     private static final ItemStack PROW = new ItemStack(FateUBW.MAANNA_PROW);
-    private static final float ARROW = 2.8F;                 // largo de la flecha: tensada del todo, la punta asoma ante la empuñadura
+    private static final float ARROW = 3.4F;                 // largo de la flecha: tensada del todo, la punta queda bien por delante de la empuñadura
     // Por qué tramo de la tensión va cada uno (1 empezando, 2 a la mitad, 3 al tope), para sonar una vez por tramo
     private static final Map<AbstractClientPlayerEntity, Integer> STAGE = new WeakHashMap<>();
     // Último tick en que se vio tensa a cada jugador, para que vuelva a su sitio suavemente
