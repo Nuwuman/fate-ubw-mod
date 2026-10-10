@@ -60,7 +60,7 @@ public class AnGalTaKigalSheEntity extends ExcaliburBeamEntity {
         Vec3d at = block.getType() == HitResult.Type.MISS ? end : block.getPos();
         boolean griefing = FateUBW.breaksBlocks(world, at);
         // A nombre de quien dispara: respeta el PvP, fatePlayerDamagePercent y le cuenta las bajas
-        world.createExplosion(this, world.getDamageSources().explosion(this, owner), null, at.x, at.y, at.z, griefing ? 7.0F : 5.0F,
+        world.createExplosion(this, FateUBW.explosion(world, this, owner), null, at.x, at.y, at.z, griefing ? 7.0F : 5.0F,
                 false, griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, at.x, at.y, at.z, 3, 1.5, 1.5, 1.5, 0.0);
         world.spawnParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 80, 3.0, 3.0, 3.0, 0.3);

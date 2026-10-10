@@ -154,6 +154,7 @@ public class Showcase implements ClientModInitializer {
             case "soaring" -> soaring(client, p, st);
             case "andromeda" -> andromeda(client, p, st);
             case "repeat" -> repeatAchievement(client, p, st);
+            case "boom" -> boom(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -1065,6 +1066,37 @@ public class Showcase implements ClientModInitializer {
     private static net.minecraft.entity.Entity zombie(MinecraftClient c, ClientPlayerEntity p) {
         return c.world.getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, p.getBoundingBox().expand(20), e -> true)
                 .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
+    }
+
+    // Daño de explosión a un jugador en Pacífico: la del mod debe hacer daño, la vanilla (que escala con la dificultad) no
+    private boolean boom(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{}, new String[]{});
+                p.networkHandler.sendChatCommand("difficulty peaceful");
+                p.networkHandler.sendChatCommand("gamemode survival");
+            }
+            case 20, 50 -> c.getServer().execute(() -> {
+                var sp = c.getServer().getPlayerManager().getPlayer(p.getUuid());
+                if (sp == null) return;
+                sp.setHealth(sp.getMaxHealth());
+                var w = sp.getServerWorld();
+                // La explosión no daña a quien la causa: la causa es una entidad aparte (como la joya), el autor el jugador
+                var jewel = new net.minecraft.entity.decoration.ArmorStandEntity(w, sp.getX() + 1, sp.getY(), sp.getZ());
+                var src = t == 20 ? com.nuwuman.fateubw.FateUBW.explosion(w, jewel, sp) : w.getDamageSources().explosion(jewel, sp);
+                float before = sp.getHealth();
+                w.createExplosion(jewel, src, null, sp.getX() + 1, sp.getY(), sp.getZ(), 2.0F, false, net.minecraft.world.World.ExplosionSourceType.NONE);
+                log("boom: " + (t == 20 ? "explosión del mod" : "explosión vanilla") + " en Pacífico: vida " + before + " -> " + sp.getHealth());
+            });
+            case 70 -> {
+                p.networkHandler.sendChatCommand("gamemode creative");
+                p.networkHandler.sendChatCommand("difficulty normal");
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
     }
 
     // Invocar dos servants distintos: el logro "¿Eres tú mi Master?" solo debe salir la primera vez

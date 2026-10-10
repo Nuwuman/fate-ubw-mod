@@ -101,7 +101,7 @@ public class GaeBolgSpearEntity extends ProjectileEntity {
     private void impact(ServerWorld world, Vec3d pos) {
         Entity owner = getOwner();
         if (FateUBW.breaksBlocks(world, pos)) {
-            world.createExplosion(this, pos.x, pos.y, pos.z, 6.0F, World.ExplosionSourceType.TNT);
+            world.createExplosion(this, FateUBW.explosion(world, this, getOwner()), null, pos.x, pos.y, pos.z, 6.0F, false, World.ExplosionSourceType.TNT);
         }
 
         DamageSource source = world.getDamageSources().create(FateUBW.GAE_BOLG_DAMAGE, this, owner);

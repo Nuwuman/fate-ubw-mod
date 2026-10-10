@@ -101,7 +101,7 @@ public class HruntingEntity extends ProjectileEntity {
             victim.damage(getDamageSources().thrown(this, owner), DAMAGE);
         }
         boolean griefing = FateUBW.breaksBlocks(world, pos);
-        world.createExplosion(this, pos.x, pos.y, pos.z, griefing ? 2.0F : 1.5F,
+        world.createExplosion(this, FateUBW.explosion(world, this, owner), null, pos.x, pos.y, pos.z, griefing ? 2.0F : 1.5F, false,
                 griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
         world.spawnParticles(RED, pos.x, pos.y, pos.z, 30, 0.6, 0.6, 0.6, 0.0);
 

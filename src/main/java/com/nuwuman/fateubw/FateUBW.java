@@ -257,6 +257,14 @@ public class FateUBW implements ModInitializer {
 
     public static final RegistryKey<DamageType> EXCALIBUR_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("excalibur"));
     public static final RegistryKey<DamageType> GAE_BOLG_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("gae_bolg"));
+    /** Explosiones del mod: como las de vanilla (protección contra explosiones, empuje) pero sin escalar con la dificultad,
+     *  que en Pacífico dejaba su daño a jugadores en 0 y en Fácil a la mitad. */
+    public static final RegistryKey<DamageType> EXPLOSION_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("explosion"));
+
+    public static net.minecraft.entity.damage.DamageSource explosion(World world, net.minecraft.entity.Entity source,
+                                                                    @org.jetbrains.annotations.Nullable net.minecraft.entity.Entity attacker) {
+        return world.getDamageSources().create(EXPLOSION_DAMAGE, source, attacker);
+    }
     public static final RegistryKey<DamageType> BELLEROPHON_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("bellerophon"));
     public static final RegistryKey<DamageType> ENUMA_ELISH_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("enuma_elish"));
     public static final RegistryKey<DamageType> AN_GAL_TA_KIGAL_SHE_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id("an_gal_ta_kigal_she"));

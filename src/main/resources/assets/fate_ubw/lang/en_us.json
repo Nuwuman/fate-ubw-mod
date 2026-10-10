@@ -310,5 +310,7 @@
   "advancement.fate_ubw.god_hand.description": "Defeat Berserker",
   "advancement.fate_ubw.grail_war": "Victor of the Holy Grail War",
   "advancement.fate_ubw.grail_war.description": "Be the last Master standing in a Holy Grail War",
-  "effect.fate_ubw.enkidu": "Chains of Heaven"
+  "effect.fate_ubw.enkidu": "Chains of Heaven",
+  "death.attack.fate_ubw.explosion": "%1$s was blown up",
+  "death.attack.fate_ubw.explosion.player": "%1$s was blown up by %2$s"
 }

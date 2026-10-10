@@ -34,7 +34,7 @@ public class RinJewelEntity extends ThrownItemEntity {
         super.onCollision(hit);
         if (!(getWorld() instanceof ServerWorld world)) return;
         boolean griefing = FateUBW.breaksBlocks(world, getPos());
-        world.createExplosion(this, getX(), getY(), getZ(), griefing ? 2.5F : 2.0F,
+        world.createExplosion(this, FateUBW.explosion(world, this, getOwner()), null, getX(), getY(), getZ(), griefing ? 2.5F : 2.0F, false,
                 griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
         world.spawnParticles(GEM_RED, getX(), getY(), getZ(), 40, 0.8, 0.8, 0.8, 0.0);
         world.spawnParticles(ParticleTypes.END_ROD, getX(), getY(), getZ(), 15, 0.4, 0.4, 0.4, 0.1);

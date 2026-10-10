@@ -121,7 +121,7 @@ public class SwordArrowEntity extends PersistentProjectileEntity {
             boolean griefing = FateUBW.breaksBlocks(world, getPos());
             // Phantasm Bloom: la explosión crece la mitad sin gastar más maná
             float bloom = bowLevel(FateEnchantments.PHANTASM_BLOOM) > 0 ? 1.5F : 1.0F;
-            world.createExplosion(this, getX(), getY(), getZ(), (griefing ? 5.0F : 4.0F) * bloom,
+            world.createExplosion(this, FateUBW.explosion(world, this, getOwner()), null, getX(), getY(), getZ(), (griefing ? 5.0F : 4.0F) * bloom, false,
                     griefing ? World.ExplosionSourceType.TNT : World.ExplosionSourceType.NONE);
             world.spawnParticles(ParticleTypes.FLASH, getX(), getY(), getZ(), 1, 0.0, 0.0, 0.0, 0.0);
             world.spawnParticles(RED_DUST, getX(), getY(), getZ(), 40, 1.5, 1.5, 1.5, 0.0);
