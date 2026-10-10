@@ -150,6 +150,9 @@ public class Showcase implements ClientModInitializer {
             case "maanna" -> maanna(client, p, st);
             case "avalon" -> avalon(client, p, st);
             case "enkidu" -> enkidu(client, p, st);
+            case "hrunting" -> hrunting(client, p, st);
+            case "soaring" -> soaring(client, p, st);
+            case "andromeda" -> andromeda(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -1061,6 +1064,119 @@ public class Showcase implements ClientModInitializer {
     private static net.minecraft.entity.Entity zombie(MinecraftClient c, ClientPlayerEntity p) {
         return c.world.getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, p.getBoundingBox().expand(20), e -> true)
                 .stream().min(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(p))).orElse(null);
+    }
+
+    // Blood Fort Andromeda montada en Pegaso: la cúpula no debe dañar a su propio Pegaso
+    private boolean andromeda(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{"armor.head with fate_ubw:rider_helmet", "armor.chest with fate_ubw:rider_chestplate",
+                    "armor.legs with fate_ubw:rider_leggings", "armor.feet with fate_ubw:rider_boots"}, new String[]{"~2 ~ ~3"});
+            case 25 -> ability(1);   // Bellerophon: invoca a Pegaso y lo monta
+            case 45 -> ability(2);   // Blood Fort Andromeda
+            case 50, 150 -> c.getServer().execute(() -> {
+                var sp = c.getServer().getPlayerManager().getPlayer(p.getUuid());
+                if (sp == null) return;
+                log("andromeda: pegaso " + (sp.getVehicle() instanceof net.minecraft.entity.LivingEntity v ? v.getHealth() + "/" + v.getMaxHealth() : "sin montar")
+                        + ", husks " + sp.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HuskEntity.class, sp.getBoundingBox().expand(8), e -> true)
+                        .stream().map(h -> String.valueOf(h.getHealth())).toList());
+            });
+            case 160 -> {
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:pegasus]");
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Gáe Bolg lanzada: salta primero y la arroja en lo más alto. Registra la altura y cuándo aparece la lanza
+    private int soaringReleased = -1, soaringSpear = -1;
+    private double soaringBase, soaringMax;
+
+    private boolean soaring(MinecraftClient c, ClientPlayerEntity p, int t) {
+        if (t == 0) {
+            soaringReleased = soaringSpear = -1;
+            setup(c, p, new String[]{"armor.chest with fate_ubw:lancer_chestplate", "armor.legs with fate_ubw:lancer_leggings",
+                    "armor.feet with fate_ubw:lancer_boots", "hotbar.0 with fate_ubw:gae_bolg"}, new String[]{"~ ~ ~20"});
+            return false;
+        }
+        if (t == 20) c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+        if (t == 25) holdSneak = true;
+        if (t == 27) use(c, p);
+        if (t < 30) return false;
+        var sp = c.getServer().getPlayerManager().getPlayer(p.getUuid());
+        if (soaringReleased < 0) {
+            if (sp != null && sp.getItemUseTime() >= 45) {
+                holdUse = false;
+                c.options.useKey.setPressed(false);
+                soaringReleased = t;
+                soaringBase = soaringMax = p.getY();
+            }
+            return t > 400;
+        }
+        if (t == soaringReleased + 3) holdSneak = false;
+        soaringMax = Math.max(soaringMax, p.getY());
+        boolean spear = !c.world.getEntitiesByClass(com.nuwuman.fateubw.lancer.GaeBolgSpearEntity.class, p.getBoundingBox().expand(30), e -> true).isEmpty();
+        if (spear && soaringSpear < 0) {
+            soaringSpear = t;
+            log(String.format("soaring: lanza a los %d ticks de soltar; altura del jugador +%.2f (máximo hasta ahora +%.2f)",
+                    t - soaringReleased, p.getY() - soaringBase, soaringMax - soaringBase));
+            shot(c, "soaring_01_throw");
+        }
+        if (soaringSpear >= 0 && t == soaringSpear + 15) {
+            log(String.format("soaring: máximo del salto +%.2f", soaringMax - soaringBase));
+            return true;
+        }
+        return t > soaringReleased + 200;
+    }
+
+    // Hrunting en vuelo, congelado: desde atrás y de lado, para ver hacia dónde apunta la punta
+    private int hruntingFrozen = -1;
+
+    private boolean hrunting(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                hruntingFrozen = -1;
+                setup(c, p, new String[]{"armor.chest with fate_ubw:archer_chestplate", "armor.legs with fate_ubw:archer_leggings",
+                        "armor.feet with fate_ubw:archer_boots"}, new String[]{});
+            }
+            case 25 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+                pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_G);
+            }
+            case 30 -> ability(2);
+            case 200 -> {
+                p.networkHandler.sendChatCommand("tick unfreeze");
+                yaw = 0.0F;
+                return true;
+            }
+            default -> {
+                if (t > 30 && hruntingFrozen < 0 && !c.world.getEntitiesByClass(com.nuwuman.fateubw.archer.HruntingEntity.class,
+                        p.getBoundingBox().expand(40), e -> e.age >= 4).isEmpty()) {
+                    p.networkHandler.sendChatCommand("tick freeze");
+                    hruntingFrozen = t;
+                    c.world.getEntitiesByClass(com.nuwuman.fateubw.archer.HruntingEntity.class, p.getBoundingBox().expand(40), e -> true)
+                            .forEach(e -> log("hrunting: rel " + e.getPos().subtract(p.getPos()) + " vel " + e.getVelocity()
+                                    + " yaw " + e.getYaw() + " pitch " + e.getPitch() + " | jugador yaw " + p.getYaw()));
+                }
+                if (hruntingFrozen < 0) return false;
+                int k = t - hruntingFrozen;
+                if (k == 2) c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                if (k == 8) shot(c, "hrunting_01_back");
+                if (k == 10) yaw = 90.0F;
+                if (k == 18) shot(c, "hrunting_02_side");
+                if (k == 20) yaw = -45.0F;
+                if (k == 28) shot(c, "hrunting_03_diag");
+                if (k == 30) {
+                    p.networkHandler.sendChatCommand("tick unfreeze");
+                    yaw = 0.0F;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Las posturas nuevas, una tras otra, de frente y en diagonal, capturadas en su punto álgido

@@ -63,6 +63,9 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
     public static final int SOARING_CHARGE = 40;
     public static final int PIERCE_COOLDOWN = 20 * 15;
     public static final int SOARING_COOLDOWN = 20 * 30;
+    /** Impulso del salto de Gáe Bolg y ticks hasta lo más alto (con gravedad 0,08 y rozamiento 0,98, ~11). */
+    private static final double SOARING_JUMP = 1.0;
+    private static final int SOARING_APEX = 11;
     private static final double PIERCE_RANGE = 12.0;
     private static final float PIERCE_DAMAGE = 35.0F;
     public static final DustParticleEffect CRIMSON = new DustParticleEffect(new Vector3f(0.85F, 0.05F, 0.1F), 1.2F);
@@ -129,14 +132,20 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
         if (!com.nuwuman.fateubw.Rules.ready(player, key, cooldown, soaring ? "gae_bolg_soaring" : "gae_bolg_pierce")) return;
         com.nuwuman.fateubw.Rules.commit(player, key, cooldown);
         if (soaring) {
-            // La lanza en alto un segundo mientras la cámara se coloca; luego la arroja
+            // La lanza en alto un segundo mientras la cámara se coloca; luego salta y la arroja en lo más alto del salto
             net.minecraft.util.Hand hand = player.getActiveHand();
             com.nuwuman.fateubw.enchant.FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
-                if (!player.isAlive() || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
-                com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "gae_bolg_throw");
-                player.swingHand(hand, true);
-                com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
-                soaringSpear(server, player, stack);
+                if (!player.isAlive()) return;
+                player.addVelocity(0.0, SOARING_JUMP, 0.0);
+                player.velocityModified = true;
+                world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_BREEZE_JUMP, SoundCategory.PLAYERS, 1.2F, 0.8F);
+                com.nuwuman.fateubw.enchant.FateEnchantments.later(SOARING_APEX, () -> {
+                    if (!player.isAlive() || !(player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)) return;
+                    com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "gae_bolg_throw");
+                    player.swingHand(hand, true);
+                    com.nuwuman.fateubw.Voices.say(world, player, "gae_bolg");
+                    soaringSpear(server, player, stack);
+                });
             });
         } else {
             player.swingHand(player.getActiveHand(), true);
@@ -183,8 +192,10 @@ public class GaeBolgItem extends SwordItem implements GeoItem {
     // Gáe Bolg: la lanza que vuela con la muerte. Salto y lanzamiento
     private void soaringSpear(ServerWorld world, PlayerEntity player, ItemStack stack) {
         LivingEntity target = findTarget(world, player, 64.0, 0.9);
-        player.addVelocity(0.0, 1.0, 0.0);
+        // Se queda un instante suspendido al lanzarla
+        player.setVelocity(player.getVelocity().multiply(1.0, 0.0, 1.0));
         player.velocityModified = true;
+        player.fallDistance = 0.0F;
         GaeBolgSpearEntity.launch(world, player, stack, target);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.PLAYERS, 1.5F, 0.7F);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.6F, 1.8F);

@@ -66,6 +66,8 @@ public final class Rules {
 
     /** ¿Puede {@code user} afectar a {@code target}? Respeta el PvP del servidor y el fuego amigo de los equipos. */
     public static boolean canAffect(Entity user, Entity target) {
+        // Nunca a tu montura ni a quien va montado contigo (Pegaso de Rider, por ejemplo)
+        if (user != null && target != null && user != target && user.getRootVehicle() == target.getRootVehicle()) return false;
         if (!(target instanceof ServerPlayerEntity victim) || !(user instanceof PlayerEntity attacker) || victim == attacker) return true;
         return victim.shouldDamagePlayer(attacker);
     }
