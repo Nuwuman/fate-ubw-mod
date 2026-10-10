@@ -37,7 +37,7 @@ public class EnumaElishRenderer extends EntityRenderer<EnumaElishEntity> {
         float len = entity.length(age);
         float fade = entity.fade(age);
         if (len <= 0.0F || fade <= 0.0F) return;
-        float grow = Math.min(1.0F, age / EnumaElishEntity.GROW_TICKS);
+        float grow = Math.min(1.0F, age / EnumaElishEntity.WIDEN_TICKS);
         // Al apagarse se estrecha además de desvanecerse
         float radius = entity.radius() * grow * (0.35F + 0.65F * fade);
         NpCamera.impact(entity, 0xFF3A28, 1.2F);

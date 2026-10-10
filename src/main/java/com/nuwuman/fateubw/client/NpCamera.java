@@ -18,7 +18,7 @@ import java.util.Set;
  * GameRendererMixin (campo de visión) e InGameHudMixin (bandas).
  */
 public final class NpCamera {
-    private static final int DURATION = 50 + PlayerAnims.WINDUP, EASE = 10;
+    private static final int DURATION = 72 + PlayerAnims.WINDUP, EASE = 10;
     private static final float FAR = 1.25F; // veces la distancia normal de tercera persona
     private static final float ORBIT = 45.0F;
     private static final float TILT = 20.0F;

@@ -33,7 +33,7 @@ public class AnGalTaKigalSheRenderer extends EntityRenderer<AnGalTaKigalSheEntit
         float len = entity.length(age);
         float fade = entity.fade(age);
         if (len <= 0.0F || fade <= 0.0F) return;
-        float grow = Math.min(1.0F, age / AnGalTaKigalSheEntity.GROW_TICKS);
+        float grow = Math.min(1.0F, age / AnGalTaKigalSheEntity.WIDEN_TICKS);
         float w = entity.radius() * grow * (1.0F + 0.06F * MathHelper.sin(age * 2.1F));
 
         matrices.push();

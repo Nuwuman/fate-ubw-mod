@@ -34,7 +34,7 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         float fade = entity.fade(age);
         if (len <= 0.0F || fade <= 0.0F) return;
 
-        float grow = Math.min(1.0F, age / ExcaliburBeamEntity.GROW_TICKS);
+        float grow = Math.min(1.0F, age / ExcaliburBeamEntity.WIDEN_TICKS);
         // Al apagarse se estrecha además de desvanecerse
         float w = entity.radius() * grow * (1.0F + 0.08F * MathHelper.sin(age * 1.7F)) * (0.35F + 0.65F * fade);
         NpCamera.impact(entity, 0xFFF4C8, 1.0F);
