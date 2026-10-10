@@ -25,8 +25,9 @@ import java.util.Map;
 public final class Mana {
     public static final float MAX = 100.0F;
     private static final float REGEN_PER_SECOND = 2.0F;
+    // Sin copyOnDeath: al morir se pierde y reapareces con el maná lleno (al cambiar de dimensión sí se conserva)
     public static final AttachmentType<Float> MANA = AttachmentRegistry.<Float>builder()
-            .persistent(Codec.FLOAT).copyOnDeath().initializer(() -> MAX)
+            .persistent(Codec.FLOAT).initializer(() -> MAX)
             .syncWith(PacketCodecs.FLOAT.cast(), AttachmentSyncPredicate.targetOnly())
             .buildAndRegister(FateUBW.id("mana"));
     private static final Map<Item, Float> COSTS = new HashMap<>();

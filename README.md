@@ -12,7 +12,7 @@ Fate: Unlimited Blade Works). Cada habilidad muestra su recarga, y cada habilida
 una no bloquea a las demás.
 
 **Maná**: la barra azul del HUD. Los Noble Phantasm y las habilidades gastan maná además de su recarga (Excalibur y
-Enuma Elish 50, Unlimited Blade Works 60, las pequeñas 10-20) y se rellena solo en unos 50 s. En creativo no se gasta.
+Enuma Elish 50, Unlimited Blade Works 60, las pequeñas 10-20) y se rellena solo en unos 50 s. Al morir reapareces con el maná lleno. En creativo no se gasta.
 
 **Sellos de Comando**: los tres rombos rojos. **V** gasta uno: todas las recargas a cero, el maná lleno y 30 s de
 Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada día de Minecraft (20 min).
