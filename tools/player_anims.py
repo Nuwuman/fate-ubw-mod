@@ -73,8 +73,8 @@ def pose(name, bones):
         b: {"rotation": {"0.0": Z, "0.2": v}} for b, v in bones.items()}}}}
     json.dump(d, open(os.path.join(out, name + ".json"), "w"), indent=2)
 
-# Guardia: el escudo en alto delante, el cuerpo un poco agachado tras él
-pose("mash_guard", {"leftArm": [-80, 25, 0], "rightArm": [-75, -30, 0], "torso": [8, 0, 0],
+# Guardia: el antebrazo con el escudo sujeto adelantado delante del cuerpo, como el Capitán América
+pose("mash_guard", {"rightArm": [-25, -25, 0], "leftArm": [-20, 15, -10], "torso": [6, 0, 0],
                     "rightLeg": [-12, 0, 4], "leftLeg": [10, 0, -4]})
 # Cargando Lord Camelot: el escudo plantado en el suelo con las dos manos, el peso hacia delante
 pose("mash_plant", {"leftArm": [-45, 20, 0], "rightArm": [-45, -20, 0], "torso": [18, 0, 0], "head": [-15, 0, 0],
