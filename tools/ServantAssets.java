@@ -2107,9 +2107,7 @@ public class ServantAssets {
         itemModel(root, "mash_chestplate", bonesToModel(mash, 8, -4, 8, "armorBody", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
         itemModel(root, "mash_leggings", bonesToModel(mash, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
         itemModel(root, "mash_boots", bonesToModel(mash, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
-        itemModel(root, "mash_shield", mashShield(), SHIELD_DISPLAY,
-                "[\n    { \"predicate\": { \"blocking\": 1 }, \"model\": \"fate_ubw:item/mash_shield_blocking\" }\n  ]");
-        itemModel(root, "mash_shield_blocking", mashShield(), SHIELD_BLOCKING_DISPLAY, null);
+        // mash_shield: modelo y textura del usuario (tools/blockbench/mash_shield.bbmodel, textura con tools/mash_shield_texture.py)
 
         // ---------- Assassin ----------
         itemModel(root, "monohoshizao", monohoshizao(), handheld(0.55, 0.6), null);
