@@ -20,6 +20,8 @@ Notas de trabajo para Claude. Lo pendiente y las ideas están en `docs/notas.md`
   - Ítems Java: `python tools/bbmodel_to_item.py <in.bbmodel> <modelo.json> <textura.png> <id>` (hornea giros de 90°,
     admite varias texturas → `_1.png`). Espada-hacha de Berserker y escudo de Mash, guardados en `tools/blockbench/`.
   - Al cambiar un modelo del usuario, guardar también su `.bbmodel` en el mod.
+- **Iconos de armaduras**: `python tools/armor_icons.py` los saca del `.geo.bbmodel` de cada armadura (mismos cubos y
+  textura, centrados y escalados a la casilla). Volver a ejecutarlo tras cambiar una armadura.
 - Las piezas deben **cubrir el brazo/pierna del jugador (4×4) con margen**, o la skin asoma (pasó en Saber, Berserker).
 - Ropa de servants: lo que va al aire deja ver la skin; sin pelo (tiaras/coronas solas).
 

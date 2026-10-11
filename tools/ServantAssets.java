@@ -1033,17 +1033,6 @@ public class ServantAssets {
             + "    \"fixed\": { \"rotation\": [0, 180, 45], \"scale\": [0.8, 0.8, 0.8] }\n"
             + "  }";
 
-    static String armorIcon(double scale) {
-        return "{\n"
-                + "    \"gui\": { \"rotation\": [30, 225, 0], \"scale\": " + arr(scale, scale, scale) + " },\n"
-                + "    \"ground\": { \"translation\": [0, 3, 0], \"scale\": [0.25, 0.25, 0.25] },\n"
-                + "    \"fixed\": { \"scale\": [0.5, 0.5, 0.5] },\n"
-                + "    \"thirdperson_righthand\": { \"rotation\": [75, 45, 0], \"translation\": [0, 2.5, 0], \"scale\": [0.375, 0.375, 0.375] },\n"
-                + "    \"firstperson_righthand\": { \"rotation\": [0, 45, 0], \"scale\": [0.4, 0.4, 0.4] },\n"
-                + "    \"firstperson_lefthand\": { \"rotation\": [0, 225, 0], \"scale\": [0.4, 0.4, 0.4] }\n"
-                + "  }";
-    }
-
     // ---------- piezas ----------
     // Kanshō / Bakuya: sables chinos de un solo filo, hoja ancha con caparazón de tortuga (hexágonos) que se curva
     // hacia la punta, recortada en diagonal, con el gancho del lomo junto a la guarda. Guarda redonda con un punto del
@@ -1956,16 +1945,6 @@ public class ServantAssets {
         return List.of(head, body, loinFront, loinBack, rightArm, leftArm, rightLeg, leftLeg, rightBoot, leftBoot);
     }
 
-    static Model bonesToModel(List<Bone> bones, double dx, double dy, double dz, String... names) {
-        Model m = new Model();
-        for (Bone b : bones) {
-            for (String name : names) {
-                if (b.name.equals(name)) m.add(b.model.shifted(dx, dy, dz));
-            }
-        }
-        return m;
-    }
-
     public static void main(String[] args) throws IOException {
         Path root = Path.of(args.length > 0 ? args[0] : ".");
         Files.createDirectories(root.resolve("models/item"));
@@ -1984,12 +1963,7 @@ public class ServantAssets {
         builtinModel(root, "excalibur", "excalibur", handheld(0.7), exOverrides);
         builtinModel(root, "excalibur_charging", "excalibur", raised(0.7, -35, 5.0, 0.0, 0.75), null);
         builtinModel(root, "excalibur_charged", "excalibur", raised(0.7, -50, 6.5, -0.5, 0.8), null);
-        List<Bone> saber = saberArmor();
         // saber_armor.geo.json y su textura se editan a mano en Blockbench (saber_armor.geo.bbmodel): no se regeneran
-        itemModel(root, "saber_chestplate", bonesToModel(saber, 8, -4, 8, "armorBody", "skirtFront", "skirtBack", "skirtLeft",
-                "skirtRight", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
-        itemModel(root, "saber_leggings", bonesToModel(saber, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "saber_boots", bonesToModel(saber, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         itemModel(root, "kanshou", falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL, KAN_PIP), handheld(0.9), null);
         itemModel(root, "bakuya", falchion(BAK_BLADE, BAK_EDGE, BAK_GRIP, BAK_METAL, BAK_PIP), handheld(0.9), null);
@@ -2014,32 +1988,19 @@ public class ServantAssets {
 
         List<Bone> armor = archerArmor();
         armorModel(root, "archer_armor", armor);
-        // Iconos 3D de inventario con los mismos cubos que la armadura puesta
-        itemModel(root, "archer_chestplate", bonesToModel(armor, 8, -4, 8, "armorBody", "coatBack", "coatLeft", "coatRight",
-                "coatFrontL", "coatFrontR", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
-        itemModel(root, "archer_leggings", bonesToModel(armor, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "archer_boots", bonesToModel(armor, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
+        // Iconos de inventario de las armaduras: tools/armor_icons.py (desde el .geo.bbmodel)
 
         // ---------- Lancer ----------
         geoModel(root, "gae_bolg", oneBone(gaeBolg()), "item/");
         builtinModel(root, "gae_bolg", "gae_bolg", handheld(0.5, 0.5), null);
         List<Bone> lancer = lancerArmor();
         armorModel(root, "lancer_armor", lancer);
-        itemModel(root, "lancer_chestplate", bonesToModel(lancer, 8, -4, 8, "armorBody", "ponytail", "armorRightArm", "armorLeftArm"),
-                armorIcon(0.5), null);
-        itemModel(root, "lancer_leggings", bonesToModel(lancer, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "lancer_boots", bonesToModel(lancer, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Rider ----------
         itemModel(root, "rider_dagger", chainDagger(), handheld(0.7), null);
         itemModel(root, "bellerophon", bridle(), HELD_OBJECT, null);
         List<Bone> rider = riderArmor();
         armorModel(root, "rider_armor", rider);
-        itemModel(root, "rider_helmet", bonesToModel(rider, 8, -20, 8, "armorHead"), armorIcon(0.7), null);
-        itemModel(root, "rider_chestplate", bonesToModel(rider, 8, -4, 8, "armorBody", "hair", "armorRightArm", "armorLeftArm"),
-                armorIcon(0.5), null);
-        itemModel(root, "rider_leggings", bonesToModel(rider, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "rider_boots", bonesToModel(rider, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
         geoModel(root, "pegasus", pegasus());
 
         // ---------- Gilgamesh ----------
@@ -2049,10 +2010,6 @@ public class ServantAssets {
         itemModel(root, "gate_of_babylon", babylonKey(), handheld(0.9), null);
         List<Bone> gilgamesh = gilgameshArmor();
         armorModel(root, "gilgamesh_armor", gilgamesh);
-        itemModel(root, "gilgamesh_chestplate", bonesToModel(gilgamesh, 8, -4, 8, "armorBody", "tassets", "armorRightArm", "armorLeftArm"),
-                armorIcon(0.5), null);
-        itemModel(root, "gilgamesh_leggings", bonesToModel(gilgamesh, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "gilgamesh_boots", bonesToModel(gilgamesh, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Unlimited Blade Works ----------
         itemModel(root, "unlimited_blade_works", ubwSword(), handheld(0.8), null, 8, "{\"animation\":{\"frametime\":2,\"interpolate\":true}}");
@@ -2075,11 +2032,6 @@ public class ServantAssets {
         builtinModel(root, "rule_breaker", "rule_breaker", handheld(1.0), null);
         List<Bone> caster = casterArmor();
         armorModel(root, "caster_armor", caster);
-        itemModel(root, "caster_hood", bonesToModel(caster, 8, -20, 8, "armorHead"), armorIcon(0.6), null);
-        itemModel(root, "caster_chestplate", bonesToModel(caster, 8, -4, 8, "armorBody", "capeBack", "capeLeft", "capeRight",
-                "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
-        itemModel(root, "caster_leggings", bonesToModel(caster, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "caster_boots", bonesToModel(caster, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Ishtar ----------
         String maannaOverrides = "[\n"
@@ -2095,37 +2047,21 @@ public class ServantAssets {
         }
         List<Bone> ishtar = ishtarArmor();
         armorModel(root, "ishtar_armor", ishtar);
-        itemModel(root, "ishtar_tiara", bonesToModel(ishtar, 8, -20, 8, "armorHead"), armorIcon(0.6), null);
-        itemModel(root, "ishtar_chestplate", bonesToModel(ishtar, 8, -4, 8, "armorBody", "armorRightArm", "armorLeftArm"),
-                armorIcon(0.5), null);
-        itemModel(root, "ishtar_leggings", bonesToModel(ishtar, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "ishtar_boots", bonesToModel(ishtar, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Mash Kyrielight ----------
         List<Bone> mash = mashArmor();
         armorModel(root, "mash_armor", mash);
-        itemModel(root, "mash_chestplate", bonesToModel(mash, 8, -4, 8, "armorBody", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
-        itemModel(root, "mash_leggings", bonesToModel(mash, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "mash_boots", bonesToModel(mash, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
         // mash_shield: modelo y textura del usuario (tools/blockbench/mash_shield.bbmodel, textura con tools/mash_shield_texture.py)
 
         // ---------- Assassin ----------
         itemModel(root, "monohoshizao", monohoshizao(), handheld(0.55, 0.6), null);
         List<Bone> assassin = assassinArmor();
         armorModel(root, "assassin_armor", assassin);
-        itemModel(root, "assassin_chestplate", bonesToModel(assassin, 8, -4, 8, "armorBody", "hair", "haoriBack", "haoriFrontL",
-                "haoriFrontR", "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
-        itemModel(root, "assassin_leggings", bonesToModel(assassin, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "assassin_boots", bonesToModel(assassin, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
 
         // ---------- Berserker ----------
         // berserker_axe_sword: modelo del usuario (tools/blockbench/berserker_axe_sword.bbmodel), no se genera
         List<Bone> berserker = berserkerArmor();
         armorModel(root, "berserker_armor", berserker);
-        itemModel(root, "berserker_chestplate", bonesToModel(berserker, 8, -4, 8, "armorBody", "loinFront", "loinBack",
-                "armorRightArm", "armorLeftArm"), armorIcon(0.5), null);
-        itemModel(root, "berserker_leggings", bonesToModel(berserker, 8, 2, 8, "armorRightLeg", "armorLeftLeg"), armorIcon(0.6), null);
-        itemModel(root, "berserker_boots", bonesToModel(berserker, 8, 6, 8, "armorRightBoot", "armorLeftBoot"), armorIcon(0.7), null);
         // Espadas clavadas: cada modelo del mod, boca abajo y enterrado; el blockstate elige uno y un giro al azar
         Map<String, Model> graves = new LinkedHashMap<>();
         graves.put("kanshou", buried(falchion(KAN_BLADE, KAN_EDGE, KAN_GRIP, KAN_METAL, KAN_PIP), 20, 5));
