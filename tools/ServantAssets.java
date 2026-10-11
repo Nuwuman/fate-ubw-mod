@@ -2040,8 +2040,6 @@ public class ServantAssets {
                 + "    { \"predicate\": { \"pulling\": 1, \"pull\": 0.9 }, \"model\": \"fate_ubw:item/maanna_pulling_2\" }\n"
                 + "  ]";
         itemModel(root, "maanna", maanna(0), BOW_DISPLAY, maannaOverrides);
-        itemModel(root, "maanna_hull", maannaHull(), handheld(1.0), null);
-        itemModel(root, "maanna_prow", maannaProw(), handheld(1.0), null);
         for (int i = 0; i < 3; i++) {
             itemModel(root, "maanna_pulling_" + i, maanna(pulls[i]).add(gemArrow(8.5 - pulls[i])), BOW_DISPLAY, null);
         }

@@ -40,11 +40,16 @@ import java.util.WeakHashMap;
  * y apuntando con la mirada) y convierte el click derecho con la mano vacía en tensarla y soltarla.
  */
 public final class FloatingMaannaClient {
-    private static final float RADIUS = 1.3F;               // radio del arco de la barca
-    private static final int SEGMENTS = 14;
-    private static final float ARC = 100.0F;                 // grados de cada brazo desde el centro
+    // El arco es el modelo del usuario (tools/blockbench/maanna.bbmodel, partido con tools/maanna_bow.py en tres ítems):
+    // HULL (empuñadura y centro, fijo), PROW (brazos de arriba) y STERN (brazos de abajo), que se cierran al tensar.
+    // Las medidas van en unidades del modelo (16 = un bloque)
     private static final ItemStack HULL = new ItemStack(FateUBW.MAANNA_HULL);
     private static final ItemStack PROW = new ItemStack(FateUBW.MAANNA_PROW);
+    private static final ItemStack STERN = new ItemStack(FateUBW.MAANNA_STERN);
+    private static final float SCALE = 1.25F;                // tamaño del arco respecto al modelo
+    private static final float PIVOT_Y = 15.0F, PIVOT_Z = 1.0F; // la empuñadura: de ahí giran los brazos y cuelga todo
+    private static final float TIP_Y = 25.5F, TIP_Z = 26.0F; // dónde se ata la cuerda (punta de arriba; la de abajo es su espejo)
+    private static final float BEND = 9.0F;                  // grados que se cierra cada brazo al tensar del todo
     private static final float ARROW = 3.4F;                 // largo de la flecha: tensada del todo, la punta queda bien por delante de la empuñadura
     // Por qué tramo de la tensión va cada uno (1 empezando, 2 a la mitad, 3 al tope), para sonar una vez por tramo
     private static final Map<AbstractClientPlayerEntity, Integer> STAGE = new WeakHashMap<>();
@@ -180,28 +185,17 @@ public final class FloatingMaannaClient {
         }
     }
 
-    // El arco en el plano YZ: el centro (la empuñadura) en el origen, curvado hacia delante, puntas detrás arriba y abajo.
-    // Al tensar, los brazos se doblan: las puntas se cierran hacia atrás
+    // El arco en el plano YZ: la empuñadura en el origen, delante, y las puntas detrás arriba y abajo.
+    // Al tensar, los brazos se cierran hacia dentro
     private static void drawBow(MinecraftClient client, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumers,
                                 int light, float pull, Draw draw) {
-        float arc = ARC + 14.0F * pull, radius = RADIUS * (1.0F - 0.1F * pull);
-        float step = 2 * arc / SEGMENTS;
-        for (int i = 0; i < SEGMENTS; i++) {
-            float theta = -arc + (i + 0.5F) * step;
-            float width = 0.55F + 0.6F * MathHelper.cos(theta * MathHelper.RADIANS_PER_DEGREE * 0.8F);
-            place(matrices, theta, radius);
-            matrices.scale(width, width, radius * step * MathHelper.RADIANS_PER_DEGREE * 1.2F);
-            client.getItemRenderer().renderItem(HULL, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, consumers, world, 0);
-            matrices.pop();
-        }
-        for (float tip : new float[]{-arc, arc}) {
-            place(matrices, tip, radius);
-            matrices.scale(0.7F, 0.7F, 0.7F);
-            client.getItemRenderer().renderItem(PROW, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, consumers, world, 0);
-            matrices.pop();
-        }
+        float bend = BEND * pull;
+        part(client, world, matrices, consumers, light, HULL, 0.0F);
+        part(client, world, matrices, consumers, light, PROW, -bend);
+        part(client, world, matrices, consumers, light, STERN, bend);
+        float reach = (TIP_Y - PIVOT_Y) / 16.0F * SCALE, back = (TIP_Z - PIVOT_Z) / 16.0F * SCALE;
+        Vec3d top = tipAt(reach, back, -bend), bottom = tipAt(-reach, back, bend);
         // Cuerda de luz entre las puntas; tensando, el centro se va hacia atrás y brilla más
-        Vec3d top = point(arc, radius), bottom = point(-arc, radius);
         Vec3d middle = top.add(bottom).multiply(0.5).add(0.0, 0.0, -0.9 * pull);
         VertexConsumer vc = consumers.getBuffer(RenderLayer.getLightning());
         Matrix4f m = matrices.peek().getPositionMatrix();
@@ -242,17 +236,24 @@ public final class FloatingMaannaClient {
         return out;
     }
 
-    private static Vec3d point(float theta, float radius) {
-        float a = theta * MathHelper.RADIANS_PER_DEGREE;
-        return new Vec3d(0.0, radius * MathHelper.sin(a), radius * (MathHelper.cos(a) - 1.0F));
+    // Una pieza del arco: el modelo girado para que la empuñadura quede delante y las puntas detrás, con 'angle' grados
+    // de giro en X alrededor de la empuñadura
+    private static void part(MinecraftClient client, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumers,
+                             int light, ItemStack piece, float angle) {
+        matrices.push();
+        matrices.scale(SCALE, SCALE, SCALE);
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
+        matrices.translate(0.0F, -(PIVOT_Y - 8.0F) / 16.0F, (8.0F - PIVOT_Z) / 16.0F);
+        client.getItemRenderer().renderItem(piece, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, consumers, world, 0);
+        matrices.pop();
     }
 
-    // Deja la matriz en el punto del arco, con Z a lo largo de la tangente (hay que hacer pop después)
-    private static void place(MatrixStack matrices, float theta, float radius) {
-        Vec3d p = point(theta, radius);
-        matrices.push();
-        matrices.translate(p.x, p.y, p.z);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-(theta + 90.0F)));
+    // Punta del arco ('y' hacia arriba, 'back' hacia atrás) tras girar el brazo 'angle' grados en X
+    private static Vec3d tipAt(float y, float back, float angle) {
+        float a = angle * MathHelper.RADIANS_PER_DEGREE, c = MathHelper.cos(a), s = MathHelper.sin(a);
+        float z = -back;
+        return new Vec3d(0.0, y * c - z * s, y * s + z * c);
     }
 
     // Una barra de luz de a a b: dos planos cruzados a lo largo de ella, para que se vea desde cualquier lado

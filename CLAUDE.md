@@ -21,7 +21,10 @@ Notas de trabajo para Claude. Lo pendiente y las ideas están en `docs/notas.md`
     admite varias texturas → `_1.png`). Espada-hacha de Berserker y escudo de Mash, guardados en `tools/blockbench/`.
   - Al cambiar un modelo del usuario, guardar también su `.bbmodel` en el mod.
   - Al revés (para que el usuario edite un modelo del mod): `python tools/item_to_bbmodel.py <modelo.json> <textura.png> <salida.bbmodel>`.
-  - El arco flotante de Ishtar se arma en código con dos ítems: `maanna_hull` (tramos del arco) y `maanna_prow` (puntas).
+  - Arco flotante de Ishtar: modelo del usuario en `tools/blockbench/maanna_base.bbmodel` (sin textura). `python tools/maanna_bow.py`
+    le pone UV y textura (`tools/blockbench/maanna.bbmodel`) y lo parte en tres ítems (`maanna_hull` fijo, `maanna_prow` brazos de
+    arriba, `maanna_stern` brazos de abajo) que `FloatingMaannaClient` gira al tensar. Si el usuario rehace el modelo, sustituir
+    `maanna_base.bbmodel` y ejecutarlo; si pasa uno ya texturizado, usar `bbmodel_to_item.py` y partirlo igual.
 - **Iconos de armaduras**: `python tools/armor_icons.py` los saca del `.geo.bbmodel` de cada armadura (mismos cubos y
   textura, centrados y escalados a la casilla). Volver a ejecutarlo tras cambiar una armadura.
 - Las piezas deben **cubrir el brazo/pierna del jugador (4×4) con margen**, o la skin asoma (pasó en Saber, Berserker).
