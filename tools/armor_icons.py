@@ -136,18 +136,18 @@ def icon(d, bones, dy, tex):
     # Encaja el icono en la casilla: lo centra y lo escala para que ocupe lo mismo sea grande o pequeño
     lo = [min(min(e['from'][i], e['to'][i]) for e in els) for i in range(3)]
     hi = [max(max(e['from'][i], e['to'][i]) for e in els) for i in range(3)]
-    view = lambda v: gui_view(v, 30, 45)
+    view = lambda v: gui_view(v, 30, 225)
     pts = [view([(lo, hi)[k >> i & 1][i] - 8 for i in range(3)]) for k in range(8)]
     size = max(max(q[i] for q in pts) - min(q[i] for q in pts) for i in (0, 1))
     s = round(min(2.0, FIT / size), 3)
     c = view([(lo[i] + hi[i]) / 2 - 8 for i in range(3)])
     display = {
-        'gui': {'rotation': [30, 45, 0], 'translation': [round(-s * c[0], 2), round(-s * c[1], 2), 0], 'scale': [s] * 3},
+        'gui': {'rotation': [30, 225, 0], 'translation': [round(-s * c[0], 2), round(-s * c[1], 2), 0], 'scale': [s] * 3},
         'ground': {'translation': [0, 3, 0], 'scale': [0.25] * 3},
         'fixed': {'scale': [0.5] * 3},
         'thirdperson_righthand': {'rotation': [75, 45, 0], 'translation': [0, 2.5, 0], 'scale': [0.375] * 3},
-        'firstperson_righthand': {'rotation': [0, 225, 0], 'scale': [0.4] * 3},
-        'firstperson_lefthand': {'rotation': [0, 45, 0], 'scale': [0.4] * 3},
+        'firstperson_righthand': {'rotation': [0, 45, 0], 'scale': [0.4] * 3},
+        'firstperson_lefthand': {'rotation': [0, 225, 0], 'scale': [0.4] * 3},
     }
     return ('{\n  "gui_light": "front",\n  "textures": %s,\n  "elements": [\n%s\n  ],\n  "display": %s\n}\n'
             % (json.dumps({'0': tex, 'particle': tex}), ',\n'.join('    ' + json.dumps(el) for el in els),
