@@ -1,1 +1,1 @@
-{ "parent": "minecraft:item/generated", "textures": { "layer0": "minecraft:item/shield" } }
+{ "parent": "minecraft:item/generated", "textures": { "layer0": "minecraft:item/nether_star" } }

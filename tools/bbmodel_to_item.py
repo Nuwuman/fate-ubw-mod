@@ -5,7 +5,12 @@ import sys, json, base64
 
 src, out_json, out_png, tex_id = sys.argv[1:5]
 d = json.load(open(src, encoding='utf-8'))
-open(out_png, 'wb').write(base64.b64decode(d['textures'][0]['source'].split(',', 1)[1]))
+# Una textura por cada una del proyecto: la primera en <textura.png>, las demás en <textura>_1.png, _2.png...
+tex_ids = {}
+for k, t in enumerate(d['textures']):
+    path = out_png if k == 0 else out_png[:-4] + '_%d.png' % k
+    open(path, 'wb').write(base64.b64decode(t['source'].split(',', 1)[1]))
+    tex_ids[str(t.get('id', k))] = (k, tex_id if k == 0 else tex_id + '_%d' % k)
 r = lambda v: round(v, 4) + 0
 AXES = 'xyz'
 # Qué cara pasa a cuál al girar +90° sobre cada eje (regla de la mano derecha, como Minecraft)
@@ -54,14 +59,14 @@ for e in d['elements']:
     for n, f in e['faces'].items():
         if f.get('texture') is None:
             continue
-        face = {"uv": [r(v) for v in f['uv']], "texture": "#0"}
+        face = {"uv": [r(v) for v in f['uv']], "texture": "#%d" % tex_ids[str(f['texture'])][0]}
         if f.get('rotation'):
             face["rotation"] = f['rotation']
         el["faces"][n] = face
     elements.append(el)
 
 model = {"gui_light": "front" if d.get('front_gui_light', True) else "side",
-         "textures": {"0": tex_id, "particle": tex_id},
+         "textures": {**{str(k): name for k, name in tex_ids.values()}, "particle": tex_id},
          "elements": elements,
          "display": d.get('display', {})}
 with open(out_json, 'w', encoding='utf-8') as fh:
