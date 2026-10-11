@@ -9,6 +9,18 @@
 2. **EULA**: permiso para aceptarlo y probar el mod en un servidor dedicado local, con dos clientes a la vez. Es la
    única forma de probar de verdad la Guerra del Santo Grial (necesita dos jugadores) y el PvP.
 
+## Pendiente de comprobar o decidir (sesión de octubre)
+
+- **Escudo de Mash**: en v2.18.16 lo giré 180° porque la cara de los detalles miraba hacia Mash. Confirmar en juego que
+  ahora mira hacia fuera; si no, volver a `[90, 90, 0]` en Display (thirdperson) de `tools/blockbench/mash_shield.bbmodel`.
+- **Escudo pegado al brazo**: con el modelo de ítem no queda perfecto (de frente se inclina). Si molesta, pasarlo a
+  la armadura de Mash (hueso del brazo) en vez de ítem en la mano.
+- **Cámara de los Noble Phantasm**: los haces duran 2 s más (v2.18.9) pero la cinemática no; alargarla si se quiere.
+- **Liga de la pierna izquierda de Mash**: el usuario la quitó en su modelo; confirmar que fue a propósito.
+- **Choque de Noble Phantasms (QTE)** y **logros de choque/Guerra del Grial**: sin probar con dos jugadores.
+- **Voces**: pack personal en `Instances/xxxx/resourcepacks/Fate UBW - Voces` con 5 voces de FGO (Excalibur, Ea,
+  Gáe Bolg, UBW al pulsar la habilidad, An Gal Ta); el resto en silencio. Se le pasa como .zip al usuario si cambia.
+
 ## Ideas que quedan para más adelante
 
 Ordenadas por lo que aportan frente a lo que cuestan.
