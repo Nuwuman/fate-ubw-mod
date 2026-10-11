@@ -10,12 +10,12 @@
     "gui": {
       "rotation": [
         30,
-        225,
+        45,
         0
       ],
       "translation": [
-        -0.22,
-        -0.84,
+        0.22,
+        -0.96,
         0
       ],
       "scale": [
@@ -63,7 +63,7 @@
     "firstperson_righthand": {
       "rotation": [
         0,
-        45,
+        225,
         0
       ],
       "scale": [
@@ -75,7 +75,7 @@
     "firstperson_lefthand": {
       "rotation": [
         0,
-        225,
+        45,
         0
       ],
       "scale": [
