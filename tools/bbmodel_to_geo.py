@@ -1,7 +1,9 @@
 # Convierte un .bbmodel de Blockbench (formato bedrock, UV por cara) al .geo.json de GeckoLib, como lo exporta Blockbench:
 # X invertida, up/down con la UV volteada, inflate y huesos con su pivote y padre.
-# Uso: python tools/bbmodel_to_geo.py <entrada.bbmodel> <salida.geo.json>
-import sys, json
+# Los grupos de referencia de Blockbench (el jugador "root" que añade la plantilla de armadura) no se exportan.
+# El tamaño de la textura sale de la textura que usan las piezas (su uv_width/uv_height), no de la resolución del proyecto.
+# Uso: python tools/bbmodel_to_geo.py <entrada.bbmodel> <salida.geo.json> [textura.png de salida]
+import sys, json, os
 
 d = json.load(open(sys.argv[1], encoding='utf-8'))
 groups = {g['uuid']: g for g in d.get('groups', [])}
@@ -28,6 +30,7 @@ def cube(e):
     return c
 
 
+SKIP = {"root"}
 bones = []
 
 
@@ -36,6 +39,8 @@ def walk(nodes, parent=None):
         if isinstance(node, str):
             continue
         g = groups.get(node['uuid'], node)
+        if parent is None and g['name'] in SKIP:
+            continue
         bone = {"name": g['name']}
         if parent:
             bone["parent"] = parent
@@ -48,9 +53,32 @@ def walk(nodes, parent=None):
 
 
 walk(d['outliner'])
+from collections import Counter
+tex_counts = Counter()
 res = d.get('resolution', {"width": 64, "height": 64})
+textures = d.get('textures', [])
+kept = set()
+def collect(nodes, skip=False):
+    for n in nodes:
+        if isinstance(n, str):
+            if not skip: kept.add(n)
+        else:
+            g = groups.get(n['uuid'], n)
+            collect(n.get('children', []), skip or (g['name'] in SKIP))
+collect(d['outliner'])
+for u in kept:
+    for f in elements[u]['faces'].values():
+        if f.get('texture') is not None: tex_counts[f['texture']] += 1
+if tex_counts and textures:
+    tid = tex_counts.most_common(1)[0][0]
+    tex = next((t for t in textures if t.get('id') == str(tid) or textures.index(t) == tid), textures[0])
+    res = {"width": tex.get('uv_width', tex.get('width')), "height": tex.get('uv_height', tex.get('height'))}
+    if len(sys.argv) > 3:
+        import base64
+        open(sys.argv[3], 'wb').write(base64.b64decode(tex['source'].split(',', 1)[1]))
 geo = {"format_version": "1.12.0", "minecraft:geometry": [{
-    "description": {"identifier": "geometry." + d.get('model_identifier', d['name']).replace('.geo', ''),
+    # El identificador sale del nombre del archivo de salida (mash_armor.geo.json → geometry.mash_armor)
+    "description": {"identifier": "geometry." + os.path.basename(sys.argv[2]).split('.')[0],
                     "texture_width": res['width'], "texture_height": res['height'],
                     "visible_bounds_width": 3, "visible_bounds_height": 3, "visible_bounds_offset": [0, 1.5, 0]},
     "bones": bones}]}
