@@ -30,8 +30,8 @@ def edge(c, d):
 # ---------- Formas de cada pieza (coordenadas del modelo, en la cara de delante) ----------
 def bar(x, y):
     # Palo vertical [4..12]x[-8..30]: se estrecha hacia la cruz; detrás de los brazos, transparente (evita parpadeos)
-    if 11 <= y <= 21:
-        return T
+    if arms(x, y) != T:
+        return T                 # lo tapan los brazos (mismo plano): así no parpadea, sin dejar huecos
     if y < 11:
         half = 4.0 - 1.1 * min(1.0, max(0.0, (y + 8) / 15.0))      # ancho abajo, estrecho junto a la cruz
     else:
@@ -171,8 +171,9 @@ def face_pixels(e, face, painter, piece):
                 c = painter(x0 + fu * w, y1 - fv * h)
                 if c[3]:
                     c = BACK if piece == 16 else (NAVY_LO if c in (NAVY, NAVY_HI) else c)
-                if piece == 16 and (4 <= x0 + fu * w <= 12 or 11 <= y1 - fv * h <= 21):
-                    c = T            # detrás de la cruz no se ve; así no parpadea con ella
+                bx, by = x0 + fu * w, y1 - fv * h
+                if piece == 16 and (bar(bx, by) != T or arms(bx, by) != T):
+                    c = T            # justo detrás de la cruz (mismo plano): así no parpadea, sin dejar huecos
             else:
                 c = side_colour(piece)
             px[i, j] = c
