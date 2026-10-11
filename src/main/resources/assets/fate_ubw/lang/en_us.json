@@ -291,6 +291,8 @@
   "item.fate_ubw.maanna_hull": "Maanna (grip)",
   "item.fate_ubw.maanna_prow": "Maanna (upper limbs)",
   "item.fate_ubw.maanna_stern": "Maanna (lower limbs)",
+  "item.fate_ubw.maanna_inner_up": "Maanna (inner crescent, upper)",
+  "item.fate_ubw.maanna_inner_down": "Maanna (inner crescent, lower)",
   "advancement.fate_ubw.root": "Fate: Unlimited Blade Works",
   "advancement.fate_ubw.root.description": "Heroic Spirits, Noble Phantasms and the Holy Grail War",
   "advancement.fate_ubw.summon": "Are You My Master?",

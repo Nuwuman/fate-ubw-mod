@@ -40,16 +40,20 @@ import java.util.WeakHashMap;
  * y apuntando con la mirada) y convierte el click derecho con la mano vacía en tensarla y soltarla.
  */
 public final class FloatingMaannaClient {
-    // El arco es el modelo del usuario (tools/blockbench/maanna.bbmodel, partido con tools/maanna_bow.py en tres ítems):
-    // HULL (empuñadura y centro, fijo), PROW (brazos de arriba) y STERN (brazos de abajo), que se cierran al tensar.
+    // El arco es el modelo del usuario (tools/blockbench/maanna.bbmodel, partido con tools/maanna_bow.py en cinco ítems):
+    // HULL (empuñadura, abanico y cintas, fijo), PROW/STERN (brazos de fuera de arriba y de abajo, que giran alrededor de
+    // la empuñadura) e INNER_UP/INNER_DOWN (el creciente de dentro con sus campanas, que gira alrededor de su centro).
     // Las medidas van en unidades del modelo (16 = un bloque)
     private static final ItemStack HULL = new ItemStack(FateUBW.MAANNA_HULL);
     private static final ItemStack PROW = new ItemStack(FateUBW.MAANNA_PROW);
     private static final ItemStack STERN = new ItemStack(FateUBW.MAANNA_STERN);
-    private static final float SCALE = 1.25F;                // tamaño del arco respecto al modelo
-    private static final float PIVOT_Y = 15.0F, PIVOT_Z = 1.0F; // la empuñadura: de ahí giran los brazos y cuelga todo
-    private static final float TIP_Y = 25.5F, TIP_Z = 26.0F; // dónde se ata la cuerda (punta de arriba; la de abajo es su espejo)
-    private static final float BEND = 9.0F;                  // grados que se cierra cada brazo al tensar del todo
+    private static final ItemStack INNER_UP = new ItemStack(FateUBW.MAANNA_INNER_UP);
+    private static final ItemStack INNER_DOWN = new ItemStack(FateUBW.MAANNA_INNER_DOWN);
+    private static final float SCALE = 1.1F;                 // tamaño del arco respecto al modelo
+    private static final float GRIP_Y = 15.0F, GRIP_Z = 1.0F; // la empuñadura: el origen del dibujo
+    private static final float CRESCENT_Z = 15.5F;           // centro del creciente de dentro (su pivote, a la altura de GRIP_Y)
+    private static final float TIP_Y = 26.0F, TIP_Z = 27.5F; // boca de la campana de arriba: ahí se ata la cuerda
+    private static final float BEND_OUTER = 6.0F, BEND_INNER = 11.0F; // grados que se cierra cada brazo al tensar del todo
     private static final float ARROW = 3.4F;                 // largo de la flecha: tensada del todo, la punta queda bien por delante de la empuñadura
     // Por qué tramo de la tensión va cada uno (1 empezando, 2 a la mitad, 3 al tope), para sonar una vez por tramo
     private static final Map<AbstractClientPlayerEntity, Integer> STAGE = new WeakHashMap<>();
@@ -189,12 +193,13 @@ public final class FloatingMaannaClient {
     // Al tensar, los brazos se cierran hacia dentro
     private static void drawBow(MinecraftClient client, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumers,
                                 int light, float pull, Draw draw) {
-        float bend = BEND * pull;
-        part(client, world, matrices, consumers, light, HULL, 0.0F);
-        part(client, world, matrices, consumers, light, PROW, -bend);
-        part(client, world, matrices, consumers, light, STERN, bend);
-        float reach = (TIP_Y - PIVOT_Y) / 16.0F * SCALE, back = (TIP_Z - PIVOT_Z) / 16.0F * SCALE;
-        Vec3d top = tipAt(reach, back, -bend), bottom = tipAt(-reach, back, bend);
+        float outer = BEND_OUTER * pull, inner = BEND_INNER * pull;
+        part(client, world, matrices, consumers, light, HULL, GRIP_Z, 0.0F);
+        part(client, world, matrices, consumers, light, PROW, GRIP_Z, -outer);
+        part(client, world, matrices, consumers, light, STERN, GRIP_Z, outer);
+        part(client, world, matrices, consumers, light, INNER_UP, CRESCENT_Z, -inner);
+        part(client, world, matrices, consumers, light, INNER_DOWN, CRESCENT_Z, inner);
+        Vec3d top = tip(-inner), bottom = new Vec3d(0.0, -top.y, top.z);   // la de abajo es el espejo de la de arriba
         // Cuerda de luz entre las puntas; tensando, el centro se va hacia atrás y brilla más
         Vec3d middle = top.add(bottom).multiply(0.5).add(0.0, 0.0, -0.9 * pull);
         VertexConsumer vc = consumers.getBuffer(RenderLayer.getLightning());
@@ -237,23 +242,27 @@ public final class FloatingMaannaClient {
     }
 
     // Una pieza del arco: el modelo girado para que la empuñadura quede delante y las puntas detrás, con 'angle' grados
-    // de giro en X alrededor de la empuñadura
+    // de giro en X alrededor del punto del eje del arco que está a 'pivotZ' (a la altura de la empuñadura)
     private static void part(MinecraftClient client, ClientWorld world, MatrixStack matrices, VertexConsumerProvider consumers,
-                             int light, ItemStack piece, float angle) {
+                             int light, ItemStack piece, float pivotZ, float angle) {
         matrices.push();
         matrices.scale(SCALE, SCALE, SCALE);
+        float back = -(pivotZ - GRIP_Z) / 16.0F;          // el pivote respecto a la empuñadura, ya del lado de atrás (-Z)
+        matrices.translate(0.0F, 0.0F, back);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle));
+        matrices.translate(0.0F, 0.0F, -back);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
-        matrices.translate(0.0F, -(PIVOT_Y - 8.0F) / 16.0F, (8.0F - PIVOT_Z) / 16.0F);
+        matrices.translate(0.0F, -(GRIP_Y - 8.0F) / 16.0F, (8.0F - GRIP_Z) / 16.0F);
         client.getItemRenderer().renderItem(piece, ModelTransformationMode.NONE, light, OverlayTexture.DEFAULT_UV, matrices, consumers, world, 0);
         matrices.pop();
     }
 
-    // Punta del arco ('y' hacia arriba, 'back' hacia atrás) tras girar el brazo 'angle' grados en X
-    private static Vec3d tipAt(float y, float back, float angle) {
+    // Boca de la campana de arriba tras girar el creciente 'angle' grados en X, respecto a la empuñadura
+    private static Vec3d tip(float angle) {
         float a = angle * MathHelper.RADIANS_PER_DEGREE, c = MathHelper.cos(a), s = MathHelper.sin(a);
-        float z = -back;
-        return new Vec3d(0.0, y * c - z * s, y * s + z * c);
+        float y = (TIP_Y - GRIP_Y) / 16.0F * SCALE, z = -(TIP_Z - CRESCENT_Z) / 16.0F * SCALE;
+        float pz = -(CRESCENT_Z - GRIP_Z) / 16.0F * SCALE;
+        return new Vec3d(0.0, y * c - z * s, pz + y * s + z * c);
     }
 
     // Una barra de luz de a a b: dos planos cruzados a lo largo de ella, para que se vea desde cualquier lado

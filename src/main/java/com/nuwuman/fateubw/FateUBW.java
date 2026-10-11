@@ -238,6 +238,8 @@ public class FateUBW implements ModInitializer {
     public static final Item MAANNA_HULL = item("maanna_hull", new Item(new Item.Settings()));
     public static final Item MAANNA_PROW = item("maanna_prow", new Item(new Item.Settings()));
     public static final Item MAANNA_STERN = item("maanna_stern", new Item(new Item.Settings()));
+    public static final Item MAANNA_INNER_UP = item("maanna_inner_up", new Item(new Item.Settings()));
+    public static final Item MAANNA_INNER_DOWN = item("maanna_inner_down", new Item(new Item.Settings()));
 
     // ---------- Entidades ----------
     public static final EntityType<ExcaliburBeamEntity> BEAM = entity("excalibur_beam", ExcaliburBeamEntity::new, 20);

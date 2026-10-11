@@ -291,6 +291,8 @@
   "item.fate_ubw.maanna_hull": "Maanna (empuñadura)",
   "item.fate_ubw.maanna_prow": "Maanna (brazos de arriba)",
   "item.fate_ubw.maanna_stern": "Maanna (brazos de abajo)",
+  "item.fate_ubw.maanna_inner_up": "Maanna (creciente, arriba)",
+  "item.fate_ubw.maanna_inner_down": "Maanna (creciente, abajo)",
   "advancement.fate_ubw.root": "Fate: Unlimited Blade Works",
   "advancement.fate_ubw.root.description": "Espíritus heroicos, Noble Phantasms y la Guerra del Santo Grial",
   "advancement.fate_ubw.summon": "¿Eres tú mi Master?",
