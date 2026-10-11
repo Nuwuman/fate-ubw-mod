@@ -155,10 +155,12 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   o una pieza de ropa.
 
 **Guerra del Santo Grial**
-- **Círculo de invocación**: click derecho en el suelo con un catalizador en la otra mano. Tras un ritual de 3 s aparece
-  el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de prismarina → Lancer, ojo de
-  ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero → Berserker, diamante → Ishtar, escudo → Mash (sin catalizador,
-  uno al azar).
+- **Altar de ritual** (bloque; receta: 2 redstone, 2 lapislázuli, 1 lingote de oro y 3 obsidiana): colócalo en el suelo y
+  suelta encima un catalizador, o dáselo con click derecho. Gasta 30 de maná, se oye el conjuro en la barra de acción y,
+  tras un ritual de 3 s, aparece el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de
+  prismarina → Lancer, ojo de ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero →
+  Berserker, diamante → Ishtar, escudo → Mash. Es reutilizable. El antiguo **círculo de invocación** (ítem, click derecho
+  con un catalizador en la otra mano) sigue funcionando, pero ya no sale en el creativo ni tiene receta.
 - **`/grailwar start`** (operadores): a cada jugador conectado le toca un servant distinto, con su equipo, el maná lleno
   y tres Sellos de Comando. Quien muere queda de espectador; el último en pie gana el **Santo Grial**.
   `/grailwar status` dice quién sigue y `/grailwar stop` la termina. Desconectarse cuenta como rendirse, pero la

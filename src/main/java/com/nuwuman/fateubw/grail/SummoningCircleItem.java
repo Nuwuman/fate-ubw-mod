@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Círculo de invocación: click derecho sobre el suelo con un catalizador en la otra mano. El ritual dura 3 s y
- * deja el equipo completo del servant que atrae el catalizador (sin catalizador, uno al azar).
+ * Círculo de invocación (el ítem antiguo; ahora se usa el altar de ritual): click derecho sobre el suelo con un
+ * catalizador en la otra mano. El ritual dura 3 s y deja el equipo completo del servant que atrae el catalizador (sin
+ * catalizador, uno al azar). También lleva el ritual que usa el altar.
  */
 public class SummoningCircleItem extends Item {
     private static final int RITUAL_TICKS = 60;
@@ -58,13 +59,24 @@ public class SummoningCircleItem extends Item {
             context.getStack().decrement(1);
             if (Servants.isCatalyst(catalyst)) catalyst.decrement(1);
         }
-        Vec3d center = Vec3d.ofBottomCenter(context.getBlockPos().up());
-        if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)
-            com.nuwuman.fateubw.Achievements.summoned(serverPlayer, servant.id());
-        RITUALS.add(new Ritual(world, center, servant, player.getUuid(), new int[]{0}));
-        world.playSound(null, center.x, center.y, center.z, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.5F, 0.6F);
-        player.sendMessage(Text.translatable("message.fate_ubw.summoning").formatted(Formatting.RED, Formatting.ITALIC), true);
+        startRitual(world, Vec3d.ofBottomCenter(context.getBlockPos().up()), servant, player);
         return ActionResult.CONSUME;
+    }
+
+    /** ¿Hay ya un ritual en marcha en ese punto? */
+    public static boolean ritualAt(ServerWorld world, Vec3d center) {
+        for (Ritual ritual : RITUALS) {
+            if (ritual.world() == world && ritual.center().squaredDistanceTo(center) < 4.0) return true;
+        }
+        return false;
+    }
+
+    /** Empieza un ritual en 'center': dibuja el círculo, canta y, a los 3 s, deja el equipo del servant. */
+    public static void startRitual(ServerWorld world, Vec3d center, Servants.Servant servant, PlayerEntity master) {
+        if (master instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)
+            com.nuwuman.fateubw.Achievements.summoned(serverPlayer, servant.id());
+        RITUALS.add(new Ritual(world, center, servant, master.getUuid(), new int[]{0}));
+        world.playSound(null, center.x, center.y, center.z, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.5F, 0.6F);
     }
 
     // El círculo se dibuja y gira, las runas suben y al final cae un rayo y aparece el equipo
@@ -73,6 +85,13 @@ public class SummoningCircleItem extends Item {
         ServerWorld world = ritual.world();
         Vec3d c = ritual.center();
         float progress = Math.min(1.0F, age / (float) RITUAL_TICKS);
+        // El conjuro: tres versos, uno cada segundo, en la barra del amo
+        if (age == 2 || age == 22 || age == 42) {
+            PlayerEntity caller = world.getPlayerByUuid(ritual.master());
+            if (caller != null) {
+                caller.sendMessage(Text.translatable("message.fate_ubw.chant_" + (age / 20 + 1)).formatted(Formatting.RED, Formatting.ITALIC), true);
+            }
+        }
         for (int i = 0; i < 24; i++) {
             double angle = i * Math.PI / 12 + age * 0.05;
             world.spawnParticles(CIRCLE, c.x + Math.cos(angle) * 2.0, c.y + 0.05, c.z + Math.sin(angle) * 2.0, 1, 0.0, 0.0, 0.0, 0.0);

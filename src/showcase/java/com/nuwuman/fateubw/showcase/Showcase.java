@@ -157,6 +157,7 @@ public class Showcase implements ClientModInitializer {
             case "boom" -> boom(client, p, st);
             case "mash" -> mash(client, p, st);
             case "mashphoto" -> mashPhoto(client, p, st);
+            case "altar" -> altar(client, p, st);
             case "poses" -> poses(client, p, st);
             case "carve" -> carve(client, p, st);
             case "assassin" -> assassin(client, p, st);
@@ -1077,6 +1078,33 @@ public class Showcase implements ClientModInitializer {
     }
 
     // Fotos del escudo de Mash en el brazo: de frente, de tres cuartos y de lado (el brazo derecho hacia la cámara)
+    // Altar de ritual: se suelta un catalizador encima y se invoca; luego otra vez con click derecho
+    private boolean altar(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> {
+                setup(c, p, new String[]{}, new String[]{});
+                p.networkHandler.sendChatCommand("gamemode survival");
+                p.networkHandler.sendChatCommand("setblock ~ ~ ~4 fate_ubw:summoning_altar");
+            }
+            case 10 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                yaw = 35.0F;
+            }
+            case 25 -> shot(c, "altar_0_idle");
+            case 26 -> p.networkHandler.sendChatCommand("summon item ~ ~3 ~4 {Item:{id:\"minecraft:golden_apple\",count:1}}");
+            case 60 -> shot(c, "altar_1_ritual");
+            case 100 -> shot(c, "altar_2_ritual");
+            case 130 -> shot(c, "altar_3_summoned");
+            case 160 -> shot(c, "altar_4_after");
+            case 165 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
     private boolean mashPhoto(MinecraftClient c, ClientPlayerEntity p, int t) {
         switch (t) {
             case 0 -> setup(c, p, new String[]{"armor.chest with fate_ubw:mash_chestplate", "armor.legs with fate_ubw:mash_leggings",

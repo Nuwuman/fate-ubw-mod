@@ -39,7 +39,8 @@ lleno y mejoras 30 s; uno por día) y logros propios.
 | **Joya de Tohsaka** | Rin | Se lanza y explota | — |
 | **Póster reforzado** | Shirou | Pega como una espada de hierro | Clic derecho: repara lo de la otra mano y da Fuerza I. |
 | **Zelzeriz** | Illya | Tres pájaros de alambre atacan 15 s | — |
-| **Círculo de invocación** | — | Clic derecho en el suelo con un catalizador: aparece el equipo del servant | — |
+| **Altar de ritual** (bloque) | — | Colócalo y suelta encima un catalizador (o dáselo con clic derecho): gasta 30 de maná, canta el conjuro y deja el equipo del servant | — |
+| Círculo de invocación (ítem antiguo) | — | Clic derecho en el suelo con un catalizador en la otra mano: aparece el equipo del servant. Ya no sale en el creativo ni tiene receta | — |
 | **Santo Grial** | Guerra del Grial | Clic derecho: elige un servant y te da su equipo, vida, maná y sellos | — |
 
 **Choque de Noble Phantasms**: si chocan los haces de Excalibur, Enuma Elish o An Gal Ta de dos jugadores, empieza un

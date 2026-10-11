@@ -1,0 +1,19 @@
+{
+  "ambientocclusion": false,
+  "textures": { "top": "fate_ubw:block/summoning_altar_top", "side": "fate_ubw:block/summoning_altar_side", "particle": "fate_ubw:block/summoning_altar_side" },
+  "elements": [
+    { "from": [0, 0, 0], "to": [16, 1, 16], "faces": {
+        "up": { "uv": [0, 0, 16, 16], "texture": "#top" },
+        "down": { "uv": [0, 0, 16, 16], "texture": "#side" },
+        "north": { "uv": [0, 15, 16, 16], "texture": "#side" },
+        "south": { "uv": [0, 15, 16, 16], "texture": "#side" },
+        "east": { "uv": [0, 15, 16, 16], "texture": "#side" },
+        "west": { "uv": [0, 15, 16, 16], "texture": "#side" } } }
+  ],
+  "display": {
+    "gui": { "rotation": [30, 225, 0], "translation": [0, -1, 0], "scale": [0.9, 0.9, 0.9] },
+    "ground": { "translation": [0, 3, 0], "scale": [0.5, 0.5, 0.5] },
+    "fixed": { "scale": [0.9, 0.9, 0.9] },
+    "thirdperson_righthand": { "rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5] }
+  }
+}

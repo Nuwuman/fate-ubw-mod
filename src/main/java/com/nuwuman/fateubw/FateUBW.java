@@ -147,6 +147,19 @@ public class FateUBW implements ModInitializer {
     public static final Item GILGAMESH_BOOTS = item("gilgamesh_boots", new GilgameshArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
     // ---------- Guerra del Santo Grial ----------
+    // Altar de ritual: la forma de invocar (el círculo en ítem sigue funcionando, pero ya no sale en el creativo)
+    public static final Block SUMMONING_ALTAR = Registry.register(Registries.BLOCK, id("summoning_altar"),
+            new com.nuwuman.fateubw.grail.SummoningAltarBlock(AbstractBlock.Settings.create().noCollision().nonOpaque()
+                    .strength(2.0F, 1200.0F).sounds(BlockSoundGroup.STONE)));
+    public static final Item SUMMONING_ALTAR_ITEM = item("summoning_altar",
+            new net.minecraft.item.BlockItem(SUMMONING_ALTAR, new Item.Settings().rarity(Rarity.RARE)) {
+                @Override
+                public void appendTooltip(net.minecraft.item.ItemStack stack, Item.TooltipContext context,
+                                          java.util.List<net.minecraft.text.Text> tooltip, net.minecraft.item.tooltip.TooltipType type) {
+                    tooltip.add(net.minecraft.text.Text.translatable("item.fate_ubw.summoning_altar.tooltip")
+                            .formatted(net.minecraft.util.Formatting.GRAY));
+                }
+            });
     public static final Item SUMMONING_CIRCLE = item("summoning_circle", new SummoningCircleItem(new Item.Settings().rarity(Rarity.RARE)));
     public static final Item HOLY_GRAIL = item("holy_grail", new HolyGrailItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC).fireproof()));
 
@@ -347,7 +360,7 @@ public class FateUBW implements ModInitializer {
                 entries.add(MASH_CHESTPLATE);
                 entries.add(MASH_LEGGINGS);
                 entries.add(MASH_BOOTS);
-                entries.add(SUMMONING_CIRCLE);
+                entries.add(SUMMONING_ALTAR_ITEM);
                 entries.add(HOLY_GRAIL);
                 entries.add(RIN_JEWEL);
                 entries.add(SHIROU_POSTER);

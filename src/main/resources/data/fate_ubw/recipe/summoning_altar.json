@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["RLR", "LGL", "OOO"],
+  "key": {
+    "R": { "item": "minecraft:redstone" },
+    "L": { "item": "minecraft:lapis_lazuli" },
+    "G": { "item": "minecraft:gold_ingot" },
+    "O": { "item": "minecraft:obsidian" }
+  },
+  "result": { "id": "fate_ubw:summoning_altar", "count": 1 }
+}

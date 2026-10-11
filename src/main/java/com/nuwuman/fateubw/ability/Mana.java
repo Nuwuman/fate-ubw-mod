@@ -49,6 +49,7 @@ public final class Mana {
         cost(FateUBW.AN_GAL_TA_KIGAL_SHE_NP, 50); cost(FateUBW.JEWEL_BURST, 20); cost(FateUBW.MANIFESTATION_OF_BEAUTY, 15);
         cost(FateUBW.SKY_BOAT, 10);
         cost(FateUBW.LORD_CAMELOT_NP, 50); cost(FateUBW.BUNKER_BOLT, 10); cost(FateUBW.WALL_OF_SNOWFLAKES, 25); cost(FateUBW.WALL_OF_CHALK, 15);
+        cost(FateUBW.SUMMONING_ALTAR_ITEM, 30);   // invocar en el altar de ritual
 
         // Se recarga sola; se sincroniza con su cliente cada medio segundo como mucho
         ServerTickEvents.END_SERVER_TICK.register(server -> {
