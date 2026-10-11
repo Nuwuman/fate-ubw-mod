@@ -133,7 +133,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   de atacarte) y **Barca del Cielo** (Maanna te lanza hacia donde miras y planeas 5 s; se puede usar dos veces seguidas, con 4 s para el segundo salto, antes de la recarga).
 
 **Shielder (Mash Kyrielight)**
-- **Lord Chaldeas**: su escudo enorme con la cruz y la lente morada. Click derecho para cubrirte como con un escudo
+- **Lord Chaldeas**: su escudo enorme: una cruz azul con un disco detrás, sujeto al costado del brazo. Click derecho para cubrirte como con un escudo
   (no se gasta); golpear con él es un porrazo con mucho empuje. Agachado, cubriéndote 2 s y soltando: **Lord Camelot**,
   un muro de luz con la forma de las murallas de Camelot delante de ti durante 6 s. Para los proyectiles y los haces de
   Noble Phantasm (Excalibur, Enuma Elish, An Gal Ta Kigal Shè…) que le llegan de frente, y los jugadores que tiene
