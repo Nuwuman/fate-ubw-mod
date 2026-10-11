@@ -35,7 +35,7 @@ public class SummoningCircleItem extends Item {
     private static final DustParticleEffect CIRCLE = new DustParticleEffect(new Vector3f(0.85F, 0.1F, 0.15F), 1.2F);
     private static final DustParticleEffect RUNE = new DustParticleEffect(new Vector3f(0.4F, 0.7F, 1.0F), 1.0F);
 
-    private record Ritual(ServerWorld world, Vec3d center, Servants.Servant servant, UUID master, int[] age) {
+    private record Ritual(ServerWorld world, Vec3d center, Servants.Servant servant, UUID master, int[] age, ItemStack catalyst) {
     }
 
     private static final List<Ritual> RITUALS = new ArrayList<>();
@@ -55,11 +55,12 @@ public class SummoningCircleItem extends Item {
         Hand other = context.getHand() == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
         ItemStack catalyst = player.getStackInHand(other);
         Servants.Servant servant = Servants.byCatalyst(catalyst, world.random);
+        ItemStack used = Servants.isCatalyst(catalyst) ? catalyst.copyWithCount(1) : ItemStack.EMPTY;
         if (!player.isCreative()) {
             context.getStack().decrement(1);
             if (Servants.isCatalyst(catalyst)) catalyst.decrement(1);
         }
-        startRitual(world, Vec3d.ofBottomCenter(context.getBlockPos().up()), servant, player);
+        startRitual(world, Vec3d.ofBottomCenter(context.getBlockPos().up()), servant, player, used);
         return ActionResult.CONSUME;
     }
 
@@ -71,11 +72,14 @@ public class SummoningCircleItem extends Item {
         return false;
     }
 
-    /** Empieza un ritual en 'center': dibuja el círculo, canta y, a los 3 s, deja el equipo del servant. */
-    public static void startRitual(ServerWorld world, Vec3d center, Servants.Servant servant, PlayerEntity master) {
+    /**
+     * Empieza un ritual en el punto dado: dibuja el círculo, canta y, a los 3 s, deja el equipo del servant. El último
+     * parámetro es una copia del catalizador que se consume (vacía si no hay): se ve deshacerse en el aire mientras dura.
+     */
+    public static void startRitual(ServerWorld world, Vec3d center, Servants.Servant servant, PlayerEntity master, ItemStack catalyst) {
         if (master instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer)
             com.nuwuman.fateubw.Achievements.summoned(serverPlayer, servant.id());
-        RITUALS.add(new Ritual(world, center, servant, master.getUuid(), new int[]{0}));
+        RITUALS.add(new Ritual(world, center, servant, master.getUuid(), new int[]{0}, catalyst));
         world.playSound(null, center.x, center.y, center.z, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.5F, 0.6F);
     }
 
@@ -104,6 +108,14 @@ public class SummoningCircleItem extends Item {
                 world.spawnParticles(RUNE, c.x + (Math.cos(a0) * (1 - t) + Math.cos(a1) * t) * 1.8, c.y + 0.05,
                         c.z + (Math.sin(a0) * (1 - t) + Math.sin(a1) * t) * 1.8, 1, 0.0, 0.0, 0.0, 0.0);
             }
+        }
+        // El catalizador se deshace: sus trozos suben girando hacia el centro del círculo
+        if (!ritual.catalyst().isEmpty()) {
+            net.minecraft.particle.ItemStackParticleEffect crumbs =
+                    new net.minecraft.particle.ItemStackParticleEffect(ParticleTypes.ITEM, ritual.catalyst());
+            double a = age * 0.35;
+            world.spawnParticles(crumbs, c.x + Math.cos(a) * (0.9 - progress * 0.7), c.y + 0.3 + progress * 1.6,
+                    c.z + Math.sin(a) * (0.9 - progress * 0.7), 3, 0.05, 0.05, 0.05, 0.01);
         }
         if (age % 4 == 0) world.spawnParticles(ParticleTypes.END_ROD, c.x, c.y + 0.2, c.z, 4, 0.8, 0.1, 0.8, 0.05 + progress * 0.2);
         if (age % 20 == 0) world.playSound(null, c.x, c.y, c.z, SoundEvents.BLOCK_BEACON_AMBIENT, SoundCategory.PLAYERS, 2.0F, 0.5F + progress);

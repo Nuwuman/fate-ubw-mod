@@ -156,7 +156,9 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 **Guerra del Santo Grial**
 - **Altar de ritual** (bloque; receta: 2 redstone, 2 lapislázuli, 1 lingote de oro y 3 obsidiana): colócalo en el suelo y
-  suelta encima un catalizador, o dáselo con click derecho. Gasta 30 de maná, se oye el conjuro en la barra de acción y,
+  rodéalo a dos bloques de distancia con **4 bloques de oro** (norte, sur, este y oeste) y **4 de lapislázuli** (en las
+  diagonales); si falta alguno, sale humo en su sitio y avisa. Suelta encima un catalizador, o dáselo con click derecho:
+  se consume (también en creativo). Gasta 30 de maná, se oye el conjuro en la barra de acción y,
   tras un ritual de 3 s, aparece el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de
   prismarina → Lancer, ojo de ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero →
   Berserker, diamante → Ishtar, escudo → Mash. Es reutilizable. El antiguo **círculo de invocación** (ítem, click derecho
