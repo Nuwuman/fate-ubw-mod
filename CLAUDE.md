@@ -20,6 +20,8 @@ Notas de trabajo para Claude. Lo pendiente y las ideas están en `docs/notas.md`
   - Ítems Java: `python tools/bbmodel_to_item.py <in.bbmodel> <modelo.json> <textura.png> <id>` (hornea giros de 90°,
     admite varias texturas → `_1.png`). Espada-hacha de Berserker y escudo de Mash, guardados en `tools/blockbench/`.
   - Al cambiar un modelo del usuario, guardar también su `.bbmodel` en el mod.
+  - Al revés (para que el usuario edite un modelo del mod): `python tools/item_to_bbmodel.py <modelo.json> <textura.png> <salida.bbmodel>`.
+  - El arco flotante de Ishtar se arma en código con dos ítems: `maanna_hull` (tramos del arco) y `maanna_prow` (puntas).
 - **Iconos de armaduras**: `python tools/armor_icons.py` los saca del `.geo.bbmodel` de cada armadura (mismos cubos y
   textura, centrados y escalados a la casilla). Volver a ejecutarlo tras cambiar una armadura.
 - Las piezas deben **cubrir el brazo/pierna del jugador (4×4) con margen**, o la skin asoma (pasó en Saber, Berserker).
