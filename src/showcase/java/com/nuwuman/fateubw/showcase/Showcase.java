@@ -128,6 +128,7 @@ public class Showcase implements ClientModInitializer {
             case "saber" -> saber(client, p, st);
             case "alter" -> saberAlter(client, p, st);
             case "shrines" -> shrines(client, p, st);
+            case "models" -> models(client, p, st);
             case "archer" -> archer(client, p, st);
             case "lancer" -> lancer(client, p, st);
             case "rider" -> rider(client, p, st);
@@ -1192,6 +1193,43 @@ public class Showcase implements ClientModInitializer {
             }
             case 190 -> shot(c, "shrine_" + s);
             case 195 -> p.networkHandler.sendChatCommand("forceload remove all");
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Pegaso y los pájaros de Zelzeriz quietos (tick freeze), de lado y de frente
+    private boolean models(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{}, new String[]{});
+            case 5 -> {
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:pegasus]");
+                p.networkHandler.sendChatCommand("summon fate_ubw:pegasus ~-1 ~ ~6 {Rotation:[90f,0f],NoAI:1b,OnGround:1b,Passengers:[{id:\"minecraft:armor_stand\",Invisible:1b,Marker:1b}]}");
+                p.networkHandler.sendChatCommand("summon fate_ubw:pegasus ~4 ~ ~9 {Rotation:[180f,0f],NoAI:1b,OnGround:1b,Passengers:[{id:\"minecraft:armor_stand\",Invisible:1b,Marker:1b}]}");
+                c.options.hudHidden = true;
+            }
+            case 40 -> shot(c, "models_1");
+            case 42 -> yaw = 25.0F;
+            case 60 -> shot(c, "models_2");
+            case 62 -> {
+                yaw = 0.0F;
+                pitch = 20.0F;
+                // Los pájaros sin dueña se deshacen enseguida: se congela el mundo para verlos
+                p.networkHandler.sendChatCommand("tick freeze");
+                    p.networkHandler.sendChatCommand("summon fate_ubw:zelzeriz ~-1.5 ~1.6 ~2.5 {Rotation:[90f,0f]}");
+                    p.networkHandler.sendChatCommand("summon fate_ubw:zelzeriz ~0.5 ~1.6 ~2.5 {Rotation:[180f,0f]}");
+                    p.networkHandler.sendChatCommand("summon fate_ubw:zelzeriz ~2 ~1.8 ~3 {Rotation:[135f,0f]}");
+            }
+            case 80 -> shot(c, "models_3_birds");
+            case 85 -> {
+                pitch = 0.0F;
+                c.options.hudHidden = false;
+                p.networkHandler.sendChatCommand("tick unfreeze");
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:pegasus]");
+                p.networkHandler.sendChatCommand("kill @e[type=fate_ubw:zelzeriz]");
+                return true;
+            }
             default -> {
             }
         }

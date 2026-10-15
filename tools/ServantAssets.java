@@ -733,14 +733,30 @@ public class ServantAssets {
     // Zelzeriz: un pájaro de alambre de plata de Illya
     static final Paint WIRE = metal(0xe6ebf2);
 
+    // Alambre trenzado: plata con vueltas finas más oscuras, como pelo de Illya convertido en alambre
+    static Paint wireMesh() {
+        return (x, y, w, h, s) -> shade(Math.floorMod(x + y, 3) == 0 ? 0xa9b4c6 : 0xeef2f8, x, y, w, h, s, 0.04);
+    }
+
+    // Zelzeriz: golondrina de alambre plateado, mirando hacia +X. Cuerpo fino, alas largas en punta echadas hacia
+    // atrás y cola en horquilla
     static Model zelzeriz() {
         Model m = new Model();
-        m.box(6.5, 7, 7, 10.5, 9, 9, WIRE);                                      // cuerpo
-        m.box(10.5, 8, 7.5, 12, 9.5, 8.5, WIRE);                                 // cabeza
-        m.box(12, 8.5, 7.8, 13, 9, 8.2, metal(0xd08a3a));                        // pico
-        m.box(7, 8.6, 9, 10, 9, 13, WIRE).rot("x", 22.5, 8.5, 8.8, 9);           // alas
-        m.box(7, 8.6, 3, 10, 9, 7, WIRE).rot("x", -22.5, 8.5, 8.8, 7);
-        m.box(4.5, 7.6, 7.6, 6.5, 8.4, 8.4, WIRE);                               // cola
+        Paint wire = wireMesh();
+        m.box(6, 7.5, 7.4, 10, 8.7, 8.6, wire);                                    // cuerpo
+        m.box(10, 7.7, 7.5, 11, 8.7, 8.5, wire);                                   // pecho
+        m.box(11, 8.0, 7.55, 12.3, 9.1, 8.45, wire);                               // cabeza
+        m.box(12.3, 8.35, 7.85, 13.6, 8.65, 8.15, metal(0xc8d2e4));                // pico
+        m.box(11.6, 8.55, 7.5, 12.0, 8.85, 7.55, solid(0x6a4fd0));                 // ojos (violeta, como su dueña)
+        m.box(11.6, 8.55, 8.45, 12.0, 8.85, 8.5, solid(0x6a4fd0));
+        // Alas: un tramo junto al cuerpo y otro largo inclinado hacia atrás
+        m.box(8.2, 8.45, 8.6, 10.2, 8.75, 11.5, wire);
+        m.box(7.6, 8.5, 11.2, 9.6, 8.7, 14.2, wire).rot("y", -22.5, 9, 8.6, 11.3);
+        m.box(8.2, 8.45, 4.5, 10.2, 8.75, 7.4, wire);
+        m.box(7.6, 8.5, 1.8, 9.6, 8.7, 4.8, wire).rot("y", 22.5, 9, 8.6, 4.7);
+        // Cola en horquilla
+        m.box(3.2, 7.95, 7.85, 6, 8.25, 8.15, wire).rot("y", 22.5, 6, 8.1, 8);
+        m.box(3.2, 7.95, 7.85, 6, 8.25, 8.15, wire).rot("y", -22.5, 6, 8.1, 8);
         return m;
     }
 
@@ -1278,42 +1294,82 @@ public class ServantAssets {
             + "  }";
 
     // Pegaso: caballo blanco con alas, crin dorada y cascos de oro. Mira hacia -Z; patas y alas giran en su bone
+    // Pegaso: proporciones de caballo (cuerpo 10x10x22, patas de 12, cuello inclinado hacia delante), crin y cola
+    // blancas, cascos y la brida dorada de Bellerophon. Las alas tienen plumas cobertoras y remeras largas hacia atrás;
+    // en reposo van plegadas sobre el lomo (lo hace la animación) y al volar se abren
+    static final Paint COAT = (x, y, w, h, s) -> shade(0xf4f4f8, x, y, w, h, s, 0.035);
+    static final Paint COAT_SHADE = (x, y, w, h, s) -> shade(0xdfe0e8, x, y, w, h, s, 0.035);
+    static final Paint HOOF = metal(0xd9b24a);
+    static final Paint NOSE = solid(0x3a3a44);
+
+    static Paint remiges() {
+        // Remeras: blanco con el raquis gris en el centro de cada pluma
+        return (x, y, w, h, s) -> shade(Math.floorMod(x, 3) == 1 ? 0xc9cfdb : 0xfbfbff, x, y, w, h, s, 0.03);
+    }
+
     static List<Bone> pegasus() {
         Bone body = new Bone("body", null, 0, 16, 0);
-        body.model.box(-5, 11, -11, 5, 21, 11, WHITE_COAT);
+        body.model.box(-5, 11, -10, 5, 21, 11, COAT);
+        body.model.box(-4.5, 12, -12, 4.5, 20, -10, COAT);              // pecho
+        body.model.box(-4.5, 12.5, 11, 4.5, 20.5, 12.5, COAT);          // grupa
+        body.model.box(-4, 10.5, -6, 4, 11, 8, COAT_SHADE);              // vientre
         Bone neck = new Bone("neck", "body", 0, 19, -9);
-        neck.model.box(-2.5, 17, -14, 2.5, 27, -8, WHITE_COAT);
-        neck.model.box(-0.75, 20, -9, 0.75, 28, -7.5, MANE);
-        Bone head = new Bone("head", "neck", 0, 26, -11);
-        head.model.box(-2.5, 24, -19, 2.5, 29, -11, WHITE_COAT);
-        head.model.box(-2, 24, -21, 2, 27.5, -19, WHITE_COAT);
-        head.model.box(2.5, 26.5, -16.5, 2.7, 27.3, -15.5, EYE_BLUE);
-        head.model.box(-2.7, 26.5, -16.5, -2.5, 27.3, -15.5, EYE_BLUE);
-        head.model.box(-2, 29, -13, -1, 31, -12, WHITE_COAT);
-        head.model.box(1, 29, -13, 2, 31, -12, WHITE_COAT);
+        neck.model.box(-2.5, 18, -13, 2.5, 25, -7.5, COAT);             // cuello: tramo bajo
+        neck.model.box(-2, 24, -14.5, 2, 30, -9.5, COAT);                // y alto, más adelantado
+        neck.model.box(-0.8, 21, -8.5, 0.8, 31, -7, MANE);              // crin
+        neck.model.box(-0.8, 27, -10, 0.8, 32, -8.5, MANE);
+        Bone head = new Bone("head", "neck", 0, 29, -12);
+        head.model.box(-2.5, 27.5, -18, 2.5, 32.5, -12.5, COAT);        // cráneo
+        head.model.box(-2, 26.5, -22, 2, 30.5, -18, COAT);              // hocico
+        head.model.box(-1.5, 28.5, -22.2, -0.5, 29.5, -22, NOSE);       // ollares
+        head.model.box(0.5, 28.5, -22.2, 1.5, 29.5, -22, NOSE);
+        head.model.box(2.5, 30.5, -16.5, 2.65, 31.5, -15.3, EYE_BLUE);  // ojos
+        head.model.box(-2.65, 30.5, -16.5, -2.5, 31.5, -15.3, EYE_BLUE);
+        head.model.box(-2, 32.5, -14, -1, 34.5, -13, COAT);             // orejas
+        head.model.box(1, 32.5, -14, 2, 34.5, -13, COAT);
+        head.model.box(-1.2, 32.5, -16, 1.2, 33.5, -12.5, MANE);        // flequillo
+        // Brida dorada de Bellerophon: muserola, carrilleras y frontalera
+        head.model.box(-2.15, 28.2, -20.2, 2.15, 28.9, -19.4, GOLD);
+        head.model.box(2.5, 28.5, -18.4, 2.7, 32.0, -17.6, GOLD);
+        head.model.box(-2.7, 28.5, -18.4, -2.5, 32.0, -17.6, GOLD);
+        head.model.box(-2.6, 31.6, -16.8, 2.6, 32.2, -16.2, GOLD);
 
-        Bone legFL = new Bone("legFL", null, 3.5, 12, -8);
-        legFL.model.box(2, 2, -9.5, 5, 12, -6.5, WHITE_COAT);
-        legFL.model.box(2, 0, -9.5, 5, 2, -6.5, GOLD);
-        Bone legFR = new Bone("legFR", null, -3.5, 12, -8);
-        legFR.model.box(-5, 2, -9.5, -2, 12, -6.5, WHITE_COAT);
-        legFR.model.box(-5, 0, -9.5, -2, 2, -6.5, GOLD);
-        Bone legBL = new Bone("legBL", null, 3.5, 12, 8);
-        legBL.model.box(2, 2, 6.5, 5, 12, 9.5, WHITE_COAT);
-        legBL.model.box(2, 0, 6.5, 5, 2, 9.5, GOLD);
-        Bone legBR = new Bone("legBR", null, -3.5, 12, 8);
-        legBR.model.box(-5, 2, 6.5, -2, 12, 9.5, WHITE_COAT);
-        legBR.model.box(-5, 0, 6.5, -2, 2, 9.5, GOLD);
+        Bone legFL = new Bone("legFL", null, 3, 12, -8);
+        Bone legFR = new Bone("legFR", null, -3, 12, -8);
+        Bone legBL = new Bone("legBL", null, 3, 12, 8);
+        Bone legBR = new Bone("legBR", null, -3, 12, 8);
+        for (Bone leg : List.of(legFL, legFR, legBL, legBR)) {
+            double x = leg.name.endsWith("L") ? 3 : -3, z = leg.name.startsWith("legF") ? -8 : 8;
+            boolean back = leg.name.startsWith("legB");
+            leg.model.box(x - 2, 7, z - (back ? 2.5 : 2), x + 2, 12.5, z + (back ? 2.5 : 2), COAT);   // muslo / antebrazo
+            leg.model.box(x - 1.5, 1.5, z - 1.5, x + 1.5, 7, z + 1.5, COAT);                        // caña
+            leg.model.box(x - 1.75, 1.5, z - 1.75, x + 1.75, 2.5, z + 1.75, COAT_SHADE);            // menudillo
+            leg.model.box(x - 1.75, 0, z - 1.75, x + 1.75, 1.5, z + 1.75, HOOF);                    // casco
+        }
 
-        Bone wingL = new Bone("wingL", "body", 5, 20, -4);
-        wingL.model.box(5, 19.5, -7, 19, 20.5, 3, feathers());
-        wingL.model.box(19, 19.7, -5, 26, 20.3, 2, feathers());
-        Bone wingR = new Bone("wingR", "body", -5, 20, -4);
-        wingR.model.box(-19, 19.5, -7, -5, 20.5, 3, feathers());
-        wingR.model.box(-26, 19.7, -5, -19, 20.3, 2, feathers());
+        // Alas extendidas hacia los lados; las remeras salen del borde de atrás
+        Bone wingL = new Bone("wingL", "body", 4.5, 20, -5);
+        Bone wingR = new Bone("wingR", "body", -4.5, 20, -5);
+        for (Bone wing : List.of(wingL, wingR)) {
+            int sx = wing == wingL ? 1 : -1;
+            double[][] parts = {      // x0, x1 (hacia fuera), z0, z1, grosor
+                    {4.5, 11, -7, 1, 1.2}, {11, 17, -6, 0, 1.0}, {17, 22, -5, -1, 0.8}};
+            for (double[] q : parts) {
+                double a = Math.min(sx * q[0], sx * q[1]), b = Math.max(sx * q[0], sx * q[1]);
+                wing.model.box(a, 20 - q[4] / 2, q[2], b, 20 + q[4] / 2, q[3], feathers());
+            }
+            // Remeras: cada vez más largas hacia la punta
+            double[][] quills = {{5, 8, 1, 5}, {8, 11, 1, 6.5}, {11, 14, 0, 8}, {14, 17, 0, 9}, {17, 20, -1, 9.5}, {20, 22.5, -1, 8.5}};
+            for (double[] q : quills) {
+                double a = Math.min(sx * q[0], sx * q[1]), b = Math.max(sx * q[0], sx * q[1]);
+                wing.model.box(a, 19.75, q[2], b, 20.25, q[3], remiges());
+            }
+        }
 
-        Bone tail = new Bone("tail", "body", 0, 19, 11);
-        tail.model.box(-1.5, 9, 11, 1.5, 19, 13.5, MANE);
+        Bone tail = new Bone("tail", "body", 0, 19, 12);
+        tail.model.box(-1.5, 14, 12, 1.5, 19.5, 14.5, MANE);
+        tail.model.box(-1.8, 7, 12.8, 1.8, 14, 15.3, MANE);
+        tail.model.box(-1.4, 4, 13.3, 1.4, 7, 15.6, MANE);
 
         return List.of(body, neck, head, legFL, legFR, legBL, legBR, wingL, wingR, tail);
     }
