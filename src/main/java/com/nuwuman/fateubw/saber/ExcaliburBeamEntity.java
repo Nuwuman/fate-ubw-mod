@@ -52,6 +52,8 @@ public class ExcaliburBeamEntity extends Entity {
     protected final Set<Integer> hit = new HashSet<>();
     private float carved = CARVE_START;
     // Choque de Noble Phantasms: el largo al que se frena (sincronizado con el cliente; -1 = sin choque)
+    // Haz de Excalibur Morgan: negro y rojo en vez de dorado
+    private static final TrackedData<Boolean> DARK = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Float> CLASH = DataTracker.registerData(ExcaliburBeamEntity.class, TrackedDataHandlerRegistry.FLOAT);
     /** Lo que dura el choque: un quick time event con W/A/S/D para los jugadores. */
     public static final int QTE_TICKS = 60;
@@ -82,7 +84,17 @@ public class ExcaliburBeamEntity extends Entity {
     }
 
     public static void fire(ServerWorld world, PlayerEntity owner) {
-        new ExcaliburBeamEntity(FateUBW.BEAM, world).launch(world, owner);
+        fire(world, owner, false);
+    }
+
+    public static void fire(ServerWorld world, PlayerEntity owner, boolean dark) {
+        ExcaliburBeamEntity beam = new ExcaliburBeamEntity(FateUBW.BEAM, world);
+        beam.dataTracker.set(DARK, dark);
+        beam.launch(world, owner);
+    }
+
+    public boolean dark() {
+        return dataTracker.get(DARK);
     }
 
     protected void launch(ServerWorld world, PlayerEntity owner) {
@@ -424,6 +436,7 @@ public class ExcaliburBeamEntity extends Entity {
 
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
+        builder.add(DARK, false);
         builder.add(CLASH, -1.0F);
         builder.add(PUSH, 0);
         builder.add(HELD, 0);

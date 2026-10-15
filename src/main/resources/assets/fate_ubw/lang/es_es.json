@@ -342,5 +342,13 @@
   "ability.fate_ubw.wall_of_chalk": "Muro de Tiza",
   "entity.fate_ubw.lord_camelot": "Lord Camelot",
   "servant.fate_ubw.mash": "Mash Kyrielight",
-  "message.fate_ubw.wall_of_chalk": "%s te protege: el siguiente golpe fuerte no te alcanzará"
+  "message.fate_ubw.wall_of_chalk": "%s te protege: el siguiente golpe fuerte no te alcanzará",
+  "item.fate_ubw.excalibur_morgan": "Excalibur Morgan",
+  "item.fate_ubw.excalibur_morgan.tooltip": "La espada de Saber Alter: Noble Phantasm con la mitad de recarga y un haz negro y rojo",
+  "item.fate_ubw.saber_alter_chestplate": "Armadura de Saber Alter",
+  "item.fate_ubw.saber_alter_leggings": "Faldas de Saber Alter",
+  "item.fate_ubw.saber_alter_boots": "Grebas de Saber Alter",
+  "item.fate_ubw.saber_alter_armor.tooltip.set": "Conjunto completo: Fuerza I y 150 de maná máximo",
+  "item.fate_ubw.saber_alter_armor.tooltip.abilities": "Habilidad: Mana Burst",
+  "servant.fate_ubw.saber_alter": "Saber Alter"
 }

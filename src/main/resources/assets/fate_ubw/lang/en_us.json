@@ -342,5 +342,13 @@
   "ability.fate_ubw.wall_of_chalk": "Wall of Chalk",
   "entity.fate_ubw.lord_camelot": "Lord Camelot",
   "servant.fate_ubw.mash": "Mash Kyrielight",
-  "message.fate_ubw.wall_of_chalk": "%s shields you: the next heavy blow won't land"
+  "message.fate_ubw.wall_of_chalk": "%s shields you: the next heavy blow won't land",
+  "item.fate_ubw.excalibur_morgan": "Excalibur Morgan",
+  "item.fate_ubw.excalibur_morgan.tooltip": "Saber Alter's sword: Noble Phantasm with half the cooldown and a black and red beam",
+  "item.fate_ubw.saber_alter_chestplate": "Saber Alter's Armor",
+  "item.fate_ubw.saber_alter_leggings": "Saber Alter's Skirt",
+  "item.fate_ubw.saber_alter_boots": "Saber Alter's Greaves",
+  "item.fate_ubw.saber_alter_armor.tooltip.set": "Full set: Strength I and 150 max mana",
+  "item.fate_ubw.saber_alter_armor.tooltip.abilities": "Ability: Mana Burst",
+  "servant.fate_ubw.saber_alter": "Saber Alter"
 }

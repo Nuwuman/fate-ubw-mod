@@ -102,6 +102,13 @@ public class FateUBW implements ModInitializer {
     public static final Item SABER_LEGGINGS = item("saber_leggings", new SaberArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item SABER_BOOTS = item("saber_boots", new SaberArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
 
+    // ---------- Saber Alter ----------
+    public static final RegistryEntry<ArmorMaterial> SABER_ALTER_MATERIAL = armorMaterial("saber_alter");
+    public static final Item EXCALIBUR_MORGAN = item("excalibur_morgan", new ExcaliburItem(new Item.Settings().rarity(Rarity.EPIC).fireproof(), true));
+    public static final Item SABER_ALTER_CHESTPLATE = item("saber_alter_chestplate", new com.nuwuman.fateubw.saber.SaberAlterArmorItem(ArmorItem.Type.CHESTPLATE, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item SABER_ALTER_LEGGINGS = item("saber_alter_leggings", new com.nuwuman.fateubw.saber.SaberAlterArmorItem(ArmorItem.Type.LEGGINGS, new Item.Settings().rarity(Rarity.EPIC)));
+    public static final Item SABER_ALTER_BOOTS = item("saber_alter_boots", new com.nuwuman.fateubw.saber.SaberAlterArmorItem(ArmorItem.Type.BOOTS, new Item.Settings().rarity(Rarity.EPIC)));
+
     // ---------- Archer ----------
     public static final RegistryEntry<ArmorMaterial> ARCHER_MATERIAL = armorMaterial("archer");
 
@@ -319,6 +326,10 @@ public class FateUBW implements ModInitializer {
                 entries.add(SABER_CHESTPLATE);
                 entries.add(SABER_LEGGINGS);
                 entries.add(SABER_BOOTS);
+                entries.add(EXCALIBUR_MORGAN);
+                entries.add(SABER_ALTER_CHESTPLATE);
+                entries.add(SABER_ALTER_LEGGINGS);
+                entries.add(SABER_ALTER_BOOTS);
                 entries.add(KANSHOU);
                 entries.add(BAKUYA);
                 entries.add(ARCHER_BOW);
@@ -410,6 +421,7 @@ public class FateUBW implements ModInitializer {
         // Los registros se hacen al cargar la clase (campos estáticos). Aquí solo los eventos.
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(LancerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(SaberArmorItem::allowDamage);
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register(com.nuwuman.fateubw.saber.SaberAlterArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(CasterArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(AssassinArmorItem::allowDamage);

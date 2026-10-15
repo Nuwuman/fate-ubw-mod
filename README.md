@@ -33,6 +33,15 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 ![Saber](docs/saber.png)
 
+**Saber Alter** (catalizador: un **bloque de netherita**)
+- **Excalibur Morgan**: Excalibur corrompida, negra y roja. Igual que Excalibur (carga, Strike Air, encantamientos),
+  pero el Noble Phantasm **recarga en 10 s** en vez de 20, el brillo de la carga es rojo y el haz es rojo sangre.
+- **Armadura**: la de Saber en negro, acero oscuro y rojo. Conjunto completo: Fuerza I, **Resistencia Mágica** y
+  **150 de maná máximo** (los demás tienen 100: le da para tres Excalibur seguidas). Habilidad: **Mana Burst**; no tiene
+  Avalon.
+
+![Saber Alter](docs/saber_alter.png)
+
 **Archer (EMIYA)**
 - **Kanshō y Bakuya**: sables chinos anchos con caparazón de tortuga, negro y rojo uno y blanco el otro, con un punto del color de la pareja en la guarda (yin y yang). Click derecho los lanza y vuelven a la mano. Con uno en cada mano salen los dos y se cruzan.
   Agachado + click derecho: **Rho Aias**, escudo de siete pétalos que destruye proyectiles.
@@ -159,7 +168,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
   rodéalo a dos bloques de distancia con **4 bloques de oro** (norte, sur, este y oeste) y **4 de lapislázuli** (en las
   diagonales); si falta alguno, sale humo en su sitio y avisa. Suelta encima un catalizador, o dáselo con click derecho:
   se consume (también en creativo). Gasta 30 de maná, se oye el conjuro en la barra de acción y,
-  tras un ritual de 3 s, aparece el equipo completo del servant: manzana dorada → Saber, tinte rojo → Archer, fragmento de
+  tras un ritual de 3 s, aparece el equipo completo del servant: manzana dorada → Saber, bloque de netherita → Saber Alter, tinte rojo → Archer, fragmento de
   prismarina → Lancer, ojo de ender → Rider, bloque de oro → Gilgamesh, amatista → Caster, pluma → Assassin, cuero →
   Berserker, diamante → Ishtar, escudo → Mash. Es reutilizable. El antiguo **círculo de invocación** (ítem, click derecho
   con un catalizador en la otra mano) sigue funcionando, pero ya no sale en el creativo ni tiene receta.

@@ -37,7 +37,7 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         float grow = Math.min(1.0F, age / ExcaliburBeamEntity.WIDEN_TICKS);
         // Al apagarse se estrecha además de desvanecerse
         float w = entity.radius() * grow * (1.0F + 0.08F * MathHelper.sin(age * 1.7F)) * (0.35F + 0.65F * fade);
-        NpCamera.impact(entity, 0xFFF4C8, 1.0F);
+        NpCamera.impact(entity, entity.dark() ? 0xD0303C : 0xFFF4C8, 1.0F);
 
         matrices.push();
         // Alinear +Y con la dirección de la mirada al disparar
@@ -47,27 +47,29 @@ public class ExcaliburBeamRenderer extends EntityRenderer<ExcaliburBeamEntity> {
         Matrix4f m = matrices.peek().getPositionMatrix();
         VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getLightning());
 
+        // Colores del haz: dorados, o rojo sangre en el de Excalibur Morgan
+        int[][] c = entity.dark() ? new int[][]{{252, 67, 97}, {201, 33, 57}, {182, 23, 45}, {219, 44, 70}, {236, 55, 83}, {226, 49, 75}, {240, 58, 87}, {215, 41, 67}} : new int[][]{{255, 255, 245}, {255, 215, 90}, {255, 170, 40}, {255, 230, 150}, {255, 245, 200}, {255, 240, 170}, {255, 250, 210}, {255, 225, 140}};
         // Tubos redondos con ondas que recorren el haz: núcleo blanco, luz dorada y halo naranja
-        tube(vc, m, len, w * 0.15F, w * 0.3F, 0.06F, age, 255, 255, 245, (int) (255 * fade));
-        tube(vc, m, len, w * 0.35F, w * 0.65F, 0.12F, age, 255, 215, 90, (int) (180 * fade));
-        tube(vc, m, len, w * 0.6F, w * 1.1F, 0.2F, age, 255, 170, 40, (int) (95 * fade));
+        tube(vc, m, len, w * 0.15F, w * 0.3F, 0.06F, age, c[0][0], c[0][1], c[0][2], (int) (255 * fade));
+        tube(vc, m, len, w * 0.35F, w * 0.65F, 0.12F, age, c[1][0], c[1][1], c[1][2], (int) (180 * fade));
+        tube(vc, m, len, w * 0.6F, w * 1.1F, 0.2F, age, c[2][0], c[2][1], c[2][2], (int) (95 * fade));
         // Anillos de luz que salen disparados a lo largo del haz
         for (int k = 0; k < 4; k++) {
             float at = ((age * 2.5F + k * len / 4) % len);
             float ringW = w * (1.15F + 0.25F * (at / len));
-            ring(vc, m, at, ringW, ringW * 1.25F, 255, 230, 150, (int) (140 * fade * (1 - at / len)));
+            ring(vc, m, at, ringW, ringW * 1.25F, c[3][0], c[3][1], c[3][2], (int) (140 * fade * (1 - at / len)));
         }
         // Estelas doradas que corren hacia la punta
-        BeamFx.streaks(vc, m, len, w, age, 18, entity.getId(), 255, 245, 200, (int) (190 * fade));
+        BeamFx.streaks(vc, m, len, w, age, 18, entity.getId(), c[4][0], c[4][1], c[4][2], (int) (190 * fade));
         // Estallido de rayos de luz en la espada y una onda que se abre al disparar
         float pulse = 1.0F + 0.15F * MathHelper.sin(age * 2.3F);
-        BeamFx.rays(vc, m, 0.4F, w * 0.35F, w * 3.2F * pulse, 14, age * 0.05F, 255, 240, 170, (int) (210 * fade));
+        BeamFx.rays(vc, m, 0.4F, w * 0.35F, w * 3.2F * pulse, 14, age * 0.05F, c[5][0], c[5][1], c[5][2], (int) (210 * fade));
         if (age < 12) {
             float wave = 1.5F + age * 1.8F;
-            ring(vc, m, 0.5F, wave * 0.7F, wave, 255, 250, 210, (int) (230 * (1.0F - age / 12.0F)));
+            ring(vc, m, 0.5F, wave * 0.7F, wave, c[6][0], c[6][1], c[6][2], (int) (230 * (1.0F - age / 12.0F)));
         }
         // Destello en la punta
-        BeamFx.rays(vc, m, len, w * 0.3F, w * 2.0F * pulse, 10, -age * 0.07F, 255, 225, 140, (int) (170 * fade));
+        BeamFx.rays(vc, m, len, w * 0.3F, w * 2.0F * pulse, 10, -age * 0.07F, c[7][0], c[7][1], c[7][2], (int) (170 * fade));
         matrices.pop();
     }
 

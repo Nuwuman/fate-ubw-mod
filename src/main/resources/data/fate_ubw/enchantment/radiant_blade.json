@@ -2,7 +2,7 @@
   "description": {
     "translate": "enchantment.fate_ubw.radiant_blade"
   },
-  "supported_items": "fate_ubw:excalibur",
+  "supported_items": ["fate_ubw:excalibur", "fate_ubw:excalibur_morgan"],
   "weight": 3,
   "max_level": 3,
   "min_cost": {

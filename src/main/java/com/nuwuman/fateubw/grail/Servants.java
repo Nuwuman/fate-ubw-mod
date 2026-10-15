@@ -34,6 +34,9 @@ public final class Servants {
             all = List.of(
                     new Servant("saber", Items.GOLDEN_APPLE,
                             List.of(FateUBW.SABER_CHESTPLATE, FateUBW.SABER_LEGGINGS, FateUBW.SABER_BOOTS), List.of(FateUBW.EXCALIBUR)),
+                    new Servant("saber_alter", Items.NETHERITE_BLOCK,
+                            List.of(FateUBW.SABER_ALTER_CHESTPLATE, FateUBW.SABER_ALTER_LEGGINGS, FateUBW.SABER_ALTER_BOOTS),
+                            List.of(FateUBW.EXCALIBUR_MORGAN)),
                     new Servant("archer", Items.RED_DYE,
                             List.of(FateUBW.ARCHER_CHESTPLATE, FateUBW.ARCHER_LEGGINGS, FateUBW.ARCHER_BOOTS),
                             List.of(FateUBW.KANSHOU, FateUBW.BAKUYA, FateUBW.ARCHER_BOW)),

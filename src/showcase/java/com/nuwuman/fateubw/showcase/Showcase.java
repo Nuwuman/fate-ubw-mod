@@ -126,6 +126,7 @@ public class Showcase implements ClientModInitializer {
         String name = sections.get(section);
         boolean done = switch (name) {
             case "saber" -> saber(client, p, st);
+            case "alter" -> saberAlter(client, p, st);
             case "archer" -> archer(client, p, st);
             case "lancer" -> lancer(client, p, st);
             case "rider" -> rider(client, p, st);
@@ -244,6 +245,59 @@ public class Showcase implements ClientModInitializer {
             case 232 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
             case 234 -> holdSneak = false;
             case 236 -> shot(c, "saber_10_strike_air");
+            case 250 -> {
+                return true;
+            }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Saber Alter: la armadura de Saber en negro y rojo, Excalibur Morgan y su haz oscuro
+    private boolean saberAlter(MinecraftClient c, ClientPlayerEntity p, int t) {
+        switch (t) {
+            case 0 -> setup(c, p, new String[]{
+                    "armor.chest with fate_ubw:saber_alter_chestplate", "armor.legs with fate_ubw:saber_alter_leggings",
+                    "armor.feet with fate_ubw:saber_alter_boots", "hotbar.0 with fate_ubw:excalibur_morgan",
+                    "hotbar.1 with fate_ubw:saber_alter_chestplate", "hotbar.2 with fate_ubw:saber_alter_leggings",
+                    "hotbar.3 with fate_ubw:saber_alter_boots"}, new String[]{"~-2 ~ ~8", "~2 ~ ~12", "~ ~ ~16"});
+            case 40 -> shot(c, "alter_01_firstperson");
+            case 42 -> c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            case 55 -> shot(c, "alter_02_front");
+            case 57 -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+            case 70 -> shot(c, "alter_03_back");
+            case 72 -> yaw = 90.0F;
+            case 85 -> shot(c, "alter_04_side");
+            case 87 -> {
+                yaw = 0.0F;
+                c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+            }
+            case 90 -> use(c, p);
+            case 120 -> shot(c, "alter_05_excalibur_charging_front");
+            case 160 -> {
+                if (waitCharge(c, p, 62)) return false;
+                shot(c, "alter_06_excalibur_charged_front");
+            }
+            case 162 -> c.options.setPerspective(Perspective.FIRST_PERSON);
+            case 165 -> shot(c, "alter_07_excalibur_charged_firstperson");
+            case 167 -> {
+                c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+                yaw = 90.0F;
+            }
+            case 168 -> shot(c, "alter_06b_excalibur_raised_side");
+            case 170 -> holdUse = false;
+            case 171, 172, 173, 174, 175 -> shot(c, "alter_07b_excalibur_swing_t" + t);
+            case 176 -> yaw = 35.0F; // el haz queda fijo; girar la cámara para verlo en diagonal
+            case 180 -> shot(c, "alter_08_excalibur_beam");
+            case 190 -> shot(c, "alter_09_excalibur_beam_late");
+            case 230 -> {
+                yaw = 0.0F;
+                holdSneak = true;
+            }
+            case 232 -> c.interactionManager.interactItem(p, Hand.MAIN_HAND);
+            case 234 -> holdSneak = false;
+            case 236 -> shot(c, "alter_10_strike_air");
             case 250 -> {
                 return true;
             }

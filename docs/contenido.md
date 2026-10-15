@@ -8,6 +8,7 @@ Resumen en tablas. El detalle completo está en `README.md`. Las habilidades sal
 | Servant | Catalizador | Bonus del conjunto completo | Habilidades (R / G) |
 |---|---|---|---|
 | **Saber** (Artoria) | Manzana dorada | Regeneración I; inmune al daño mágico y al Wither | **Avalon**: 5 s invulnerable, con la vaina y sus fragmentos alrededor. **Mana Burst**: embestida que arrolla. |
+| **Saber Alter** | Bloque de netherita | Fuerza I; inmune al daño mágico y al Wither; **150 de maná máximo** | **Mana Burst**: embestida que arrolla. |
 | **Archer** (EMIYA) | Tinte rojo | Visión nocturna; los monstruos cercanos brillan | **Trace On**: analiza un arma y proyecta copias (si la tiras, estalla). **Unlimited Blade Works**: Reality Marble de 60 s con lluvia de espadas. **Hrunting**: espada-flecha que persigue al objetivo hasta 3 veces. |
 | **Lancer** (Cú Chulainn) | Fragmento de prismarina | Velocidad I; el 75 % de los proyectiles no le hiere; sobrevive a un golpe mortal cada 5 min | **Runa Ansuz**: tres bolas de fuego en abanico. |
 | **Rider** (Medusa) | Ojo de ender | Velocidad I y Salto II (necesita también la venda) | **Ojos Místicos**: casi petrifica a quien la mira. **Bellerophon**: invoca a Pegaso; montada, embestida de luz. **Blood Fort Andromeda**: templo de sangre que absorbe vida 10 s. |
@@ -26,6 +27,7 @@ lleno y mejoras 30 s; uno por día) y logros propios.
 | Arma | De | Uso normal | Noble Phantasm / ataque especial |
 |---|---|---|---|
 | **Excalibur** | Saber | Espada; agachado + clic derecho: **Strike Air** (ráfaga de viento) | Mantener 3 s y soltar: **Excalibur**, haz de luz de 48 bloques que ignora armadura. |
+| **Excalibur Morgan** | Saber Alter | Espada; agachado + clic derecho: **Strike Air** | Mantener 3 s y soltar: **Excalibur Morgan**, como Excalibur pero con 10 s de recarga (en vez de 20) y el haz rojo sangre. |
 | **Kanshō y Bakuya** | Archer | Sables; clic derecho los lanza y vuelven | Agachado + clic derecho: **Rho Aias**, escudo de siete pétalos que destruye proyectiles. |
 | **Arco de Archer** | Archer | Dispara espadas sin gastar flechas | Agachado y tensado a tope: **Caladbolg II**, explota al impactar. |
 | **Gáe Bolg** | Lancer | Lanza con más alcance | Mantener 1 s: **estocada** que atraviesa el corazón (12 bloques, Wither). Agachado 2 s: **la lanza que vuela**; salta y la arroja, persigue y estalla. |
@@ -53,8 +55,8 @@ Los normales (I-III) salen en la mesa; los **legendarios**, en cofres y con los 
 
 | Arma | Encantamiento | Qué hace |
 |---|---|---|
-| Excalibur | **Radiant Blade** (I-III) | Cargando más de 1 s y soltando antes del Noble Phantasm, el tajo deja llamas 3 s. |
-| Excalibur | **Avalon's Grace** (legendario) | Regeneración mientras cargas y 2 corazones al soltar. |
+| Excalibur y Excalibur Morgan | **Radiant Blade** (I-III) | Cargando más de 1 s y soltando antes del Noble Phantasm, el tajo deja llamas 3 s. |
+| Excalibur y Excalibur Morgan | **Avalon's Grace** (legendario) | Regeneración mientras cargas y 2 corazones al soltar. |
 | Kanshō y Bakuya | **Yin-Yang Resonance** (I-III) | 15/30/45 % de que la pareja de la otra mano golpee también. |
 | Kanshō y Bakuya | **Trace Resilience** (legendario) | Las proyecciones de Trace On duran el triple. |
 | Arco de Archer | **Broken Blade** (I-III) | 15/30/45 % de que las espadas den Marchitamiento. |

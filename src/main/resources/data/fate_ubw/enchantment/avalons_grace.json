@@ -2,7 +2,7 @@
   "description": {
     "translate": "enchantment.fate_ubw.avalons_grace"
   },
-  "supported_items": "fate_ubw:excalibur",
+  "supported_items": ["fate_ubw:excalibur", "fate_ubw:excalibur_morgan"],
   "weight": 1,
   "max_level": 1,
   "min_cost": {

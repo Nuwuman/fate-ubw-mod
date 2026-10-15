@@ -28,6 +28,7 @@ Notas de trabajo para Claude. Lo pendiente y las ideas están en `docs/notas.md`
     edita `maanna.bbmodel` y lo devuelve, partirlo por grupos/posición con `bbmodel_to_item.py` en vez de regenerarlo.
 - **Iconos de armaduras**: `python tools/armor_icons.py` los saca del `.geo.bbmodel` de cada armadura (mismos cubos y
   textura, centrados y escalados a la casilla). Volver a ejecutarlo tras cambiar una armadura.
+- **Saber Alter** reutiliza el modelo de Saber: `python tools/saber_alter.py` recolorea la armadura y Excalibur (azul→negro, plata→acero oscuro, oro→rojo). Volver a ejecutarlo si cambian la armadura o Excalibur de Saber.
 - Las piezas deben **cubrir el brazo/pierna del jugador (4×4) con margen**, o la skin asoma (pasó en Saber, Berserker).
 - Ropa de servants: lo que va al aire deja ver la skin; sin pelo (tiaras/coronas solas).
 

@@ -10,6 +10,7 @@ BOOTS = ('armorRightBoot', 'armorLeftBoot')
 # servant: [(ítem, huesos, desplazamiento en Y)]; los hijos de cada hueso van con él
 SETS = {
     'saber': [('saber_chestplate', CHEST, -4), ('saber_leggings', LEGS, 2), ('saber_boots', BOOTS, 6)],
+    'saber_alter': [('saber_alter_chestplate', CHEST, -4), ('saber_alter_leggings', LEGS, 2), ('saber_alter_boots', BOOTS, 6)],
     'archer': [('archer_chestplate', CHEST + ('coatBack', 'coatLeft', 'coatRight', 'coatFrontL', 'coatFrontR'), -4),
                ('archer_leggings', LEGS, 2), ('archer_boots', BOOTS, 6)],
     'lancer': [('lancer_chestplate', CHEST + ('ponytail',), -4), ('lancer_leggings', LEGS, 2),

@@ -55,8 +55,9 @@ public final class Mana {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTicks() % 10 != 0) return;
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                float mana = get(player);
-                if (mana < MAX) player.setAttached(MANA, Math.min(MAX, mana + REGEN_PER_SECOND / 2));
+                float mana = get(player), max = max(player);
+                if (mana < max) player.setAttached(MANA, Math.min(max, mana + REGEN_PER_SECOND / 2));
+                else if (mana > max) player.setAttached(MANA, max);   // al quitarse la armadura de Saber Alter
             }
         });
     }
@@ -67,6 +68,11 @@ public final class Mana {
 
     public static float costOf(Item key) {
         return COSTS.getOrDefault(key, 0.0F);
+    }
+
+    /** Maná máximo: 100, o 150 con la armadura completa de Saber Alter. */
+    public static float max(PlayerEntity player) {
+        return com.nuwuman.fateubw.saber.SaberAlterArmorItem.fullSet(player) ? com.nuwuman.fateubw.saber.SaberAlterArmorItem.MAX_MANA : MAX;
     }
 
     public static float get(PlayerEntity player) {
@@ -94,6 +100,6 @@ public final class Mana {
     }
 
     public static void fill(PlayerEntity player) {
-        player.setAttached(MANA, MAX);
+        player.setAttached(MANA, max(player));
     }
 }

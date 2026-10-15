@@ -96,6 +96,8 @@ public final class Abilities {
                     new ServantSet(FateUBW.SABER_CHESTPLATE, FateUBW.SABER_LEGGINGS, FateUBW.SABER_BOOTS, null, List.of(
                             new Ability("avalon", Items.ENCHANTED_GOLDEN_APPLE, FateUBW.AVALON, SaberArmorItem::avalon),
                             new Ability("mana_burst", Items.WIND_CHARGE, FateUBW.MANA_BURST, SaberArmorItem::manaBurst))),
+                    new ServantSet(FateUBW.SABER_ALTER_CHESTPLATE, FateUBW.SABER_ALTER_LEGGINGS, FateUBW.SABER_ALTER_BOOTS, null, List.of(
+                            new Ability("mana_burst", Items.WIND_CHARGE, FateUBW.MANA_BURST, SaberArmorItem::manaBurst))),
                     new ServantSet(FateUBW.ARCHER_CHESTPLATE, FateUBW.ARCHER_LEGGINGS, FateUBW.ARCHER_BOOTS, null, List.of(
                             new Ability("trace_on", FateUBW.TRACE_ON, FateUBW.TRACE_ON, TraceOn::use),
                             new Ability("unlimited_blade_works", FateUBW.UNLIMITED_BLADE_WORKS,

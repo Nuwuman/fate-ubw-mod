@@ -22,15 +22,17 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
  * y en el inventario se ve siempre la espada (sin el viento de Invisible Air).
  */
 public class ExcaliburRenderer extends GeoItemRenderer<ExcaliburItem> {
-    private static final Identifier NORMAL = FateUBW.id("textures/item/excalibur.png");
-    private static final Identifier CHARGING = FateUBW.id("textures/item/excalibur_charging.png");
-    private static final Identifier CHARGED = FateUBW.id("textures/item/excalibur_charged.png");
+    private final Identifier normal, charging, charged;
     // El halo suma su color a lo que hay detrás: a media intensidad para que siga pareciendo translúcido
     private static final int AURA_COLOUR = 0xFF8C8C8C;
     private boolean auraPass;
 
-    public ExcaliburRenderer() {
+    /** 'texture': excalibur o excalibur_morgan (mismo modelo y animaciones, otras texturas). */
+    public ExcaliburRenderer(String texture) {
         super(new DefaultedItemGeoModel<>(FateUBW.id("excalibur")));
+        normal = FateUBW.id("textures/item/" + texture + ".png");
+        charging = FateUBW.id("textures/item/" + texture + "_charging.png");
+        charged = FateUBW.id("textures/item/" + texture + "_charged.png");
         addRenderLayer(new AutoGlowingGeoLayer<>(this) {
             @Override
             public void render(MatrixStack poseStack, ExcaliburItem animatable, BakedGeoModel bakedModel, @Nullable RenderLayer renderType,
@@ -69,9 +71,9 @@ public class ExcaliburRenderer extends GeoItemRenderer<ExcaliburItem> {
     @Override
     public Identifier getTextureLocation(ExcaliburItem animatable) {
         return switch (state()) {
-            case ExcaliburItem.CHARGING -> CHARGING;
-            case ExcaliburItem.CHARGED -> CHARGED;
-            default -> NORMAL;
+            case ExcaliburItem.CHARGING -> charging;
+            case ExcaliburItem.CHARGED -> charged;
+            default -> normal;
         };
     }
 

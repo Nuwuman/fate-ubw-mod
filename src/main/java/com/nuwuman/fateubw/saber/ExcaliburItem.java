@@ -51,6 +51,9 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
     // Carga mínima para que cuenten los encantamientos al soltar (1 s)
     private static final int RADIANT_CHARGE = 20;
     private static final int EXCALIBUR_COOLDOWN = 20 * 20;
+    // Excalibur Morgan (Saber Alter): la mitad de recarga y un haz negro y rojo
+    private static final int MORGAN_COOLDOWN = 20 * 10;
+    private static final DustParticleEffect RED_DUST = new DustParticleEffect(new Vector3f(0.75F, 0.05F, 0.12F), 1.3F);
     private static final int STRIKE_AIR_COOLDOWN = 20 * 2;
     private static final DustParticleEffect GOLD_DUST = new DustParticleEffect(new Vector3f(1.0F, 0.8F, 0.25F), 1.3F);
 
@@ -63,10 +66,21 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
     private static final RawAnimation REVEALED_LOOP = RawAnimation.begin().thenLoop("animation.excalibur.revealed");
     private static final RawAnimation CHARGE_LOOP = RawAnimation.begin().thenLoop("animation.excalibur.charge");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final boolean morgan;
 
     public ExcaliburItem(Item.Settings settings) {
+        this(settings, false);
+    }
+
+    /** 'morgan': la Excalibur Morgan de Saber Alter (recarga más corta, haz oscuro, sus propias texturas). */
+    public ExcaliburItem(Item.Settings settings, boolean morgan) {
         super(ToolMaterials.NETHERITE, settings.attributeModifiers(
                 SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 6, -2.4F)));
+        this.morgan = morgan;
+    }
+
+    private int npCooldown() {
+        return morgan ? MORGAN_COOLDOWN : EXCALIBUR_COOLDOWN;
     }
 
     @Override
@@ -76,7 +90,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
 
             @Override
             public net.minecraft.client.render.item.BuiltinModelItemRenderer getGeoItemRenderer() {
-                if (renderer == null) renderer = new com.nuwuman.fateubw.client.ExcaliburRenderer();
+                if (renderer == null) renderer = new com.nuwuman.fateubw.client.ExcaliburRenderer(morgan ? "excalibur_morgan" : "excalibur");
                 return renderer;
             }
         });
@@ -133,7 +147,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
             Rules.commit(user, FateUBW.STRIKE_AIR, STRIKE_AIR_COOLDOWN);
             return TypedActionResult.success(stack, world.isClient());
         }
-        if (!Rules.ready(user, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN, "excalibur")) return TypedActionResult.fail(stack);
+        if (!Rules.ready(user, FateUBW.EXCALIBUR_NP, npCooldown(), "excalibur")) return TypedActionResult.fail(stack);
         user.setCurrentHand(hand);
         return TypedActionResult.consume(stack);
     }
@@ -155,7 +169,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
                     0, 0.0, 1.0, 0.0, 0.05 + progress * 0.12);
         }
         // Brillo dorado alrededor de la espada alzada
-        server.spawnParticles(GOLD_DUST, user.getX(), user.getEyeY() + 0.9, user.getZ(),
+        server.spawnParticles(morgan ? RED_DUST : GOLD_DUST, user.getX(), user.getEyeY() + 0.9, user.getZ(),
                 2 + (int) (progress * 4), 0.25, 0.5, 0.25, 0.0);
 
         if (charge == FULL_CHARGE / 3 || charge == FULL_CHARGE * 2 / 3) {
@@ -199,7 +213,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
         }
         if (charge < FULL_CHARGE || !(user instanceof PlayerEntity player)) return;
 
-        Rules.commit(player, FateUBW.EXCALIBUR_NP, EXCALIBUR_COOLDOWN);
+        Rules.commit(player, FateUBW.EXCALIBUR_NP, npCooldown());
         // La espada se queda en alto un segundo mientras la cámara se coloca, y entonces cae el golpe
         com.nuwuman.fateubw.PlayerAnims.play(player, "excalibur_hold");
         com.nuwuman.fateubw.PlayerAnims.cinematic(player);
@@ -216,7 +230,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
         FateEnchantments.later(com.nuwuman.fateubw.PlayerAnims.WINDUP, () -> {
             if (!player.isAlive()) return;
             com.nuwuman.fateubw.PlayerAnims.playAll(serverPlayer, "excalibur_swing");
-            ExcaliburBeamEntity.fire(server, player);
+            ExcaliburBeamEntity.fire(server, player, morgan);
             com.nuwuman.fateubw.NpFx.launchBlast(server, player, true);
             player.swingHand(hand, true);
             world.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -261,6 +275,7 @@ public class ExcaliburItem extends SwordItem implements GeoItem {
 
     @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+        if (morgan) tooltip.add(Text.translatable("item.fate_ubw.excalibur_morgan.tooltip").formatted(Formatting.DARK_RED));
         tooltip.add(Text.translatable("item.fate_ubw.excalibur.tooltip.charge").formatted(Formatting.GOLD));
         tooltip.add(Text.translatable("item.fate_ubw.excalibur.tooltip.strike_air").formatted(Formatting.AQUA));
         tooltip.add(Text.translatable("item.fate_ubw.excalibur.tooltip.air").formatted(Formatting.GRAY));

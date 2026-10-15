@@ -58,8 +58,10 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(FateUBW.BABYLON_WEAPON, ctx -> new OrientedItemRenderer<BabylonWeaponEntity>(ctx, BabylonWeaponEntity::getStack, e -> false));
 
         // Excalibur y Ea: normal / cargando / cargada
-        ModelPredicateProviderRegistry.register(FateUBW.EXCALIBUR, FateUBW.id("charge"),
-                (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
+        for (net.minecraft.item.Item excalibur : new net.minecraft.item.Item[]{FateUBW.EXCALIBUR, FateUBW.EXCALIBUR_MORGAN}) {
+            ModelPredicateProviderRegistry.register(excalibur, FateUBW.id("charge"),
+                    (stack, world, entity, seed) -> using(entity, stack) ? ExcaliburItem.chargeProgress(entity) : 0.0F);
+        }
         // Invisible Air (GeckoLib): el viento la tapa salvo al cargar el Noble Phantasm o justo después de liberar Strike Air
         ExcaliburItem.airState = stack -> {
             net.minecraft.client.world.ClientWorld world = net.minecraft.client.MinecraftClient.getInstance().world;

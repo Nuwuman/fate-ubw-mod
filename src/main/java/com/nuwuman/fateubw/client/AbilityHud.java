@@ -108,7 +108,7 @@ public final class AbilityHud {
         context.fill(x - 2, top - 2, x + width + 2, bottom, 0x80000000);
 
         // Maná (barra azul) y Sellos de Comando (rombos rojos; apagados los gastados)
-        float mana = Mana.get(player) / Mana.MAX;
+        float mana = Mana.get(player) / Mana.max(player);
         int barWidth = width - 44;
         context.fill(x + 2, top + 2, x + 2 + barWidth, top + 8, 0xFF1A1F3A);
         context.fill(x + 2, top + 2, x + 2 + (int) (barWidth * mana), top + 8, 0xFF4A8CFF);
