@@ -23,12 +23,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,18 +33,14 @@ import java.util.Set;
  * El movimiento lo calcula el cliente del jinete (como cualquier montura); el daño de la embestida, el servidor.
  * Sin jinete durante 5 s, desaparece.
  */
-public class PegasusEntity extends PathAwareEntity implements GeoEntity {
+public class PegasusEntity extends PathAwareEntity {
     private static final TrackedData<Integer> CHARGE = DataTracker.registerData(PegasusEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.pegasus.idle");
-    private static final RawAnimation WALK = RawAnimation.begin().thenLoop("animation.pegasus.walk");
-    private static final RawAnimation FLY = RawAnimation.begin().thenLoop("animation.pegasus.fly");
     public static final int CHARGE_TICKS = 30;
     private static final double FLY_SPEED = 0.9;
     private static final double CHARGE_SPEED = 2.4;
     private static final float CHARGE_DAMAGE = 40.0F;
     private static final int RIDERLESS_TICKS = 100;
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final Set<Integer> chargeHits = new HashSet<>();
     private int riderless;
 
@@ -177,19 +167,5 @@ public class PegasusEntity extends PathAwareEntity implements GeoEntity {
         if (getCharge() % 4 == 0) {
             world.playSound(null, getX(), getY(), getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, SoundCategory.PLAYERS, 1.0F, 1.6F);
         }
-    }
-
-    // ---------- GeckoLib ----------
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, 5, state -> {
-            if (!isOnGround()) return state.setAndContinue(FLY);
-            return state.setAndContinue(state.isMoving() ? WALK : IDLE);
-        }));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
     }
 }

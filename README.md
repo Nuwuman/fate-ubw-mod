@@ -85,7 +85,7 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **Armadura** de 4 piezas: Breaker Gorgon (venda), vestido con melena animada, medias y botas.
   Conjunto completo: Velocidad I y Salto II. Habilidades:
   - **Ojos Místicos**: quien te mira de frente queda casi petrificado (lentitud extrema, fatiga y debilidad).
-  - **Bellerophon**: invoca a **Pegaso** (modelo 3D animado) y lo montas. Mira hacia arriba y avanza para despegar;
+  - **Bellerophon**: invoca a **Pegaso** (el caballo blanco del juego con alas y brida dorada; en el suelo las alas van plegadas y al volar aletean) y lo montas. Mira hacia arriba y avanza para despegar;
     vuela hacia donde miras. Montado, la habilidad lanza **la embestida de Bellerophon**, un cometa de luz que arrolla
     todo a su paso. Pegaso desaparece si se queda sin jinete.
   - **Blood Fort Andromeda**: un templo de sangre de 10 bloques que durante 10 s absorbe la vida de los demás y te cura.

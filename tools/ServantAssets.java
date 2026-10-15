@@ -1294,86 +1294,6 @@ public class ServantAssets {
             + "  }";
 
     // Pegaso: caballo blanco con alas, crin dorada y cascos de oro. Mira hacia -Z; patas y alas giran en su bone
-    // Pegaso: proporciones de caballo (cuerpo 10x10x22, patas de 12, cuello inclinado hacia delante), crin y cola
-    // blancas, cascos y la brida dorada de Bellerophon. Las alas tienen plumas cobertoras y remeras largas hacia atrás;
-    // en reposo van plegadas sobre el lomo (lo hace la animación) y al volar se abren
-    static final Paint COAT = (x, y, w, h, s) -> shade(0xf4f4f8, x, y, w, h, s, 0.035);
-    static final Paint COAT_SHADE = (x, y, w, h, s) -> shade(0xdfe0e8, x, y, w, h, s, 0.035);
-    static final Paint HOOF = metal(0xd9b24a);
-    static final Paint NOSE = solid(0x3a3a44);
-
-    static Paint remiges() {
-        // Remeras: blanco con el raquis gris en el centro de cada pluma
-        return (x, y, w, h, s) -> shade(Math.floorMod(x, 3) == 1 ? 0xc9cfdb : 0xfbfbff, x, y, w, h, s, 0.03);
-    }
-
-    static List<Bone> pegasus() {
-        Bone body = new Bone("body", null, 0, 16, 0);
-        body.model.box(-5, 11, -10, 5, 21, 11, COAT);
-        body.model.box(-4.5, 12, -12, 4.5, 20, -10, COAT);              // pecho
-        body.model.box(-4.5, 12.5, 11, 4.5, 20.5, 12.5, COAT);          // grupa
-        body.model.box(-4, 10.5, -6, 4, 11, 8, COAT_SHADE);              // vientre
-        Bone neck = new Bone("neck", "body", 0, 19, -9);
-        neck.model.box(-2.5, 18, -13, 2.5, 25, -7.5, COAT);             // cuello: tramo bajo
-        neck.model.box(-2, 24, -14.5, 2, 30, -9.5, COAT);                // y alto, más adelantado
-        neck.model.box(-0.8, 21, -8.5, 0.8, 31, -7, MANE);              // crin
-        neck.model.box(-0.8, 27, -10, 0.8, 32, -8.5, MANE);
-        Bone head = new Bone("head", "neck", 0, 29, -12);
-        head.model.box(-2.5, 27.5, -18, 2.5, 32.5, -12.5, COAT);        // cráneo
-        head.model.box(-2, 26.5, -22, 2, 30.5, -18, COAT);              // hocico
-        head.model.box(-1.5, 28.5, -22.2, -0.5, 29.5, -22, NOSE);       // ollares
-        head.model.box(0.5, 28.5, -22.2, 1.5, 29.5, -22, NOSE);
-        head.model.box(2.5, 30.5, -16.5, 2.65, 31.5, -15.3, EYE_BLUE);  // ojos
-        head.model.box(-2.65, 30.5, -16.5, -2.5, 31.5, -15.3, EYE_BLUE);
-        head.model.box(-2, 32.5, -14, -1, 34.5, -13, COAT);             // orejas
-        head.model.box(1, 32.5, -14, 2, 34.5, -13, COAT);
-        head.model.box(-1.2, 32.5, -16, 1.2, 33.5, -12.5, MANE);        // flequillo
-        // Brida dorada de Bellerophon: muserola, carrilleras y frontalera
-        head.model.box(-2.15, 28.2, -20.2, 2.15, 28.9, -19.4, GOLD);
-        head.model.box(2.5, 28.5, -18.4, 2.7, 32.0, -17.6, GOLD);
-        head.model.box(-2.7, 28.5, -18.4, -2.5, 32.0, -17.6, GOLD);
-        head.model.box(-2.6, 31.6, -16.8, 2.6, 32.2, -16.2, GOLD);
-
-        Bone legFL = new Bone("legFL", null, 3, 12, -8);
-        Bone legFR = new Bone("legFR", null, -3, 12, -8);
-        Bone legBL = new Bone("legBL", null, 3, 12, 8);
-        Bone legBR = new Bone("legBR", null, -3, 12, 8);
-        for (Bone leg : List.of(legFL, legFR, legBL, legBR)) {
-            double x = leg.name.endsWith("L") ? 3 : -3, z = leg.name.startsWith("legF") ? -8 : 8;
-            boolean back = leg.name.startsWith("legB");
-            leg.model.box(x - 2, 7, z - (back ? 2.5 : 2), x + 2, 12.5, z + (back ? 2.5 : 2), COAT);   // muslo / antebrazo
-            leg.model.box(x - 1.5, 1.5, z - 1.5, x + 1.5, 7, z + 1.5, COAT);                        // caña
-            leg.model.box(x - 1.75, 1.5, z - 1.75, x + 1.75, 2.5, z + 1.75, COAT_SHADE);            // menudillo
-            leg.model.box(x - 1.75, 0, z - 1.75, x + 1.75, 1.5, z + 1.75, HOOF);                    // casco
-        }
-
-        // Alas extendidas hacia los lados; las remeras salen del borde de atrás
-        Bone wingL = new Bone("wingL", "body", 4.5, 20, -5);
-        Bone wingR = new Bone("wingR", "body", -4.5, 20, -5);
-        for (Bone wing : List.of(wingL, wingR)) {
-            int sx = wing == wingL ? 1 : -1;
-            double[][] parts = {      // x0, x1 (hacia fuera), z0, z1, grosor
-                    {4.5, 11, -7, 1, 1.2}, {11, 17, -6, 0, 1.0}, {17, 22, -5, -1, 0.8}};
-            for (double[] q : parts) {
-                double a = Math.min(sx * q[0], sx * q[1]), b = Math.max(sx * q[0], sx * q[1]);
-                wing.model.box(a, 20 - q[4] / 2, q[2], b, 20 + q[4] / 2, q[3], feathers());
-            }
-            // Remeras: cada vez más largas hacia la punta
-            double[][] quills = {{5, 8, 1, 5}, {8, 11, 1, 6.5}, {11, 14, 0, 8}, {14, 17, 0, 9}, {17, 20, -1, 9.5}, {20, 22.5, -1, 8.5}};
-            for (double[] q : quills) {
-                double a = Math.min(sx * q[0], sx * q[1]), b = Math.max(sx * q[0], sx * q[1]);
-                wing.model.box(a, 19.75, q[2], b, 20.25, q[3], remiges());
-            }
-        }
-
-        Bone tail = new Bone("tail", "body", 0, 19, 12);
-        tail.model.box(-1.5, 14, 12, 1.5, 19.5, 14.5, MANE);
-        tail.model.box(-1.8, 7, 12.8, 1.8, 14, 15.3, MANE);
-        tail.model.box(-1.4, 4, 13.3, 1.4, 7, 15.6, MANE);
-
-        return List.of(body, neck, head, legFL, legFR, legBL, legBR, wingL, wingR, tail);
-    }
-
     // Ea: tres cilindros (octogonales: un cubo y otro girado 45°) cada vez más finos, sobre una empuñadura dorada
     static Model ea(int mode) {
         Model m = new Model();
@@ -2057,7 +1977,7 @@ public class ServantAssets {
         itemModel(root, "bellerophon", bridle(), HELD_OBJECT, null);
         List<Bone> rider = riderArmor();
         armorModel(root, "rider_armor", rider);
-        geoModel(root, "pegasus", pegasus());
+        // Pegaso: el caballo blanco vanilla con alas (client/PegasusRenderer), ya no se genera
 
         // ---------- Gilgamesh ----------
         // Ea la dibuja GeckoLib (cilindros que giran y líneas que brillan); el JSON solo da las posiciones en mano
