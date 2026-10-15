@@ -157,11 +157,32 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 
 **Servants enemigos**
 - **Berserker** (jefe, con barra de vida): 40 de vida y God Hand con once vidas más (480 en total), ignora golpes débiles y usa Nine Lives.
-  Solo aparece con su huevo; suelta su hacha-espada.
+  Suelta su hacha-espada.
 - **Lancer**: rápido, esquiva casi todos los proyectiles y se lanza con la Gáe Bolg.
 - **Assassin**: invisible hasta que te tiene cerca, esquiva golpes y usa Tsubame Gaeshi.
 - Lancer y Assassin aparecen de noche muy de vez en cuando (`fateServantSpawns` lo quita) y a veces sueltan su arma
   o una pieza de ropa.
+- **Saber** (jefe): inmune a la magia; Strike Air barre a quien tenga delante.
+- **Archer**: Kanshō y Bakuya de cerca; de lejos, Caladbolg II estalla donde estás.
+- **Rider**: muy rápida; sus Ojos Místicos te dejan casi de piedra (Lentitud IV).
+- **Gilgamesh** (jefe): Gate of Babylon, una lluvia de armas del tesoro.
+- **Caster**: Palabras Divinas (tres rayos) de lejos, y si la acorralan se teletransporta.
+
+**Santuarios de los servants**: por el mundo (bosques, taigas, llanuras, sabanas, junglas, desiertos, badlands...) hay
+santuarios de Saber, Archer, Lancer, Rider, Gilgamesh, Caster, Assassin y Berserker, cada uno con su servant de guardia
+(no se aleja del santuario ni desaparece) y un cofre de botín: hierro, oro, esmeraldas, diamantes, libros encantados y
+algo de su servant (su catalizador, un libro con uno de sus encantamientos del mod, joyas de Tohsaka y, a veces, su arma).
+Se buscan con `/locate structure fate_ubw:saber_shrine` (o `archer_shrine`, `lancer_shrine`...).
+- Saber: un patio en ruinas de Camelot, con Caliburn clavada en la piedra.
+- Archer: una colina llena de espadas clavadas.
+- Lancer: un círculo de piedras celta con una hoguera.
+- Rider: el templo de sangre de Blood Fort Andromeda.
+- Gilgamesh: la cámara del tesoro, con su trono de oro (el cofre, junto al trono).
+- Caster: un pabellón del templo Ryuudou, con libros.
+- Assassin: la puerta del templo (un torii) y un altar pequeño.
+- Berserker: una arena en ruinas con huesos.
+
+![Santuarios](docs/shrines.png)
 
 **Guerra del Santo Grial**
 - **Altar de ritual** (bloque; receta: 2 redstone, 2 lapislázuli, 1 lingote de oro y 3 obsidiana): colócalo en el suelo y

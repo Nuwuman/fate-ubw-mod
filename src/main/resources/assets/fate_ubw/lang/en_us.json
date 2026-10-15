@@ -351,5 +351,15 @@
   "item.fate_ubw.saber_alter_boots": "Saber Alter's Greaves",
   "item.fate_ubw.saber_alter_armor.tooltip.set": "Full set: Strength I and 150 max mana",
   "item.fate_ubw.saber_alter_armor.tooltip.abilities": "Ability: Mana Burst, with 3 charges",
-  "servant.fate_ubw.saber_alter": "Saber Alter"
+  "servant.fate_ubw.saber_alter": "Saber Alter",
+  "entity.fate_ubw.saber_servant": "Saber",
+  "item.fate_ubw.saber_servant_spawn_egg": "Saber Spawn Egg",
+  "entity.fate_ubw.archer_servant": "Archer",
+  "item.fate_ubw.archer_servant_spawn_egg": "Archer Spawn Egg",
+  "entity.fate_ubw.rider_servant": "Rider",
+  "item.fate_ubw.rider_servant_spawn_egg": "Rider Spawn Egg",
+  "entity.fate_ubw.gilgamesh_servant": "Gilgamesh",
+  "item.fate_ubw.gilgamesh_servant_spawn_egg": "Gilgamesh Spawn Egg",
+  "entity.fate_ubw.caster_servant": "Caster",
+  "item.fate_ubw.caster_servant_spawn_egg": "Caster Spawn Egg"
 }

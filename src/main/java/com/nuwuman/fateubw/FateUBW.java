@@ -380,6 +380,11 @@ public class FateUBW implements ModInitializer {
                 entries.add(com.nuwuman.fateubw.npc.ServantNpcs.BERSERKER_EGG);
                 entries.add(com.nuwuman.fateubw.npc.ServantNpcs.LANCER_EGG);
                 entries.add(com.nuwuman.fateubw.npc.ServantNpcs.ASSASSIN_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.SABER_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.ARCHER_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.RIDER_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.GILGAMESH_EGG);
+                entries.add(com.nuwuman.fateubw.npc.ServantNpcs.CASTER_EGG);
             })
             .build());
 
@@ -442,6 +447,7 @@ public class FateUBW implements ModInitializer {
         SummoningCircleItem.register();
         com.nuwuman.fateubw.rider.RiderArmorItem.register();
         com.nuwuman.fateubw.npc.ServantNpcs.register();
+        com.nuwuman.fateubw.structure.ServantShrines.register();
         GrailWar.register();
         HolyGrailItem.register();
         PlayerAnims.register();

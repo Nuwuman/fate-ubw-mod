@@ -1,0 +1,42 @@
+{
+  "structures": [
+    {
+      "structure": "fate_ubw:saber_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:archer_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:lancer_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:rider_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:gilgamesh_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:caster_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:assassin_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "fate_ubw:berserker_shrine",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 28,
+    "separation": 10,
+    "salt": 517204913
+  }
+}

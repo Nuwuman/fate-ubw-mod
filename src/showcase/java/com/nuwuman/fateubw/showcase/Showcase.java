@@ -127,6 +127,7 @@ public class Showcase implements ClientModInitializer {
         boolean done = switch (name) {
             case "saber" -> saber(client, p, st);
             case "alter" -> saberAlter(client, p, st);
+            case "shrines" -> shrines(client, p, st);
             case "archer" -> archer(client, p, st);
             case "lancer" -> lancer(client, p, st);
             case "rider" -> rider(client, p, st);
@@ -1153,6 +1154,44 @@ public class Showcase implements ClientModInitializer {
             case 165 -> {
                 return true;
             }
+            default -> {
+            }
+        }
+        return false;
+    }
+
+    // Santuarios de los servants: coloca cada uno delante y lo fotografía desde arriba; prueba sus cofres de botín
+    private static final String[] SHRINES = {"saber", "archer", "lancer", "rider", "gilgamesh", "caster", "assassin", "berserker"};
+
+    private net.minecraft.util.math.BlockPos shrineBase = net.minecraft.util.math.BlockPos.ORIGIN;
+
+    private boolean shrines(MinecraftClient c, ClientPlayerEntity p, int t) {
+        if (t == 0) {
+            setup(c, p, new String[]{}, new String[]{});
+            p.networkHandler.sendChatCommand("gamemode spectator");
+            shrineBase = p.getBlockPos();
+            return false;
+        }
+        if (t < 10) return false;
+        int i = (t - 10) / 200, k = (t - 10) % 200;
+        if (i >= SHRINES.length) {
+            pitch = 0.0F;
+            return true;
+        }
+        String s = SHRINES[i];
+        int x = shrineBase.getX() + i * 48, z = shrineBase.getZ() + 16;
+        int cx = (x >> 4 << 4) + 6, cz = (z >> 4 << 4) + 6;   // la pieza empieza en la esquina de su chunk
+        switch (k) {
+            case 0 -> p.networkHandler.sendChatCommand("forceload add " + (x - 16) + " " + (z - 32) + " " + (x + 32) + " " + (z + 32));
+            case 80 -> p.networkHandler.sendChatCommand("place structure fate_ubw:" + s + "_shrine " + x + " " + shrineBase.getY() + " " + z);
+            case 85 -> p.networkHandler.sendChatCommand("loot spawn " + x + " " + (shrineBase.getY() + 30) + " " + z + " loot fate_ubw:chests/" + s + "_shrine");
+            case 100 -> {
+                p.networkHandler.sendChatCommand("execute positioned " + cx + " 0 " + (cz - 13) + " positioned over motion_blocking_no_leaves run tp @s ~ ~12 ~");
+                yaw = 0.0F;
+                pitch = 40.0F;
+            }
+            case 190 -> shot(c, "shrine_" + s);
+            case 195 -> p.networkHandler.sendChatCommand("forceload remove all");
             default -> {
             }
         }

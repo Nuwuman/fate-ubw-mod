@@ -1,0 +1,8 @@
+{
+  "type": "fate_ubw:servant_shrine",
+  "servant": "archer",
+  "biomes": "#fate_ubw:has_structure/servant_shrine",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin"
+}

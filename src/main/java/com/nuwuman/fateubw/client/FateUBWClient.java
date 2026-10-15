@@ -55,6 +55,11 @@ public class FateUBWClient implements ClientModInitializer {
         EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.BERSERKER, HostileServantRenderer::new);
         EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.LANCER, HostileServantRenderer::new);
         EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.ASSASSIN, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.SABER, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.ARCHER, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.RIDER, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.GILGAMESH, HostileServantRenderer::new);
+        EntityRendererRegistry.register(com.nuwuman.fateubw.npc.ServantNpcs.CASTER, HostileServantRenderer::new);
         EntityRendererRegistry.register(FateUBW.BABYLON_WEAPON, ctx -> new OrientedItemRenderer<BabylonWeaponEntity>(ctx, BabylonWeaponEntity::getStack, e -> false));
 
         // Excalibur y Ea: normal / cargando / cargada

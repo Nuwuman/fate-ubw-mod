@@ -351,5 +351,15 @@
   "item.fate_ubw.saber_alter_boots": "Grebas de Saber Alter",
   "item.fate_ubw.saber_alter_armor.tooltip.set": "Conjunto completo: Fuerza I y 150 de maná máximo",
   "item.fate_ubw.saber_alter_armor.tooltip.abilities": "Habilidad: Mana Burst, con 3 cargas",
-  "servant.fate_ubw.saber_alter": "Saber Alter"
+  "servant.fate_ubw.saber_alter": "Saber Alter",
+  "entity.fate_ubw.saber_servant": "Saber",
+  "item.fate_ubw.saber_servant_spawn_egg": "Huevo generador de Saber",
+  "entity.fate_ubw.archer_servant": "Archer",
+  "item.fate_ubw.archer_servant_spawn_egg": "Huevo generador de Archer",
+  "entity.fate_ubw.rider_servant": "Rider",
+  "item.fate_ubw.rider_servant_spawn_egg": "Huevo generador de Rider",
+  "entity.fate_ubw.gilgamesh_servant": "Gilgamesh",
+  "item.fate_ubw.gilgamesh_servant_spawn_egg": "Huevo generador de Gilgamesh",
+  "entity.fate_ubw.caster_servant": "Caster",
+  "item.fate_ubw.caster_servant_spawn_egg": "Huevo generador de Caster"
 }

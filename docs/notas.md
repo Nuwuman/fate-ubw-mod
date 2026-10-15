@@ -32,11 +32,7 @@ Ordenadas por lo que aportan frente a lo que cuestan.
 - **Voz de Ishtar** para sus habilidades además del Noble Phantasm.
 
 **Medianas**
-- **Más servants enemigos**: Rider (a lomos de Pegaso), Caster (flotando y lanzando magia), Archer (a distancia,
-  con Kanshō y Bakuya de cerca) e Ishtar (desde el aire). Reutilizan sus armaduras y ataques.
 - **Servants aliados**: invocar un servant que luche a tu lado en vez de llevar su equipo.
-- **Servants enemigos guardando estructuras** (ahora aparecen sueltos de noche): el templo Ryuudou, la casa de Emiya,
-  la iglesia de Kotomine, con botín.
 - **Guerra del Santo Grial más completa**: marcador con quién queda, zona que se cierra como un battle royale o límite
   de tiempo.
 

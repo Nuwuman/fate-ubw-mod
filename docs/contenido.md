@@ -69,3 +69,19 @@ Los normales (I-III) salen en la mesa; los **legendarios**, en cofres y con los 
 | Rule Breaker | **Contract Breaker** (legendario) | Le robas su mejor efecto a quien apuñalas. |
 | Monohoshizao | **Heartbeat** (legendario) | 5 % de golpe al corazón: mata a los monstruos normales; 25 de daño al resto. |
 | Hacha-espada | **God Hand** (legendario, I-III) | Por debajo del 30 % de vida: Resistencia III y Absorción 4/6/8 s (una vez por minuto). |
+
+## Servants enemigos y santuarios
+
+| Servant | Dónde | Qué hace |
+|---|---|---|
+| **Saber** (jefe) | Santuario: patio de Camelot | Inmune a la magia; Strike Air en cono |
+| **Archer** | Santuario: colina de espadas | Kanshō y Bakuya de cerca; Caladbolg II de lejos (estalla) |
+| **Lancer** | Santuario: círculo de piedras; también de noche, suelto | Esquiva proyectiles; se lanza con la Gáe Bolg |
+| **Rider** | Santuario: templo de sangre | Muy rápida; Ojos Místicos (Lentitud IV) |
+| **Gilgamesh** (jefe) | Santuario: cámara del tesoro | Gate of Babylon (lluvia de armas) |
+| **Caster** | Santuario: pabellón del templo Ryuudou | Rayos de Palabras Divinas; se teletransporta si la acorralan |
+| **Assassin** | Santuario: puerta del templo; también de noche, suelto | Invisible hasta que te tiene cerca; Tsubame Gaeshi |
+| **Berserker** (jefe) | Santuario: arena en ruinas | God Hand (12 vidas); Nine Lives |
+
+Cada santuario tiene un cofre con botín normal y algo de su servant (catalizador, libro con su encantamiento del mod,
+joyas de Tohsaka y, a veces, su arma). `/locate structure fate_ubw:<servant>_shrine` los encuentra.
