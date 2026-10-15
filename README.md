@@ -37,8 +37,8 @@ Fuerza II, Velocidad II, Resistencia y Regeneración II. Se recupera uno cada d�
 - **Excalibur Morgan**: Excalibur corrompida, negra y roja. Igual que Excalibur (carga, Strike Air, encantamientos),
   pero el Noble Phantasm **recarga en 10 s** en vez de 20, el brillo de la carga es rojo y el haz es rojo sangre.
 - **Armadura**: la de Saber en negro, acero oscuro y rojo. Conjunto completo: Fuerza I, **Resistencia Mágica** y
-  **150 de maná máximo** (los demás tienen 100: le da para tres Excalibur seguidas). Habilidad: **Mana Burst**; no tiene
-  Avalon.
+  **150 de maná máximo** (los demás tienen 100: le da para tres Excalibur seguidas). Habilidad: **Mana Burst** con **3 cargas** (cada
+  una vuelve en 6 s; el HUD muestra las que quedan); no tiene Avalon.
 
 ![Saber Alter](docs/saber_alter.png)
 

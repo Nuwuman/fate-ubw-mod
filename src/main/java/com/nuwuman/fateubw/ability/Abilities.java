@@ -53,6 +53,7 @@ public final class Abilities {
         cooldown(FateUBW.UBW_BARRAGE, UnlimitedBladeWorks.BARRAGE_COOLDOWN);
         cooldown(FateUBW.AVALON, SaberArmorItem.AVALON_COOLDOWN);
         cooldown(FateUBW.MANA_BURST, SaberArmorItem.MANA_BURST_COOLDOWN);
+        cooldown(FateUBW.MANA_BURST_ALTER, com.nuwuman.fateubw.saber.SaberAlterArmorItem.BURST_RECHARGE);
         cooldown(FateUBW.ANSUZ, LancerArmorItem.ANSUZ_COOLDOWN);
         cooldown(FateUBW.MYSTIC_EYES, RiderDaggerItem.MYSTIC_EYES_COOLDOWN);
         cooldown(FateUBW.BELLEROPHON, BellerophonItem.SUMMON_COOLDOWN);
@@ -97,7 +98,8 @@ public final class Abilities {
                             new Ability("avalon", Items.ENCHANTED_GOLDEN_APPLE, FateUBW.AVALON, SaberArmorItem::avalon),
                             new Ability("mana_burst", Items.WIND_CHARGE, FateUBW.MANA_BURST, SaberArmorItem::manaBurst))),
                     new ServantSet(FateUBW.SABER_ALTER_CHESTPLATE, FateUBW.SABER_ALTER_LEGGINGS, FateUBW.SABER_ALTER_BOOTS, null, List.of(
-                            new Ability("mana_burst", Items.WIND_CHARGE, FateUBW.MANA_BURST, SaberArmorItem::manaBurst))),
+                            new Ability("mana_burst", Items.WIND_CHARGE, FateUBW.MANA_BURST_ALTER,
+                                    com.nuwuman.fateubw.saber.SaberAlterArmorItem::manaBurst))),
                     new ServantSet(FateUBW.ARCHER_CHESTPLATE, FateUBW.ARCHER_LEGGINGS, FateUBW.ARCHER_BOOTS, null, List.of(
                             new Ability("trace_on", FateUBW.TRACE_ON, FateUBW.TRACE_ON, TraceOn::use),
                             new Ability("unlimited_blade_works", FateUBW.UNLIMITED_BLADE_WORKS,
@@ -155,7 +157,10 @@ public final class Abilities {
         }
         if (!Mana.has(player, key)) return;
         if (ability.action().use(player)) {
-            com.nuwuman.fateubw.Rules.cooldown(player, key, cooldownOf(key));
+            // El Mana Burst de Saber Alter va por cargas: la recarga depende de las que le queden
+            int ticks = key == FateUBW.MANA_BURST_ALTER
+                    ? com.nuwuman.fateubw.saber.SaberAlterArmorItem.cooldownAfterBurst(player) : cooldownOf(key);
+            com.nuwuman.fateubw.Rules.cooldown(player, key, ticks);
             Mana.spend(player, key);
             // Postura de la habilidad, si tiene (player_animations/<id>.json); si no, no pasa nada
             com.nuwuman.fateubw.PlayerAnims.playAll(player, ability.id());

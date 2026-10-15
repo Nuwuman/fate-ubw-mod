@@ -183,6 +183,7 @@
   "item.fate_ubw.strike_air": "Strike Air",
   "item.fate_ubw.avalon": "Avalon",
   "item.fate_ubw.mana_burst": "Mana Burst",
+  "item.fate_ubw.mana_burst_alter": "Mana Burst (Alter)",
   "item.fate_ubw.ansuz": "Runa Ansuz",
   "item.fate_ubw.enuma_elish_np": "Enuma Elish",
   "item.fate_ubw.enkidu": "Enkidu",
@@ -349,6 +350,6 @@
   "item.fate_ubw.saber_alter_leggings": "Faldas de Saber Alter",
   "item.fate_ubw.saber_alter_boots": "Grebas de Saber Alter",
   "item.fate_ubw.saber_alter_armor.tooltip.set": "Conjunto completo: Fuerza I y 150 de maná máximo",
-  "item.fate_ubw.saber_alter_armor.tooltip.abilities": "Habilidad: Mana Burst",
+  "item.fate_ubw.saber_alter_armor.tooltip.abilities": "Habilidad: Mana Burst, con 3 cargas",
   "servant.fate_ubw.saber_alter": "Saber Alter"
 }

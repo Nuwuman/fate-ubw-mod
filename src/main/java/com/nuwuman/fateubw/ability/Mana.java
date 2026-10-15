@@ -36,7 +36,7 @@ public final class Mana {
     }
 
     public static void register() {
-        cost(FateUBW.EXCALIBUR_NP, 50); cost(FateUBW.STRIKE_AIR, 10); cost(FateUBW.AVALON, 40); cost(FateUBW.MANA_BURST, 10);
+        cost(FateUBW.EXCALIBUR_NP, 50); cost(FateUBW.STRIKE_AIR, 10); cost(FateUBW.AVALON, 40); cost(FateUBW.MANA_BURST, 10); cost(FateUBW.MANA_BURST_ALTER, 10);
         cost(FateUBW.RHO_AIAS, 20); cost(FateUBW.CALADBOLG, 25); cost(FateUBW.TRACE_ON, 10); cost(FateUBW.UBW_COOLDOWN, 60);
         cost(FateUBW.UBW_BARRAGE, 5); cost(FateUBW.HRUNTING, 20);
         cost(FateUBW.GAE_BOLG_PIERCE, 25); cost(FateUBW.GAE_BOLG_SOARING, 35); cost(FateUBW.ANSUZ, 10);

@@ -233,6 +233,7 @@ public class FateUBW implements ModInitializer {
     public static final Item STRIKE_AIR = item("strike_air", new Item(new Item.Settings()));
     public static final Item AVALON = item("avalon", new Item(new Item.Settings()));
     public static final Item MANA_BURST = item("mana_burst", new Item(new Item.Settings()));
+    public static final Item MANA_BURST_ALTER = item("mana_burst_alter", new Item(new Item.Settings()));
     public static final Item ANSUZ = item("ansuz", new Item(new Item.Settings()));
     public static final Item ENUMA_ELISH_NP = item("enuma_elish_np", new Item(new Item.Settings()));
     public static final Item ENKIDU = item("enkidu", new Item(new Item.Settings()));
@@ -422,6 +423,7 @@ public class FateUBW implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(LancerArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(SaberArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(com.nuwuman.fateubw.saber.SaberAlterArmorItem::allowDamage);
+        com.nuwuman.fateubw.saber.SaberAlterArmorItem.register();
         ServerLivingEntityEvents.ALLOW_DEATH.register(LancerArmorItem::allowDeath);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(CasterArmorItem::allowDamage);
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(AssassinArmorItem::allowDamage);

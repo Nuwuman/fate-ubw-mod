@@ -128,6 +128,12 @@ public final class AbilityHud {
             context.drawItem(new ItemStack(ability.icon()), x + 2, rowY + 1);
 
             Item key = ability.key().apply(player);
+            // Cargas que quedan (Mana Burst de Saber Alter), a la derecha de la fila
+            if (key == com.nuwuman.fateubw.FateUBW.MANA_BURST_ALTER) {
+                int charges = com.nuwuman.fateubw.saber.SaberAlterArmorItem.charges(player);
+                context.drawTextWithShadow(font, Text.literal("x" + charges).formatted(charges > 0 ? Formatting.AQUA : Formatting.DARK_GRAY),
+                        x + width - 16, rowY + 5, 0xFFFFFF);
+            }
             float left = player.getItemCooldownManager().getCooldownProgress(key, counter.getTickDelta(true));
             boolean noMana = Mana.get(player) < Mana.costOf(key) && !player.isCreative();
             if (left > 0.0F) {

@@ -24,10 +24,25 @@ import java.util.List;
 
 /**
  * Armadura de Saber Alter (la de Saber teñida de negro y rojo). Conjunto completo: Fuerza I, Resistencia Mágica como
- * Saber y 150 de maná máximo en vez de 100. No tiene Avalon; sí Mana Burst.
+ * Saber y 150 de maná máximo en vez de 100. No tiene Avalon; sí Mana Burst, con tres cargas que se recargan de una en
+ * una (6 s cada una).
  */
 public class SaberAlterArmorItem extends ServantArmorItem {
     public static final float MAX_MANA = 150.0F;
+    public static final int BURST_CHARGES = 3;
+    public static final int BURST_RECHARGE = SaberArmorItem.MANA_BURST_COOLDOWN;   // lo que tarda en volver cada carga
+    private static final int BURST_GAP = 10;                                         // entre una embestida y la siguiente
+    /** Cargas de Mana Burst que le quedan (sincronizadas con su cliente para el HUD). */
+    public static final net.fabricmc.fabric.api.attachment.v1.AttachmentType<Integer> BURST_LEFT =
+            net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry.<Integer>builder()
+                    .persistent(com.mojang.serialization.Codec.INT).initializer(() -> BURST_CHARGES)
+                    .syncWith(net.minecraft.network.codec.PacketCodecs.VAR_INT.cast(),
+                            net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate.targetOnly())
+                    .buildAndRegister(FateUBW.id("mana_burst_charges"));
+    // Tick del mundo en que vuelve la siguiente carga
+    private static final net.fabricmc.fabric.api.attachment.v1.AttachmentType<Long> BURST_NEXT =
+            net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry.<Long>builder()
+                    .persistent(com.mojang.serialization.Codec.LONG).buildAndRegister(FateUBW.id("mana_burst_next"));
 
     public SaberAlterArmorItem(ArmorItem.Type type, Item.Settings settings) {
         super(FateUBW.SABER_ALTER_MATERIAL, type, settings, "saber_alter_armor");
@@ -36,6 +51,43 @@ public class SaberAlterArmorItem extends ServantArmorItem {
     public static boolean fullSet(LivingEntity entity) {
         return entity instanceof PlayerEntity player
                 && wearsSet(player, FateUBW.SABER_ALTER_CHESTPLATE, FateUBW.SABER_ALTER_LEGGINGS, FateUBW.SABER_ALTER_BOOTS);
+    }
+
+    public static int charges(PlayerEntity player) {
+        Integer left = player.getAttached(BURST_LEFT);
+        return left == null ? BURST_CHARGES : left;
+    }
+
+    /** Las cargas vuelven de una en una aunque no lleve la armadura puesta. */
+    public static void register() {
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+            for (net.minecraft.server.network.ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                int left = charges(player);
+                if (left >= BURST_CHARGES) continue;
+                long now = player.getServerWorld().getTime();
+                Long next = player.getAttached(BURST_NEXT);
+                if (next != null && now < next) continue;
+                player.setAttached(BURST_LEFT, left + 1);
+                if (left + 1 < BURST_CHARGES) player.setAttached(BURST_NEXT, now + BURST_RECHARGE);
+            }
+        });
+    }
+
+    /** Mana Burst con cargas: gasta una; si era la primera, empieza a contar la recarga. */
+    public static boolean manaBurst(net.minecraft.server.network.ServerPlayerEntity player) {
+        int left = charges(player);
+        if (left <= 0 || !SaberArmorItem.manaBurst(player)) return false;
+        long now = player.getServerWorld().getTime();
+        if (left == BURST_CHARGES) player.setAttached(BURST_NEXT, now + BURST_RECHARGE);
+        player.setAttached(BURST_LEFT, left - 1);
+        return true;
+    }
+
+    /** Recarga tras usarla: un respiro si quedan cargas; si no, hasta que vuelva la siguiente. */
+    public static int cooldownAfterBurst(net.minecraft.server.network.ServerPlayerEntity player) {
+        if (charges(player) > 0) return BURST_GAP;
+        Long next = player.getAttached(BURST_NEXT);
+        return next == null ? BURST_RECHARGE : (int) Math.max(BURST_GAP, next - player.getServerWorld().getTime());
     }
 
     @Override
